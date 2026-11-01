@@ -1,0 +1,15 @@
+# Database dump berukuran besar (sumber OLTP)
+/dump-*.sql
+*.sql.gz
+*.sql.zip
+
+# Environment & credentials
+.env
+*.env
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

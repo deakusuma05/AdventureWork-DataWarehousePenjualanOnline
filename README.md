@@ -187,19 +187,15 @@ adventureworks-online-sales-dw/
 ├── .gitignore
 │
 ├── docs/
-│   ├── piagam-proyek.md
-│   ├── pertanyaan-bisnis.md
-│   ├── grain.md
-│   ├── star-schema-v1.drawio
-│   ├── star-schema-v1.png
-│   ├── star-schema-v1.md
-│   ├── bus-matrix.md
-│   └── risiko-awal.md
+│   ├── risiko-awal.md
+│   └── star-schema-v1.png
 │
 ├── sql/
 │   └── profiling/
+│       ├── 07-penjualan-online-per-bulan.sql
 │       ├── 08-profiling-null-online-sales.sql
-│       └── 09-profiling-currency-online.sql
+│       ├── 09-profiling-currency-online.sql
+│       └── 10-profiling-rentang-tanggal.sql
 │
 ├── hasil-profiling/
 │   ├── 07-penjualan-online-per-bulan.csv
@@ -209,8 +205,7 @@ adventureworks-online-sales-dw/
 │
 ├── bukti/
 │   ├── github/
-│   │   ├── repositori-tim.png
-│   │   └── undangan-dosen.png
+│   │   └── .gitkeep
 │   │
 │   └── database/
 │       ├── 01-verifikasi-database.png
@@ -319,21 +314,21 @@ Setiap anggota wajib mendokumentasikan hasil pekerjaannya dan berkoordinasi apab
 
 ## 14. Status Proyek
 
-**Tahap saat ini: Pekan 9 — Perencanaan dan Desain Awal**
+**Tahap saat ini: Pekan 9–10 — Perencanaan, Desain Awal, dan Steering Review**
 
 - [x] Menentukan proses bisnis Penjualan Online
 - [x] Menyiapkan database AdventureWorks pada MySQL
 - [x] Melakukan impor database sumber
 - [x] Memverifikasi 71 tabel dan tabel sumber utama
 - [x] Mengidentifikasi dimensi berdasarkan bus matrix
-- [ ] Melengkapi piagam dan peran anggota tim
+- [x] Melengkapi piagam dan peran anggota tim
 - [ ] Memastikan undangan dosen diterima
-- [ ] Memfinalisasi pertanyaan bisnis
-- [ ] Menyimpan hasil profiling lengkap
-- [ ] Memfinalisasi Star Schema versi 1
-- [ ] Memfinalisasi bus matrix dan conformed dimension
-- [ ] Melengkapi daftar risiko
-- [ ] Menyusun laporan Steering Review pekan 10
+- [x] Memfinalisasi pertanyaan bisnis
+- [x] Menyimpan hasil profiling lengkap
+- [x] Memfinalisasi Star Schema versi 1
+- [x] Memfinalisasi bus matrix dan conformed dimension
+- [x] Melengkapi daftar risiko
+- [x] Menyusun laporan Steering Review pekan 10
 
 Checklist ini diperbarui berdasarkan bukti yang tersedia dalam repositori.
 
