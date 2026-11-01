@@ -182,27 +182,68 @@ Komponen utama:
 
 ```text
 adventureworks-online-sales-dw/
+│
 ├── README.md
+├── .gitignore
+│
 ├── docs/
 │   ├── piagam-proyek.md
 │   ├── pertanyaan-bisnis.md
 │   ├── grain.md
 │   ├── star-schema-v1.drawio
 │   ├── star-schema-v1.png
+│   ├── star-schema-v1.md
 │   ├── bus-matrix.md
 │   └── risiko-awal.md
+│
 ├── sql/
-│   ├── profiling/
-│   ├── schema/
-│   └── validation/
+│   └── profiling/
+│       ├── 01-verifikasi-database.sql
+│       ├── 02-profiling-transaksi-online.sql
+│       ├── 03-profiling-produk.sql
+│       ├── 04-validasi-grain.sql
+│       ├── 05-profiling-orderqty.sql
+│       ├── 06-validasi-tujuh-dimensi.sql
+│       ├── 07-penjualan-online-per-bulan.sql
+│       ├── 08-profiling-null-online-sales.sql
+│       ├── 09-profiling-currency-online.sql
+│       └── 10-profiling-rentang-tanggal.sql
+│
+├── hasil-profiling/
+│   ├── 01-verifikasi-jumlah-baris.csv
+│   ├── 02-profiling-transaksi-online.csv
+│   ├── 03-profiling-produk.csv
+│   ├── 04-validasi-grain.csv
+│   ├── 05-profiling-orderqty.csv
+│   ├── 06-validasi-tujuh-dimensi.csv
+│   ├── 07-penjualan-online-per-bulan.csv
+│   ├── 08-profiling-null-online-sales.csv
+│   ├── 09-profiling-currency-online.csv
+│   └── 10-profiling-rentang-tanggal.csv
+│
+├── bukti/
+│   ├── github/
+│   │   ├── repositori-tim.png
+│   │   └── undangan-dosen.png
+│   │
+│   └── database/
+│       ├── 01-verifikasi-database.png
+│       ├── 02-profiling-transaksi-online.png
+│       ├── 03-profiling-produk.png
+│       ├── 04-validasi-grain.png
+│       ├── 05-profiling-orderqty.png
+│       ├── 06-validasi-tujuh-dimensi.png
+│       ├── 07-penjualan-online-per-bulan.png
+│       ├── 08-profiling-null-online-sales.png
+│       ├── 09-profiling-currency-online.png
+│       └── 10-profiling-rentang-tanggal.png
+│
+├── laporan/
+│   └── pekan-10.md
+│
 ├── etl/
 ├── olap/
-├── dashboard/
-├── hasil-profiling/
-├── bukti/
-│   └── database/
-└── laporan/
-    └── pekan-10.md
+└── dashboard/
 ```
 
 Struktur dapat disesuaikan dengan ketentuan resmi proyek.
