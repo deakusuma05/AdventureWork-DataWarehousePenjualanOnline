@@ -218,8 +218,8 @@ Proyek AdventureWorks Online Sales Data Warehouse dikerjakan oleh lima mahasiswa
 | 1 | Dea Kusuma Ningrum | 23082010048 | Project Manager & Business Analyst |
 | 2 | Fivediniar Edra Primaulidina | 23082010046 | Data Engineer & ETL Developer |
 | 3 | Siti Anisa Safitri | 23082010045 | Data Warehouse & Dimensional Modeler |
-| 4 | Alifa Zuriyatul Haq | 23082010050 | OLAP & Dashboard Developer |
-| 5 | Haura Taqiya Azza Nabila | 23082010165 | Data Quality, Testing & Documentation |
+| 4 | Haura Taqiya Azza Nabila  | 23082010165 | OLAP & Dashboard Developer |
+| 5 | Alifa Zuriyatul Haq | 23082010050 | Data Quality, Testing & Documentation |
 
 ### 12.2 Tanggung Jawab Tim
 
@@ -247,7 +247,7 @@ Proyek AdventureWorks Online Sales Data Warehouse dikerjakan oleh lima mahasiswa
 - Menyusun bus matrix dan mengidentifikasi conformed dimension.
 - Mengimplementasikan rancangan dimensional di DBMS.
 
-**4. OLAP & Dashboard Developer — Alifa Zuriyatul Haq**
+**4. OLAP & Dashboard Developer — Haura Taqiya Azza Nabila**
 
 - Merancang struktur OLAP cube.
 - Mengimplementasikan analisis multidimensional dengan Mondrian.
@@ -255,7 +255,7 @@ Proyek AdventureWorks Online Sales Data Warehouse dikerjakan oleh lima mahasiswa
 - Mengembangkan dashboard penjualan online.
 - Memastikan dashboard dapat menampilkan indikator bisnis.
 
-**5. Data Quality, Testing & Documentation — Haura Taqiya Azza Nabila**
+**5. Data Quality, Testing & Documentation — Alifa Zuriyatul Haq**
 
 - Melakukan profiling data sumber.
 - Memeriksa NULL, duplikasi, dan konsistensi relasi data.
