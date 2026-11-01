@@ -1,6 +1,6 @@
 # AdventureWorks Data Warehouse — Online Sales Analytics
 
-**Proyek Data Warehouse | Sistem Informasi — UPN “Veteran” Jawa Timur**
+**Kelompok 2 | Proyek Data Warehouse | Sistem Informasi — UPN “Veteran” Jawa Timur**
 
 ## 1. Deskripsi Proyek
 
