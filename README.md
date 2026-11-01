@@ -198,24 +198,10 @@ adventureworks-online-sales-dw/
 │
 ├── sql/
 │   └── profiling/
-│       ├── 01-verifikasi-database.sql
-│       ├── 02-profiling-transaksi-online.sql
-│       ├── 03-profiling-produk.sql
-│       ├── 04-validasi-grain.sql
-│       ├── 05-profiling-orderqty.sql
-│       ├── 06-validasi-tujuh-dimensi.sql
-│       ├── 07-penjualan-online-per-bulan.sql
 │       ├── 08-profiling-null-online-sales.sql
-│       ├── 09-profiling-currency-online.sql
-│       └── 10-profiling-rentang-tanggal.sql
+│       └── 09-profiling-currency-online.sql
 │
 ├── hasil-profiling/
-│   ├── 01-verifikasi-jumlah-baris.csv
-│   ├── 02-profiling-transaksi-online.csv
-│   ├── 03-profiling-produk.csv
-│   ├── 04-validasi-grain.csv
-│   ├── 05-profiling-orderqty.csv
-│   ├── 06-validasi-tujuh-dimensi.csv
 │   ├── 07-penjualan-online-per-bulan.csv
 │   ├── 08-profiling-null-online-sales.csv
 │   ├── 09-profiling-currency-online.csv
@@ -242,10 +228,14 @@ adventureworks-online-sales-dw/
 │   └── pekan-10.md
 │
 ├── etl/
+│   └── .gitkeep
+│
 ├── olap/
+│   └── .gitkeep
+│
 └── dashboard/
+    └── .gitkeep
 ```
-
 Struktur dapat disesuaikan dengan ketentuan resmi proyek.
 
 ## 12. Tim Proyek
