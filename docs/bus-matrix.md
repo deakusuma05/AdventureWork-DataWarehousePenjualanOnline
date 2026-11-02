@@ -29,6 +29,7 @@ Filter `OnlineOrderFlag` menentukan **cara pesanan dibuat**, belum otomatis mene
 ## 2. Bus Matrix
 
 Simbol **X** berarti dimensi digunakan dalam rancangan proses. X tidak menyatakan bahwa dimensi telah dimuat, disetujui lintas tim, atau lolos seluruh pemeriksaan kualitas.
+<img width="3400" height="1540" alt="bus-matrix" src="https://github.com/user-attachments/assets/20f31739-4eb2-4bcb-8b59-02dfd61133d8" />
 
 | Proses bisnis / fakta | Tanggal | Produk | Pelanggan | Wilayah | Promosi | Mata Uang | Metode Kirim |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
