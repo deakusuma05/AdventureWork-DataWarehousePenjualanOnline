@@ -187,6 +187,10 @@ adventureworks-online-sales-dw/
 ├── .gitignore
 │
 ├── docs/
+│   ├── bus-matrix.md
+│   ├── bus-matrix.png
+│   ├── grain.md
+│   ├── piagam-proyek.md
 │   ├── risiko-awal.md
 │   └── star-schema-v1.png
 │

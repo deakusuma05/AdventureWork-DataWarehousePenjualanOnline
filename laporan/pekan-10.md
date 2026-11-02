@@ -20,7 +20,7 @@
 | 4 | Haura Taqiya Azza Nabila | 23082010165 | OLAP & Dashboard Developer |
 | 5 | Alifa Zuriyatul Haq | 23082010050 | Data Quality, Testing & Documentation |
 
-Pembagian peran ini merupakan rancangan tim; konfirmasi akhir serta bukti undangan dosen perlu dicantumkan di piagam proyek dan repositori.
+Pembagian peran ini merupakan rancangan tim; detail tanggung jawab tercantum pada [`docs/piagam-proyek.md`](../docs/piagam-proyek.md).
 
 ## 2. Ringkasan Eksekutif
 
@@ -140,7 +140,7 @@ Tren penjualan online bulanan tersimpan pada `hasil-profiling/07-penjualan-onlin
 ### 6.1 Empat Langkah Desain
 
 1. **Proses bisnis:** Penjualan Online.
-2. **Grain:** satu baris detail produk dalam satu pesanan online.
+2. **Grain:** satu baris detail produk dalam satu pesanan online (`docs/grain.md`).
 3. **Dimensi:** Tanggal, Produk, Pelanggan, Wilayah, Promosi, Mata Uang, Metode Kirim.
 4. **Fakta/measures:** `OrderQty`, `UnitPrice`, `UnitPriceDiscount`, `LineTotal`; metrik turunan dihitung berdasarkan aturan yang terdokumentasi.
 
@@ -164,7 +164,7 @@ Tren penjualan online bulanan tersimpan pada `hasil-profiling/07-penjualan-onlin
 
 **Aturan desain:** PK/FK DW tidak dibuat di database sumber. `LineTotal` digunakan sebagai subtotal detail; hindari menghitung ulang diskon apabila sudah tercermin pada nilai tersebut. Atribut mata uang masih memerlukan verifikasi bisnis.
 
-**Lampiran:** `docs/star-schema-v1.png`.
+**Lampiran:** `docs/star-schema-v1.png`, `docs/grain.md`.
 
 ## 7. Bus Matrix Tim
 
@@ -172,7 +172,7 @@ Tren penjualan online bulanan tersimpan pada `hasil-profiling/07-penjualan-onlin
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | Penjualan Online | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
-Ketujuh dimensi merupakan **kandidat conformed dimension** sesuai bus matrix kelas; status conformed final memerlukan persetujuan definisi, kunci, dan hierarki lintas tim.
+Ketujuh dimensi merupakan **kandidat conformed dimension** sesuai bus matrix kelas; status conformed final memerlukan persetujuan definisi, kunci, dan hierarki lintas tim. Lampiran: `docs/bus-matrix.md` dan `docs/bus-matrix.png`.
 
 ## 8. Risiko Awal dan Mitigasi
 
@@ -192,13 +192,13 @@ Lampiran: `docs/risiko-awal.md`.
 | Kebutuhan tugas | Status saat penyusunan | Bukti/aksi lanjutan |
 |---|---|---|
 | Repositori dan undangan dosen | **Repositori aktif; menunggu bukti undangan** | Tautan repo, screenshot anggota/undangan di `bukti/github/` |
-| Piagam proyek dan peran | **Tersedia di README dan laporan** | Pembagian peran 5 anggota telah ditetapkan |
+| Piagam proyek dan peran | **Selesai** | `docs/piagam-proyek.md` |
 | Database AdventureWorks berjalan | **Terverifikasi** | `bukti/database/01-verifikasi-database.png` |
-| ≥5 pertanyaan bisnis | **7 pertanyaan disusun** | Tercantum pada README & Bagian 4 laporan ini |
+| ≥5 pertanyaan bisnis | **7 pertanyaan disusun** | Tercantum pada `docs/piagam-proyek.md`, `README.md`, & Bagian 4 laporan ini |
 | Profil data tersimpan | **Lengkap (SQL, CSV, PNG)** | `sql/profiling/`, `hasil-profiling/`, `bukti/database/` |
-| Grain satu kalimat | **Selesai** | Tercantum pada README & Bagian 6.2 laporan ini |
+| Grain satu kalimat | **Selesai** | `docs/grain.md` |
 | Star Schema v1 | **Selesai** | `docs/star-schema-v1.png` |
-| Bus matrix tim | **Selesai** | Tercantum pada Bagian 7 laporan ini |
+| Bus matrix tim | **Selesai** | `docs/bus-matrix.md`, `docs/bus-matrix.png` |
 | ≥3 risiko beserta mitigasi | **Enam risiko disusun** | `docs/risiko-awal.md` |
 | Laporan pekan 10 | **Tersedia** | `laporan/pekan-10.md` |
 
@@ -223,6 +223,10 @@ Lampiran: `docs/risiko-awal.md`.
 README.md
 .gitignore
 docs/
+  bus-matrix.md
+  bus-matrix.png
+  grain.md
+  piagam-proyek.md
   risiko-awal.md
   star-schema-v1.png
 sql/profiling/
@@ -262,5 +266,5 @@ dashboard/
 ---
 
 **Disusun oleh:** Kelompok 2 — Tim Data Warehouse Penjualan Online  
-**Tanggal:** 1 November 2026  
+**Tanggal:** 2 November 2026  
 **Pemeriksaan sponsor:** Menunggu Steering Review.
