@@ -1,485 +1,325 @@
-
 # Bus Matrix — Data Warehouse Penjualan Online AdventureWorks
 
-**Kelompok:** 2  
-**Mata Kuliah:** Data Warehouse & OLAP  
-**Program Studi:** Sistem Informasi, UPN “Veteran” Jawa Timur  
-**Dokumen:** `docs/bus-matrix.md`  
----
+**Kelompok 2 · Data Warehouse & OLAP · Sistem Informasi UPN “Veteran” Jawa Timur**  
+**Versi:** 1.1 — revisi rancangan, 2 November 2026  
+**Status:** Rancangan untuk review tim; bukan hasil ETL yang telah diimplementasikan.
 
-## 1. Identitas dan Tanggung Jawab Tim
+**Penanggung jawab:** Siti Anisa Safitri (dimensional modeling), Fivediniar Edra Primaulidina (ETL), Alifa Zuriyatul Haq (kualitas data), Haura Taqiya Azza Nabila (OLAP/dashboard), dan Dea Kusuma Ningrum (koordinasi/keputusan bisnis).
 
-| Nama | Peran |
+Dokumen ini menjadi acuan hubungan proses Penjualan Online dengan dimensi analisis, sekaligus dasar pemetaan ke fakta, cube, dan dashboard. Isinya diselaraskan dengan `README.md`, `laporan/pekan-10.md`, `docs/risiko-awal.md`, serta hasil profiling yang tersimpan pada repositori kelompok. Angka yang dicatat merupakan hasil profiling sebelumnya, **bukan** hasil pengujian ETL.
+
+## 1. Proses, batas data, dan grain
+
+| Unsur | Definisi |
 |---|---|
-| Dea Kusuma Ningrum | Project Manager & Business Analyst |
-| Fivediniar Edra Primaulidina | Data Engineer & ETL Developer |
-| Siti Anisa Safitri | Data Warehouse & Dimensional Modeler |
-| Haura Taqiya Azza Nabila | OLAP & Dashboard Developer |
-| Alifa Zuriyatul Haq | Data Quality, Testing & Documentation |
+| Proses bisnis | **Penjualan Online** (*Online Sales Order*) |
+| Filter sumber | `sales_salesorderheader.OnlineOrderFlag = 1` |
+| Header transaksi | `sales_salesorderheader` |
+| Detail transaksi | `sales_salesorderdetail` |
+| Join utama | `header.SalesOrderID = detail.SalesOrderID` |
+| Fact table | `fact_online_sales` (*transaction fact*) |
+| Grain | **Satu baris fakta untuk satu `SalesOrderDetailID` dalam satu pesanan online** |
+| Identitas transaksi | `SalesOrderID` dan `SalesOrderDetailID` disimpan untuk pelacakan |
+| Di luar cakupan | Penjualan offline, pembelian, produksi, dan persediaan |
 
-Kelompok mengembangkan Data Warehouse berdasarkan database
-AdventureWorks dengan fokus pada proses bisnis Penjualan Online.
+Satu pesanan yang berisi tiga baris produk menghasilkan tiga baris fakta, bukan satu. Jumlah pesanan harus dihitung dari `COUNT(DISTINCT SalesOrderID)`. Nilai dan kuantitas berasal dari detail, sedangkan atribut pelanggan, wilayah, metode kirim, dan sebagian informasi mata uang berasal dari header.
 
-Bus Matrix digunakan untuk menentukan hubungan antara proses bisnis
-dan dimensi analisis yang diperlukan dalam perancangan star schema.
+Filter `OnlineOrderFlag` menentukan **cara pesanan dibuat**, belum otomatis menentukan apakah pesanan telah selesai atau diakui sebagai penjualan. Kolom `Status` pada header perlu diprofilkan sebelum KPI bernama “penjualan terealisasi” ditetapkan.
 
-## 2. Proses Bisnis yang Dipilih
+## 2. Bus Matrix
 
-Proses bisnis yang dipilih adalah **Penjualan Online (Online Sales Order)**.
+Simbol **X** berarti dimensi digunakan dalam rancangan proses. X tidak menyatakan bahwa dimensi telah dimuat, disetujui lintas tim, atau lolos seluruh pemeriksaan kualitas.
 
-Analisis dibatasi pada transaksi dengan:
-
-`OnlineOrderFlag = TRUE`
-
-### 2.1 Identifikasi Sumber Data
-
-| Komponen | Tabel Sumber | Keterangan |
-|---|---|---|
-| Header transaksi | `sales_salesorderheader` | Informasi pesanan |
-| Detail transaksi | `sales_salesorderdetail` | Detail produk yang dipesan |
-| Produk | `production_product` | Informasi produk |
-| Pelanggan | `sales_customer` | Identitas pelanggan |
-| Wilayah | `sales_salesterritory` | Wilayah penjualan |
-| Promosi | `sales_specialoffer` | Informasi penawaran khusus |
-| Metode pengiriman | `purchasing_shipmethod` | Informasi pengiriman |
-
-### 2.2 Informasi Database
-
-| Komponen | Nilai |
-|---|---|
-| DBMS | PostgreSQL |
-| Database | `adventureworks` |
-| Schema | `adventureworks2` |
-| Jumlah tabel | 71 |
-| Sifat sumber | Read-only |
-
-Database sumber digunakan untuk membaca transaksi operasional.
-Tabel Data Warehouse direncanakan disimpan secara terpisah.
-
-## 3. Penentuan Grain
-
-**Grain: Setiap baris pada tabel fakta merepresentasikan satu detail
-item produk dalam satu pesanan penjualan online.**
-
-Tabel fakta yang direncanakan adalah:
-
-`fact_online_sales`
-
-Identitas transaksi:
-
-| Kolom | Fungsi |
-|---|---|
-| `SalesOrderID` | Identitas pesanan |
-| `SalesOrderDetailID` | Identitas detail item |
-
-Satu pesanan dapat mempunyai beberapa baris detail.
-
-Konsekuensi pemilihan grain:
-
-1. Jumlah detail dihitung dengan `COUNT(*)`.
-2. Jumlah pesanan dihitung dengan `COUNT(DISTINCT SalesOrderID)`.
-3. Kuantitas menggunakan `OrderQty`.
-4. Nilai detail menggunakan `LineTotal`.
-5. Nilai header tidak dijumlahkan berulang pada setiap detail.
-
-Kolom `SubTotal`, `TaxAmt`, `Freight`, dan `TotalDue` berada
-pada tingkat header pesanan.
-
-Nilai tersebut tidak boleh langsung disalin ke semua baris detail
-kemudian dijumlahkan karena dapat menyebabkan double counting.
-
-## 4. Bus Matrix Versi 1
-
-| Proses Bisnis | Tanggal | Produk | Pelanggan | Wilayah | Promosi | Mata Uang | Metode Kirim |
+| Proses bisnis / fakta | Tanggal | Produk | Pelanggan | Wilayah | Promosi | Mata Uang | Metode Kirim |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Penjualan Online | X | X | X | X | X | ? | X |
+| Penjualan Online / `fact_online_sales` | X | X | X | X | X | X | X |
 
-**Keterangan:**
+Bus Matrix hanya mempunyai satu baris karena kelompok memilih satu proses. Penambahan proses atau tabel fakta baru harus didasarkan pada kebutuhan analisis dengan grain berbeda, bukan untuk memperbanyak baris matriks.
 
-- `X` = Dimensi digunakan dalam rancangan awal.
-- `?` = Dimensi masih memerlukan pemeriksaan dan keputusan.
-- Sel kosong = Dimensi tidak digunakan.
+### 2.1 Pemetaan sumber dan kesiapan dimensi
 
-Enam dimensi menjadi rancangan utama:
+| Dimensi DW | Business key / asal | Jalur data | Kondisi berdasarkan profiling | Keputusan tertunda |
+|---|---|---|---|---|
+| `dim_date` | Tanggal kalender dari `OrderDate` | Header.`OrderDate` | Rentang Mei 2011–Juni 2014 | Zona waktu dan peran tanggal lain |
+| `dim_product` | `ProductID` | Detail → `production_product` → subkategori/kategori | 130 produk unik online berkategori lengkap | Atribut historis, SCD |
+| `dim_customer` | `CustomerID` | Header → `sales_customer` | Tidak ada NULL pada data detail online yang diperiksa | Klasifikasi dan SCD |
+| `dim_territory` | `TerritoryID` | Header → `sales_salesterritory` | Tidak ada NULL pada data detail online yang diperiksa | Wilayah penjualan vs alamat kirim |
+| `dim_promotion` | `SpecialOfferID` | Detail → `sales_specialoffer` | ID tersedia pada seluruh detail yang diperiksa | Makna promo vs diskon aktual |
+| `dim_currency` | **Belum final:** kode mata uang, bukan otomatis `CurrencyRateID` | Header.`CurrencyRateID` → `sales_currencyrate`/`sales_currency` | 14.860 pesanan tidak punya referensi kurs | Kode mata uang, basis laporan, kurs |
+| `dim_ship_method` | `ShipMethodID` | Header → `purchasing_shipmethod` | Tidak ada NULL pada data detail online yang diperiksa | Atribut layanan dan metrik ongkir |
 
-1. Dimensi Tanggal
-2. Dimensi Produk
-3. Dimensi Pelanggan
-4. Dimensi Wilayah
-5. Dimensi Promosi
-6. Dimensi Metode Pengiriman
+Pemeriksaan *foreign key* yang tidak menemukan baris yatim hanya membuktikan keterhubungan data yang diuji. Hasil tersebut tidak menggantikan keputusan tentang arti atribut, aturan historisasi, atau satuan nilai.
 
-Dimensi Mata Uang masih menjadi kandidat karena referensi kurs
-dan kebutuhan analisis mata uang belum dipastikan.
+## 3. Definisi dimensi untuk star schema
 
-## 5. Pemetaan Dimensi ke Sumber Data
+### 3.1 Tanggal (`dim_date`)
 
-| Dimensi DW | Business Key | Tabel Sumber | Kegunaan |
-|---|---|---|---|
-| `dim_date` | `OrderDate` | `sales_salesorderheader` | Analisis berdasarkan waktu |
-| `dim_product` | `ProductID` | `sales_salesorderdetail`, `production_product` | Analisis produk |
-| `dim_customer` | `CustomerID` | `sales_salesorderheader`, `sales_customer` | Analisis pelanggan |
-| `dim_territory` | `TerritoryID` | `sales_salesorderheader`, `sales_salesterritory` | Analisis wilayah penjualan |
-| `dim_promotion` | `SpecialOfferID` | `sales_salesorderdetail`, `sales_specialoffer` | Analisis penawaran khusus |
-| `dim_ship_method` | `ShipMethodID` | `sales_salesorderheader`, `purchasing_shipmethod` | Analisis metode pengiriman |
-| `dim_currency` | Belum ditetapkan | `sales_currencyrate`, `sales_currency` | Kandidat analisis mata uang |
+Tanggal utama ialah `OrderDate`. Dimensi minimal memuat `date_key`, tanggal, hari, nama hari, bulan, kuartal, dan tahun. Hierarki cube: **Tahun → Kuartal → Bulan → Tanggal**. `ShipDate` dan `DueDate` dapat memakai tabel tanggal yang sama sebagai *role-playing dimension* apabila analisis durasi pengiriman dimasukkan.
 
-### 5.1 Dimensi Tanggal
+Sebelum membentuk `date_key`, sepakati zona waktu pelaporan. Hasil migrasi PostgreSQL menampilkan timestamp dengan zona waktu, sedangkan ekspor MariaDB dan CSV bulanan belum menghasilkan distribusi bulan yang identik.
 
-Dimensi Tanggal menggunakan `OrderDate` sebagai tanggal utama.
+### 3.2 Produk (`dim_product`)
 
-Atribut yang direncanakan:
+`ProductID` dari detail dihubungkan ke `production_product`, lalu ke subkategori dan kategori berdasarkan referensi yang valid. Atribut untuk analisis: nomor produk, nama, warna/lini jika relevan, nama subkategori, dan nama kategori. Hierarki: **Kategori → Subkategori → Produk**.
 
-- Tanggal
-- Hari
-- Bulan
-- Kuartal
-- Tahun
+Profiling tim mencatat 504 produk katalog; 209 di antaranya tidak mempunyai subkategori. Namun, seluruh 130 produk unik yang terjual secara online memiliki kategori lengkap. Produk baru yang tidak berkategori tetap harus ditangani sebagai `Unknown/Unclassified`, bukan dihilangkan melalui `INNER JOIN`. Harga pada tabel master produk **bukan** pengganti harga historis dari `sales_salesorderdetail.UnitPrice`.
 
-Hierarki OLAP:
+### 3.3 Pelanggan (`dim_customer`)
 
-**Tahun → Kuartal → Bulan → Tanggal**
+`CustomerID` pada header menjadi business key. Atribut dimensi dibatasi pada kebutuhan pengelompokan pelanggan; identitas personal tidak dimuat hanya karena tersedia di OLTP. Periksa pula apakah referensi pelanggan mewakili person atau store. Strategi SCD Type 1 atau Type 2 masih perlu disepakati sebelum memutuskan bagaimana perubahan klasifikasi pelanggan diperlakukan.
 
-Zona waktu pelaporan perlu ditetapkan sebelum membentuk
-kunci tanggal agar pengelompokan transaksi per bulan konsisten.
+### 3.4 Wilayah (`dim_territory`)
 
-### 5.2 Dimensi Produk
+`TerritoryID` header merepresentasikan **wilayah penjualan**, bukan otomatis lokasi pengiriman. Atribut kandidat dari `sales_salesterritory` meliputi nama, kelompok wilayah, dan kode negara/region. Hierarki OLAP: **Kelompok → Negara/Region → Wilayah**. Analisis tujuan pengiriman memerlukan jalur `ShipToAddressID` dan sumber alamat tersendiri.
 
-Dimensi Produk menggunakan `ProductID`.
+### 3.5 Promosi (`dim_promotion`)
 
-Sumber informasi produk:
+`SpecialOfferID` berasal dari detail dan dihubungkan ke `sales_specialoffer`. Atribut dapat berupa deskripsi, jenis/kategori penawaran, dan masa berlaku. Adanya ID penawaran **tidak sama** dengan diskon positif. Untuk KPI diskon, rujuk `UnitPriceDiscount` dan `LineTotal` serta rekonsiliasi perhitungannya; jangan hanya menghitung `SpecialOfferID IS NOT NULL`.
 
-- `production_product`
-- `production_productsubcategory`
-- `production_productcategory`
+### 3.6 Mata uang (`dim_currency`)
 
-Hierarki OLAP:
+`CurrencyRateID` adalah referensi **catatan kurs**. Satu kode mata uang dapat memiliki banyak ID kurs berdasarkan tanggal/pasangan mata uang. Profiling tim menemukan **2.466 ID kurs unik**, bukan 2.466 jenis mata uang. Karena itu, business key `dim_currency` harus ditetapkan berdasarkan kode mata uang yang benar setelah hubungan `sales_currencyrate` dan `sales_currency` ditelusuri. Catatan kurs dapat dikelola sebagai referensi transaksi atau struktur pendukung tersendiri.
 
-**Kategori → Subkategori → Produk**
+Sebanyak **14.860 dari 27.659 pesanan online (53,73%)** memiliki `CurrencyRateID` NULL. Untuk desain sementara, identitas yang belum terbukti dipetakan ke `Unknown/Not Identified`, **bukan otomatis USD**. Satuan `LineTotal`, mata uang asal/tujuan, dan aturan konversi harus dipastikan sebelum nominal lintas mata uang disebut pendapatan dalam mata uang pelaporan tertentu.
 
-Berdasarkan profiling sebelumnya, terdapat 130 produk unik
-yang terjual melalui kanal online.
+### 3.7 Metode kirim (`dim_ship_method`)
 
-Produk tanpa kategori harus ditangani secara eksplisit
-agar tidak hilang selama proses transformasi.
+`ShipMethodID` dari header mengarah ke `purchasing_shipmethod`. Dimensi memuat ID dan nama metode serta atribut layanan yang relevan. Ongkos kirim `Freight` berada pada **grain pesanan**. Jika disalin ke setiap baris detail lalu dijumlahkan, ongkir akan berlipat sesuai jumlah item.
 
-### 5.3 Dimensi Pelanggan
+## 4. Struktur fakta dan definisi measure
 
-Dimensi Pelanggan menggunakan `CustomerID` dari header pesanan.
+Simpan `SalesOrderID` dan `SalesOrderDetailID` di fakta sebagai identitas transaksi (*degenerate dimensions*). Surrogate key untuk fakta boleh digunakan sebagai kunci teknis, tetapi tidak mengubah grain yang sudah ditetapkan.
 
-Dimensi ini digunakan untuk menganalisis:
-
-- Jumlah pesanan setiap pelanggan.
-- Nilai pesanan setiap pelanggan.
-- Kontribusi pelanggan terhadap transaksi online.
-
-### 5.4 Dimensi Wilayah
-
-Dimensi Wilayah menggunakan `TerritoryID`.
-
-Wilayah yang dianalisis merupakan wilayah penjualan,
-bukan otomatis alamat tujuan pengiriman.
-
-Atribut yang direncanakan:
-
-- Nama wilayah
-- Kelompok wilayah
-- Kode negara atau region
-
-### 5.5 Dimensi Promosi
-
-Dimensi Promosi menggunakan `SpecialOfferID`.
-
-Keberadaan ID penawaran tidak selalu berarti transaksi
-memperoleh diskon positif.
-
-Analisis diskon juga perlu menggunakan informasi
-`UnitPriceDiscount`, `UnitPrice`, dan `LineTotal`.
-
-### 5.6 Dimensi Metode Pengiriman
-
-Dimensi Metode Pengiriman menggunakan `ShipMethodID`.
-
-Dimensi ini digunakan untuk mengetahui jumlah pesanan
-dan nilai transaksi menurut metode pengiriman.
-
-Biaya `Freight` berasal dari tingkat header,
-sehingga memerlukan perlakuan khusus jika akan
-dianalisis pada tingkat detail.
-
-## 6. Evaluasi Dimensi Mata Uang
-
-Rancangan awal kelompok memasukkan `dim_currency`.
-
-Namun, `CurrencyRateID` merupakan referensi data kurs,
-bukan identitas mata uang secara langsung.
-
-Hasil profiling sebelumnya menunjukkan:
-
-- 33.400 baris detail online terkait dengan header
-  yang memiliki `CurrencyRateID` NULL.
-
-Angka tersebut dihitung pada tingkat detail,
-bukan jumlah pesanan.
-
-Sebelum memasukkan Dimensi Mata Uang, perlu diperiksa:
-
-1. Hubungan `CurrencyRateID` dengan tabel kurs.
-2. Makna nilai NULL pada `CurrencyRateID`.
-3. Mata uang yang digunakan pada `LineTotal`.
-4. Kebutuhan analisis berdasarkan mata uang.
-5. Aturan konversi nilai transaksi.
-
-**Keputusan sementara:**
-
-`dim_currency` berstatus perlu validasi dan belum menjadi
-dimensi wajib pada star schema versi 1.
-
-Keputusan ini perlu diselaraskan dengan rancangan star schema
-yang telah disusun kelompok.
-
-## 7. Rancangan Tabel Fakta
-
-Nama tabel fakta:
-
-`fact_online_sales`
-
-### 7.1 Identitas dan Foreign Key
-
-| Kolom | Sumber | Fungsi |
+| Kolom target | Sumber atau aturan | Peran |
 |---|---|---|
-| `sales_order_id` | `SalesOrderID` | Identitas pesanan |
-| `sales_order_detail_id` | `SalesOrderDetailID` | Identitas detail |
-| `order_date_key` | `OrderDate` | FK ke `dim_date` |
-| `product_key` | `ProductID` | FK ke `dim_product` |
-| `customer_key` | `CustomerID` | FK ke `dim_customer` |
-| `territory_key` | `TerritoryID` | FK ke `dim_territory` |
-| `promotion_key` | `SpecialOfferID` | FK ke `dim_promotion` |
-| `ship_method_key` | `ShipMethodID` | FK ke `dim_ship_method` |
+| `sales_order_id`, `sales_order_detail_id` | ID dari header/detail | Kontrol grain, distinct order, audit |
+| `order_date_key` | Lookup `OrderDate` | FK `dim_date` |
+| `product_key` | Lookup `ProductID` | FK `dim_product` |
+| `customer_key` | Lookup `CustomerID` | FK `dim_customer` |
+| `territory_key` | Lookup `TerritoryID` | FK `dim_territory` |
+| `promotion_key` | Lookup `SpecialOfferID` | FK `dim_promotion` |
+| `currency_key` | Aturan mata uang **belum final**; Unknown bila belum teridentifikasi | FK `dim_currency` |
+| `ship_method_key` | Lookup `ShipMethodID` | FK `dim_ship_method` |
+| `order_status_code` | Header.`Status` | Atribut filter/audit; dimensi status opsional |
+| `order_quantity` | Detail.`OrderQty` | Measure aditif |
+| `unit_price` | Detail.`UnitPrice` | Harga satuan, tidak aditif |
+| `unit_price_discount` | Detail.`UnitPriceDiscount` | Nilai diskon per unit sesuai sumber |
+| `gross_amount` | `OrderQty × UnitPrice` | Nilai sebelum diskon; rumus perlu diuji |
+| `discount_amount` | `gross_amount − LineTotal` | Diskon nominal; verifikasi presisi |
+| `line_sales_amount` | Detail.`LineTotal` | Nilai detail setelah diskon, belum pajak/ongkir header |
 
-### 7.2 Measures
+`LineTotal` tidak boleh dikurangi diskon kedua kali. `SubTotal`, `TaxAmt`, `Freight`, dan `TotalDue` dari header tidak dimasukkan sebagai ukuran aditif detail tanpa alokasi yang disepakati atau fakta tingkat pesanan terpisah.
 
-| Measure | Sumber | Agregasi |
+### 4.1 Kamus KPI minimum
+
+| KPI | Rumus | Aturan interpretasi |
 |---|---|---|
-| `order_quantity` | `OrderQty` | SUM |
-| `line_sales_amount` | `LineTotal` | SUM |
-| Jumlah detail | Baris tabel fakta | COUNT |
-| Jumlah pesanan | `SalesOrderID` | COUNT DISTINCT |
-| Harga satuan | `UnitPrice` | Tidak dijumlahkan |
+| Jumlah baris detail | `COUNT(*)` | Baris transaksi, bukan jumlah pesanan |
+| Jumlah pesanan online | `COUNT(DISTINCT sales_order_id)` | *Non-additive* antarproduk: satu pesanan bisa memuat beberapa produk |
+| Unit terjual | `SUM(order_quantity)` | Semua detail online historis pada profiling memiliki `OrderQty = 1` |
+| Nilai detail pesanan | `SUM(line_sales_amount)` | Jangan dulu dinamai pendapatan terealisasi |
+| Rata-rata nilai per pesanan | `SUM(line_sales_amount) / COUNT(DISTINCT sales_order_id)` | Filter status dan mata uang harus konsisten |
+| Nominal diskon | `SUM(discount_amount)` | Hanya setelah rumus dan pembulatan lolos rekonsiliasi |
+| Pelanggan pemesan unik | `COUNT(DISTINCT dim_customer.customer_id)` setelah join dimensi | Gunakan business key pelanggan; surrogate key dapat berganti jika SCD Type 2 diterapkan |
 
-Measure tambahan yang perlu diuji:
+`SUM(unit_price)` bukan KPI total penjualan. Jika harga rata-rata dibutuhkan, bedakan rata-rata harga per baris dari harga rata-rata tertimbang `SUM(gross_amount) / SUM(order_quantity)`.
 
-- `gross_amount`: nilai sebelum diskon.
-- `discount_amount`: nominal diskon detail transaksi.
+## 5. Pertanyaan bisnis dan kebutuhan OLAP
 
-Rumus diskon perlu dibandingkan dengan nilai sumber
-sebelum digunakan dalam laporan.
-
-## 8. Pertanyaan Bisnis
-
-| No. | Pertanyaan Bisnis | Dimensi | Measure |
+| Pertanyaan | Dimensi | KPI | Analisis yang disiapkan |
 |---|---|---|---|
-| 1 | Bagaimana perkembangan nilai pesanan online setiap bulan? | Tanggal | SUM nilai detail |
-| 2 | Produk dan kategori mana yang memberikan kontribusi terbesar? | Produk, Tanggal | SUM nilai detail |
-| 3 | Pelanggan mana yang paling sering melakukan pesanan? | Pelanggan | COUNT DISTINCT pesanan |
-| 4 | Wilayah penjualan mana yang memiliki nilai transaksi terbesar? | Wilayah | SUM nilai detail |
-| 5 | Bagaimana nilai transaksi berdasarkan penawaran khusus? | Promosi | SUM nilai detail |
-| 6 | Metode pengiriman mana yang paling banyak digunakan? | Metode Pengiriman | COUNT DISTINCT pesanan |
+| Bagaimana tren nilai pesanan tiap bulan/tahun? | Tanggal | Nilai detail, jumlah pesanan | Roll-up tahunan, drill-down bulanan |
+| Produk dan kategori mana berkontribusi paling besar? | Produk, Tanggal | Nilai detail, unit | Kategori → Subkategori → Produk |
+| Wilayah penjualan mana paling tinggi? | Wilayah, Tanggal | Nilai detail, jumlah pesanan | Kelompok/negara/wilayah |
+| Pelanggan mana berkontribusi besar? | Pelanggan, Tanggal | Nilai detail, jumlah pesanan | Peringkat/segmentasi pelanggan |
+| Bagaimana perbedaan transaksi menurut promosi? | Promosi, Tanggal | Nilai detail, diskon aktual | Bandingkan penawaran dan diskon |
+| Metode kirim apa paling sering dipakai? | Metode Kirim, Tanggal | Jumlah pesanan distinct | Distribusi metode pengiriman |
+| Berapa transaksi tanpa referensi kurs? | Mata Uang/Kurs, Tanggal | Pesanan NULL dan proporsinya | Panel kelengkapan data |
 
-Setiap pertanyaan memiliki ukuran yang dapat dihitung
-dan dimensi yang digunakan untuk mengelompokkan hasil.
+Jumlah pesanan per produk/kategori **tidak boleh dijumlahkan kembali antarkategori** untuk mendapatkan jumlah pesanan keseluruhan. Untuk operasi OLAP: *slice* menurut tahun, *dice* menurut kombinasi periode–wilayah–produk, *roll-up* dan *drill-down* mengikuti hierarki yang telah diuji.
 
-## 9. Hasil Profiling Data Sumber
+## 6. Angka dasar yang harus dipertahankan saat ETL
 
-| Indikator | Hasil |
-|---|---:|
-| Jumlah tabel | 71 |
-| Pesanan seluruh kanal | 31.465 |
-| Detail seluruh kanal | 121.317 |
-| Pesanan online | 27.659 |
-| Detail online | 60.398 |
-| Produk unik terjual online | 130 |
-| Total unit online | 60.398 |
-| Total `LineTotal` online | 29.358.677,22 |
+Berikut angka dari `laporan/pekan-10.md` dan `hasil-profiling/` pada ZIP tim:
 
-Rentang `OrderDate` online:
+| Pemeriksaan | Hasil | Kegunaan |
+|---|---:|---|
+| Pesanan online unik | **27.659** | Target rekonsiliasi distinct order dengan filter yang sama |
+| Detail online | **60.398** | Target jumlah baris fakta jika tidak ada penolakan |
+| ID detail unik | **60.398** | Kontrol duplikasi |
+| Produk unik terjual online | **130** | Kontrol lookup produk |
+| Kuantitas online | **60.398** | Kontrol `SUM(OrderQty)` |
+| `SUM(LineTotal)` mentah | **29.358.677,22** | Kontrol nominal pada satuan sumber |
+| Detail dengan `CurrencyRateID` NULL | **33.400 (55,30%)** | Penanganan Unknown di grain detail |
+| Pesanan dengan `CurrencyRateID` NULL | **14.860 (53,73%)** | Kelengkapan kurs pada grain pesanan |
+| Pesanan dengan referensi kurs | **12.799** | Pemeriksaan lookup |
+| ID kurs berbeda | **2.466** | Tidak sama dengan jumlah mata uang |
+| Rentang `OrderDate` | **Mei 2011 – Juni 2014** | Validasi periode dan zona waktu |
 
-- Tanggal awal: 31 Mei 2011.
-- Tanggal akhir: 30 Juni 2014.
+Profil NULL pada `CustomerID`, `TerritoryID`, `ShipMethodID`, `ProductID`, `SpecialOfferID`, dan `LineTotal` menunjukkan **0** pada baris detail online yang diperiksa. `SalesPersonID` justru NULL pada seluruh 60.398 detail online; karena tidak relevan untuk proses yang dipilih, dimensi salesperson tidak masuk Bus Matrix.
 
-### 9.1 Profiling NULL
+### 6.1 Perbedaan hasil bulanan yang belum selesai
 
-| Kolom | Jumlah NULL |
-|---|---:|
-| `CustomerID` | 0 |
-| `TerritoryID` | 0 |
-| `ShipMethodID` | 0 |
-| `ProductID` | 0 |
-| `SpecialOfferID` | 0 |
-| `LineTotal` | 0 |
-| `SalesPersonID` pada header terkait | 60.398 |
-| `CurrencyRateID` pada header terkait | 33.400 |
+File `hasil-profiling/07-penjualan-online-per-bulan.csv` dan isi data `INSERT` pada `sql/profiling/07-penjualan-online-per-bulan.sql` **tidak memuat distribusi bulan yang sama**, walaupun total pesanan dan unit seluruh periode identik.
 
-Seluruh pesanan online tidak memiliki `SalesPersonID`.
+| Pemeriksaan | Hasil CSV | Isi data pada file SQL |
+|---|---:|---:|
+| Pesanan Mei 2011 | **5** | **9** |
+| Pesanan Juni 2014 | **939** | **905** |
+| Jumlah pesanan seluruh bulan | **27.659** | **27.659** |
+| Jumlah unit seluruh bulan | **60.398** | **60.398** |
+| Penjumlahan nominal yang sudah dibulatkan per bulan | **29.358.677,24** | **29.358.677,20** |
 
-Oleh karena itu, Dimensi Salesperson tidak dimasukkan
-ke rancangan awal.
+Nilai mentah `SUM(LineTotal)` tercatat **29.358.677,22**. Selisih beberapa sen antara jumlah nilai bulanan yang sudah dibulatkan dan nilai mentah dapat berasal dari pembulatan. **Perbedaan jumlah pesanan per bulan bukan masalah pembulatan**; penyebabnya harus diuji dari query, zona waktu, sumber, dan rentang tanggal yang digunakan. Sampai itu selesai, file bulanan belum layak dijadikan satu-satunya bukti akurasi tren pada dashboard.
 
-Angka profiling merupakan baseline sumber dan akan
-digunakan untuk rekonsiliasi setelah ETL dijalankan.
+Berkas `sql/profiling/07–10*.sql` dalam ZIP berupa **dump phpMyAdmin** yang mengandung `CREATE TABLE`, `INSERT`, dan `ALTER TABLE`. Berkas tersebut bukan query profiling `SELECT` yang aman untuk diulang. Untuk kebutuhan audit, simpan ulang query `SELECT` asli beserta hasil CSV-nya dan informasi koneksi/sesi ketika dijalankan.
 
-## 10. Query Verifikasi PostgreSQL
+## 7. Query verifikasi sumber
 
-Seluruh query menggunakan operasi baca-saja.
+Query contoh berikut menggunakan sintaks **MySQL/MariaDB** sebagaimana lingkungan yang ditulis dalam `README.md` tim. Pilih database yang berisi tabel `sales_salesorderheader` dan `sales_salesorderdetail` terlebih dahulu. Pada salinan PostgreSQL, sesuaikan schema dan fungsi tanggal; jangan mencampur data hasil dua DBMS tanpa menyamakan aturan.
 
-### 10.1 Verifikasi Jumlah Pesanan dan Detail
+### 7.1 Grain, jumlah transaksi, dan nilai detail
 
 ```sql
 SELECT
     COUNT(*) AS jumlah_detail,
-    COUNT(DISTINCT h.salesorderid) AS jumlah_pesanan,
-    COUNT(DISTINCT d.productid) AS produk_unik,
-    SUM(d.orderqty) AS total_unit,
-    ROUND(SUM(d.linetotal)::numeric, 2) AS total_nilai
-FROM adventureworks2.sales_salesorderheader h
-JOIN adventureworks2.sales_salesorderdetail d
-    ON d.salesorderid = h.salesorderid
-WHERE h.onlineorderflag = TRUE;
+    COUNT(DISTINCT h.SalesOrderID) AS jumlah_pesanan,
+    COUNT(DISTINCT d.SalesOrderDetailID) AS detail_unik,
+    COUNT(DISTINCT d.ProductID) AS produk_unik,
+    SUM(d.OrderQty) AS jumlah_unit,
+    ROUND(SUM(d.LineTotal), 2) AS nilai_detail
+FROM sales_salesorderheader h
+JOIN sales_salesorderdetail d
+  ON d.SalesOrderID = h.SalesOrderID
+WHERE h.OnlineOrderFlag = 1;
 ```
 
-### 10.2 Verifikasi NULL CurrencyRateID
+### 7.2 Status pesanan online
 
 ```sql
 SELECT
-    COUNT(*) AS jumlah_pesanan_online,
-    COUNT(*) FILTER (
-        WHERE currencyrateid IS NULL
-    ) AS tanpa_referensi_kurs,
-    COUNT(*) FILTER (
-        WHERE currencyrateid IS NOT NULL
-    ) AS dengan_referensi_kurs
-FROM adventureworks2.sales_salesorderheader
-WHERE onlineorderflag = TRUE;
+    h.Status,
+    COUNT(*) AS jumlah_pesanan,
+    ROUND(SUM(h.SubTotal), 2) AS subtotal_header
+FROM sales_salesorderheader h
+WHERE h.OnlineOrderFlag = 1
+GROUP BY h.Status
+ORDER BY h.Status;
 ```
 
-### 10.3 Pemeriksaan Duplikasi Detail
+Kueri ini bekerja pada **grain header**. `SubTotal` digunakan hanya sebagai pembanding per status, bukan sebagai nilai yang disalin dan dijumlahkan pada setiap baris fakta. Jika kebijakan kemudian hanya memasukkan status tertentu, semua baseline wajib dihitung ulang dengan filter yang sama.
+
+### 7.3 Referensi kurs pada tingkat pesanan
 
 ```sql
 SELECT
-    d.salesorderid,
-    d.salesorderdetailid,
-    COUNT(*) AS jumlah
-FROM adventureworks2.sales_salesorderdetail d
-JOIN adventureworks2.sales_salesorderheader h
-    ON h.salesorderid = d.salesorderid
-WHERE h.onlineorderflag = TRUE
-GROUP BY
-    d.salesorderid,
-    d.salesorderdetailid
-HAVING COUNT(*) > 1;
+    COUNT(*) AS jumlah_pesanan,
+    SUM(CASE WHEN CurrencyRateID IS NULL THEN 1 ELSE 0 END) AS tanpa_referensi_kurs,
+    SUM(CASE WHEN CurrencyRateID IS NOT NULL THEN 1 ELSE 0 END) AS dengan_referensi_kurs,
+    COUNT(DISTINCT CurrencyRateID) AS id_kurs_unik
+FROM sales_salesorderheader
+WHERE OnlineOrderFlag = 1;
 ```
 
-Hasil yang diharapkan adalah 0 baris.
-
-### 10.4 Pemeriksaan Status Pesanan
+### 7.4 Profil bulanan yang akan menjadi referensi tunggal
 
 ```sql
 SELECT
-    status,
-    COUNT(*) AS jumlah_pesanan
-FROM adventureworks2.sales_salesorderheader
-WHERE onlineorderflag = TRUE
-GROUP BY status
-ORDER BY status;
+    YEAR(h.OrderDate) AS tahun,
+    MONTH(h.OrderDate) AS bulan,
+    COUNT(DISTINCT h.SalesOrderID) AS jumlah_pesanan,
+    SUM(d.OrderQty) AS unit_terjual,
+    ROUND(SUM(d.LineTotal), 2) AS nilai_detail
+FROM sales_salesorderheader h
+JOIN sales_salesorderdetail d
+  ON d.SalesOrderID = h.SalesOrderID
+WHERE h.OnlineOrderFlag = 1
+GROUP BY YEAR(h.OrderDate), MONTH(h.OrderDate)
+ORDER BY tahun, bulan;
 ```
 
-Hasil query digunakan untuk memahami status pesanan
-sebelum menetapkan definisi KPI penjualan.
+Sebelum menyimpan hasil, catat DBMS/versi, nama database/schema, zona waktu koneksi, tanggal pengambilan, dan nilai total. Hasil query yang sama pada konfigurasi yang sama harus menjadi satu CSV bulanan acuan.
 
-## 11. Conformed Dimension
+## 8. Pengujian ETL dan syarat penerimaan
 
-Conformed dimension adalah dimensi yang memiliki definisi
-konsisten dan dapat digunakan oleh beberapa proses bisnis.
-
-| Dimensi | Status | Kebutuhan Kesepakatan |
+| ID | Kontrol | Hasil yang harus dapat dibuktikan |
 |---|---|---|
-| `dim_date` | Kandidat conformed | Kalender dan zona waktu |
-| `dim_product` | Kandidat conformed | Identitas produk dan kategori |
-| `dim_customer` | Belum ditetapkan | Definisi pelanggan |
-| `dim_territory` | Belum ditetapkan | Definisi wilayah |
-| `dim_promotion` | Belum ditetapkan | Definisi penawaran khusus |
-| `dim_ship_method` | Belum ditetapkan | Klasifikasi metode pengiriman |
-| `dim_currency` | Ditunda | Identitas mata uang dan penggunaan kurs |
+| DQ-01 | Cakupan transaksi | Semua baris fakta memenuhi filter online dan filter status **jika kemudian disepakati** |
+| DQ-02 | Keunikan grain | Tidak ada `SalesOrderDetailID` yang dimuat lebih dari sekali |
+| DQ-03 | Rekonsiliasi baris | `COUNT(*)` fakta sama dengan detail sumber setelah filter dan penanganan penolakan |
+| DQ-04 | Rekonsiliasi pesanan | `COUNT(DISTINCT SalesOrderID)` sama pada sumber dan fakta |
+| DQ-05 | Rekonsiliasi unit | `SUM(order_quantity)` sama dengan `SUM(OrderQty)` pada sumber |
+| DQ-06 | Rekonsiliasi nominal | `SUM(line_sales_amount)` sama dengan `SUM(LineTotal)` pada aturan presisi yang dinyatakan |
+| DQ-07 | Lookup dimensi | FK setiap fakta valid; kegagalan lookup dicatat, tidak menghilangkan transaksi diam-diam |
+| DQ-08 | Unknown currency | Jumlah transaksi tanpa identitas kurs dapat ditelusuri ke sumber |
+| DQ-09 | Kalender | Tidak ada pergeseran bulan yang tidak dijelaskan antara sumber dan DW |
+| DQ-10 | Diskon | Formula `gross_amount` dan `discount_amount` cocok dengan nilai sumber dan pembulatan |
+| DQ-11 | Keamanan sumber | OLTP tetap baca-saja; tabel DW dibuat dalam database target terpisah |
+| DQ-12 | Pemuatan ulang | Re-run ETL tidak menggandakan fakta; kunci dan strategi pemuatan terdokumentasi |
 
-Dimensi Tanggal dan Produk menjadi kandidat utama karena
-berpotensi digunakan pada proses pembelian dan produksi.
+Urutan ETL yang akan dikembangkan di Pentaho: ekstraksi header/detail → filter online/status → standardisasi tanggal dan kunci → pemuatan dimensi → lookup surrogate key → penghitungan measure → pemuatan fakta → rekonsiliasi. Detail transformasi, komponen Pentaho, *error handling*, dan *incremental load* dicatat dalam dokumen ETL setelah diuji; tidak dinyatakan sudah berjalan pada tahap desain ini.
 
-Status akhir memerlukan kesepakatan dengan kelompok lain
-serta Project Sponsor.
+## 9. Conformed dimension dan hierarki
 
-## 12. Risiko Awal
+Karena proyek baru memodelkan satu proses bisnis, tujuh dimensi pada matriks masih merupakan **kandidat dimensi bersama**. *Conformed dimension* hanya dapat ditetapkan setelah business key, atribut, hierarki, zona waktu, anggota Unknown, serta aturan historisasi disepakati dengan proses/tim lain.
 
-| Risiko | Dampak | Penanganan |
+| Dimensi | Potensi pemakaian lintas proses | Hal yang perlu diseragamkan |
 |---|---|---|
-| Nilai header dihitung berulang pada detail | Nilai agregasi terlalu besar | Gunakan measure sesuai grain |
-| Referensi mata uang belum jelas | Interpretasi nilai transaksi salah | Validasi kurs dan satuan pelaporan |
-| Zona waktu berbeda | Transaksi berpindah bulan | Tetapkan zona waktu pelaporan |
-| Relasi sumber tidak sesuai asumsi | Jumlah fakta tidak cocok | Periksa join dan duplikasi |
-| Definisi dimensi berbeda antarkelompok | Analisis tidak konsisten | Sepakati conformed dimension |
+| `dim_date` | Tinggi | Kalender dan zona waktu |
+| `dim_product` | Tinggi | Kunci, kategori, subkategori, historisasi |
+| `dim_customer` | Tergantung kebutuhan | Identitas pelanggan dan SCD |
+| `dim_territory` | Tergantung kebutuhan | Wilayah penjualan vs pengiriman |
+| `dim_promotion` | Tergantung kebutuhan | Klasifikasi promosi dan makna diskon |
+| `dim_currency` | Tergantung kebutuhan | Kode mata uang, pasangan dan tanggal kurs, satuan laporan |
+| `dim_ship_method` | Tergantung kebutuhan | Identitas dan kategori metode kirim |
 
-## 13. Keputusan yang Masih Diperlukan
+Keputusan SCD Type 1 dapat dipertimbangkan untuk dimensi yang tidak perlu menyimpan riwayat perubahan. SCD Type 2 digunakan bila perbandingan nilai transaksi perlu memakai keadaan atribut pada saat transaksi. Pilihan tersebut belum diputuskan dan tidak boleh ditulis sebagai hasil persetujuan.
 
-| No. | Keputusan | Status |
-|---|---|---|
-| 1 | Persetujuan grain detail pesanan | Menunggu review |
-| 2 | Persetujuan enam dimensi utama | Menunggu review |
-| 3 | Penggunaan Dimensi Mata Uang | Perlu pemeriksaan |
-| 4 | Penetapan zona waktu | Belum diputuskan |
-| 5 | Penentuan status pesanan untuk KPI | Perlu profiling |
-| 6 | Persetujuan conformed dimension | Menunggu kesepakatan |
-| 7 | Konsistensi Bus Matrix dan star schema | Perlu pemeriksaan |
+Untuk OLAP Mondrian, hierarki minimal yang disiapkan adalah:
 
-## 14. Keterkaitan dengan Dokumen Proyek
+- **Tanggal:** Tahun → Kuartal → Bulan → Tanggal.
+- **Produk:** Kategori → Subkategori → Produk.
+- **Wilayah:** Kelompok Wilayah → Negara/Region → Wilayah.
 
-Dokumen ini digunakan bersama:
+Uji drill-down, roll-up, slice, dan dice perlu membuktikan bahwa nilai `SUM(LineTotal)` tetap konsisten pada level yang berbeda. Dashboard minimal memuat tren bulanan, peringkat produk/kategori, kontribusi wilayah, distribusi metode kirim, dan panel kelengkapan kurs. Angka pesanan ditampilkan dengan *distinct count*, bukan jumlah baris fakta.
 
-- `docs/piagam-proyek.md`
-- `docs/pertanyaan-bisnis.md`
-- `docs/grain.md`
-- `docs/star-schema-v1.md`
-- `docs/star-schema-v1.drawio`
-- `docs/star-schema-v1.png`
-- `docs/risiko-awal.md`
-- `sql/profiling/`
-- `hasil-profiling/`
-- `laporan/pekan-10.md`
+## 10. Keputusan yang menahan finalisasi desain
 
-## 15. Status Pengerjaan
+| ID | Keputusan | Alasan | Penanggung jawab terkait | Status |
+|---|---|---|---|---|
+| K-01 | Status pesanan mana yang masuk KPI nilai penjualan? | Filter menentukan cakupan dan angka dasar | Dea, Siti, Alifa | Menunggu profiling `Status` |
+| K-02 | Sumber ETL resmi MySQL/MariaDB atau salinan PostgreSQL? | Tipe tanggal dan hasil query bisa berbeda | Fivediniar, Alifa | Perlu kesepakatan |
+| K-03 | Zona waktu `OrderDate` yang digunakan? | Mengubah pengelompokan per bulan | Fivediniar, Haura | Belum diputuskan |
+| K-04 | Mengapa CSV dan ekspor SQL bulanan berbeda? | Mengganggu keandalan tren | Alifa, Fivediniar | Perlu query ulang |
+| K-05 | Apa satuan `LineTotal` dan arti `CurrencyRateID` NULL? | Agregasi lintas mata uang tidak jelas | Dea, Siti, Alifa | Belum tervalidasi |
+| K-06 | Bagaimana model `dim_currency` dibedakan dari data kurs? | Business key dan grain dimensi belum tepat | Siti, Fivediniar | Revisi desain |
+| K-07 | SCD apa yang digunakan? | Berpengaruh pada analisis historis | Siti, Fivediniar | Belum diputuskan |
+| K-08 | Apakah formula diskon cocok dengan `LineTotal`? | KPI promosi/diskon dapat keliru | Siti, Alifa | Perlu uji |
+| K-09 | Kapan dimensi bersama dinyatakan conformed? | Perlu konsistensi antartim | Dea, Siti | Menunggu kesepakatan |
 
-| Komponen | Status |
-|---|---|
-| Pemilihan proses bisnis | Sudah dipilih |
-| Pernyataan grain | Sudah dirancang |
-| Bus Matrix versi 1 | Sudah dirancang |
-| Pemetaan dimensi ke sumber | Perlu validasi relasi |
-| Pertanyaan bisnis | Sudah disusun |
-| Profiling awal | Sebagian hasil tersedia |
-| Kesesuaian dengan star schema | Perlu diperiksa |
-| Persetujuan conformed dimension | Menunggu kesepakatan |
-| Persetujuan Project Sponsor | Belum dikonfirmasi |
+Keputusan baru dicatat sebagai selesai jika hasil pemeriksaan, tanggal keputusan, dan pihak yang menyetujui tersedia. Tidak ada persetujuan dosen yang diasumsikan dalam dokumen ini.
 
-## 16. Kesimpulan
+## 11. Keterkaitan berkas repositori
 
-Bus Matrix Penjualan Online dirancang berdasarkan grain
-satu detail item dalam satu pesanan online.
+**Sudah ada pada ZIP kerja kelompok yang diperiksa:**
 
-Enam dimensi utama digunakan untuk mendukung analisis
-waktu, produk, pelanggan, wilayah, promosi, dan pengiriman.
+- `README.md` — lingkup, pertanyaan bisnis, anggota, teknologi.
+- `laporan/pekan-10.md` — grain, ringkasan profiling, Bus Matrix awal, laporan steering review.
+- `docs/risiko-awal.md` — baseline profil dan register risiko.
+- `docs/star-schema-v1.png` — gambar rancangan.
+- `hasil-profiling/07–10*.csv` dan `bukti/database/` — hasil/screenshot.
 
-Dimensi Mata Uang masih memerlukan pemeriksaan karena
-`CurrencyRateID` adalah referensi kurs dan sebagian
-pesanan tidak memiliki nilai pada kolom tersebut.
+**Masih perlu dilengkapi agar dokumen dan bukti konsisten:**
 
-Rancangan ini menjadi dasar pengembangan star schema
-versi 1 dan akan disesuaikan berdasarkan hasil
-validasi data serta keputusan Steering Review.
+- `docs/bus-matrix.md` — dokumen ini.
+- `docs/grain.md` — definisi grain dan contoh konsekuensi `COUNT DISTINCT`.
+- `docs/pertanyaan-bisnis.md` — definisi KPI, cakupan status, filter, dan pengguna analisis.
+- `docs/star-schema-v1.drawio` — diagram yang dapat diedit; PNG saja tidak cukup untuk revisi.
+- `sql/profiling/07–10*.sql` yang berisi query `SELECT` asli, bukan dump phpMyAdmin.
+- Dokumen pemetaan sumber–target serta rancangan ETL setelah pilihan DBMS dipastikan.
+
+**Urutan tindak lanjut:** (1) jalankan profil `Status`; (2) tetapkan sumber ETL dan zona waktu; (3) buat satu hasil tren bulanan yang dapat direproduksi; (4) tetapkan model mata uang/kurs; (5) sepakati KPI, grain, dan aturan dimensi; (6) finalisasi star schema sebelum menyusun transformasi Pentaho.
+
+---
+
+**Sumber pemeriksaan:** berkas proyek `AdventureWork-DataWarehousePenjualanOnline-main`, terutama `README.md`, `laporan/pekan-10.md`, `docs/risiko-awal.md`, `hasil-profiling/`, serta bukti pada `bukti/database/`. Dokumen ini merupakan **rancangan yang disusun dari bukti yang tersedia**; bukan laporan bahwa ETL, cube, atau dashboard telah diuji dan selesai.
