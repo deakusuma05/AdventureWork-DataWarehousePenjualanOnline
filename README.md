@@ -326,7 +326,7 @@ Setiap anggota wajib mendokumentasikan hasil pekerjaannya dan berkoordinasi apab
 - [x] Memverifikasi 71 tabel dan tabel sumber utama
 - [x] Mengidentifikasi dimensi berdasarkan bus matrix
 - [x] Melengkapi piagam dan peran anggota tim
-- [ ] Memastikan undangan dosen diterima
+- [x] Memastikan undangan dosen diterima
 - [x] Memfinalisasi pertanyaan bisnis
 - [x] Menyimpan hasil profiling lengkap
 - [x] Memfinalisasi Star Schema versi 1
