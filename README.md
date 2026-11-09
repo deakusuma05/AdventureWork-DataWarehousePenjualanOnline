@@ -342,7 +342,7 @@ Checklist ini diperbarui berdasarkan bukti yang tersedia dalam repositori.
 2. Analisis sumber menggunakan query read-only.
 3. Implementasi tabel fakta dan dimensi dilakukan pada database Data Warehouse terpisah.
 4. Setiap proses ETL harus dapat diuji dan direproduksi.
-5. Seluruh hasil profiling, desain, dan laporan disimpan dalam repositori.
+5. Seluruh hasil pemeriksaan data, desain, dan laporan disimpan dalam repositori.
 6. Perubahan rancangan didokumentasikan melalui Git.
 
 ---
