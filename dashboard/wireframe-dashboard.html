@@ -3,775 +3,899 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wireframe Dashboard Penjualan Online — AdventureWorks DW</title>
+  <title>AdventureWorks. — Soft Geometric Blue Analytics</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      --primary-blue: #2379F5;
+      --azure-blue: #639DF5;
+      --soft-sky-blue: #A9CAFA;
+      --powder-blue: #C9DFFF;
+      --ice-white: #F5F9FF;
+      --pure-white: #FFFFFF;
+      --dark-ink: #111318;
+      --navy-text: #17324F;
+      --slate-text: #64748B;
+      --teal-pos: #159C86;
+      --amber-warn: #D99A32;
+      --coral-neg: #D96870;
+    }
+
     body {
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: var(--powder-blue);
+      color: var(--navy-text);
     }
-    .soft-shadow {
-      box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.08), 0 4px 10px -2px rgba(148, 163, 184, 0.04);
+
+    /* Main Spacious White Canvas with Subtle Architectural Grid */
+    .main-canvas {
+      background-color: var(--pure-white);
+      background-image:
+        linear-gradient(to right, rgba(23, 50, 79, 0.032) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(23, 50, 79, 0.032) 1px, transparent 1px);
+      background-size: 32px 32px;
+      border-radius: 30px;
+      box-shadow: 0 16px 40px -16px rgba(17, 19, 24, 0.08);
     }
-    .soft-shadow-hover:hover {
-      box-shadow: 0 16px 30px -6px rgba(59, 130, 246, 0.12), 0 6px 14px -3px rgba(148, 163, 184, 0.06);
-      transform: translateY(-2px);
+
+    /* Tonal Blue Bento Cards with Subtle Internal Grid (Paragina Studio Reference) */
+    .bento-ice {
+      background-color: var(--ice-white);
+      background-image:
+        linear-gradient(to right, rgba(35, 121, 245, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(35, 121, 245, 0.04) 1px, transparent 1px);
+      background-size: 20px 20px;
+      border: 1px solid #E1EEFF;
+      border-radius: 20px;
+      transition: transform 0.16s ease, border-color 0.16s ease;
     }
+
+    .bento-sky {
+      background-color: var(--soft-sky-blue);
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+      background-size: 20px 20px;
+      border-radius: 20px;
+      transition: transform 0.16s ease;
+    }
+
+    .bento-powder {
+      background-color: var(--powder-blue);
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.22) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.22) 1px, transparent 1px);
+      background-size: 20px 20px;
+      border-radius: 20px;
+      transition: transform 0.16s ease;
+    }
+
+    .bento-royal {
+      background-color: var(--primary-blue);
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+      background-size: 20px 20px;
+      border-radius: 20px;
+      color: var(--pure-white);
+      transition: transform 0.16s ease;
+    }
+
+    .bento-panel {
+      background-color: var(--ice-white);
+      border: 1px solid #E4EFFD;
+      border-radius: 22px;
+    }
+
+    .bento-white {
+      background-color: var(--pure-white);
+      border: 1px solid #DCEBFE;
+      border-radius: 22px;
+    }
+
+    /* Navigation Active State (Solid Primary Blue Pill) */
     .active-page {
-      background-color: #2563EB !important;
-      color: #FFFFFF !important;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      background-color: var(--primary-blue) !important;
+      color: var(--pure-white) !important;
+    }
+
+    /* Signature Capsule Bar Charts */
+    .capsule-track {
+      background-color: #DCEBFE;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .capsule-fill-primary {
+      background-color: var(--primary-blue);
+      border-radius: 9999px;
+    }
+
+    .capsule-fill-azure {
+      background-color: var(--azure-blue);
+      border-radius: 9999px;
+    }
+
+    .capsule-fill-sky {
+      background-color: var(--soft-sky-blue);
+      border-radius: 9999px;
+    }
+
+    .filter-control:focus-visible {
+      outline: 2px solid var(--primary-blue);
+      outline-offset: 2px;
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-[#EEF5FF] via-[#F4F8FF] to-[#EAF2FD] text-slate-800 min-h-screen p-4 md:p-8 antialiased">
+<body class="min-h-screen p-3 sm:p-6 lg:p-10 antialiased">
 
-  <!-- ========================================== -->
-  <!-- HEADER & BREADCRUMB                       -->
-  <!-- ========================================== -->
-  <header class="max-w-7xl mx-auto mb-6">
-    <div class="bg-white/90 backdrop-blur-md border border-blue-100 rounded-3xl p-5 md:p-6 soft-shadow flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-sky-400 to-pink-400 flex items-center justify-center text-white font-extrabold text-xl shadow-md shadow-blue-400/25">
-          AW
+  <!-- ========================================================================= -->
+  <!-- MAIN WHITE CANVAS (Paragina Studio Spacious White Board on Powder Blue)   -->
+  <!-- ========================================================================= -->
+  <div class="main-canvas max-w-[1360px] mx-auto px-5 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-9">
+
+    <!-- ========================================== -->
+    <!-- BAGIAN 1: HEADER & NAVIGASI KORPORAT       -->
+    <!-- ========================================== -->
+    <header class="mb-8">
+      <!-- Top Corporate Navigation Bar (Matches Paragina Studio Header Layout) -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-[#E8F1FD]">
+        <!-- Left: Clean Geometric Wordmark -->
+        <div class="flex items-center gap-3">
+          <span class="text-[20px] font-extrabold tracking-tight text-[#111318]">
+            AdventureWorks.
+          </span>
+          <span class="text-[12px] font-semibold text-[#64748B] hidden sm:inline-block">
+            Online Sales Data Warehouse
+          </span>
         </div>
+
+        <!-- Center: Minimal Pill & Text Navigation -->
+        <nav aria-label="Navigasi Halaman Dashboard" class="flex items-center gap-2 sm:gap-6 flex-wrap">
+          <button onclick="navigateToPage('page-1')" id="nav-page-1" class="active-page px-5 py-2 rounded-full text-[13px] font-bold transition-colors duration-150">
+            Penjualan &amp; Produk
+          </button>
+          <button onclick="navigateToPage('page-2')" id="nav-page-2" class="px-4 py-2 rounded-full text-[13px] font-semibold text-[#64748B] hover:text-[#111318] transition-colors duration-150">
+            Pengiriman &amp; Kualitas Kurs
+          </button>
+          <button onclick="navigateToPage('page-spec')" id="nav-page-spec" class="px-4 py-2 rounded-full text-[13px] font-semibold text-[#64748B] hover:text-[#111318] transition-colors duration-150">
+            Spesifikasi SQL &amp; JSON
+          </button>
+        </nav>
+
+        <!-- Right: Dark Ink Contrast Pills (Matches Login / Sign Up Pill Accent) -->
+        <div class="flex items-center gap-2 self-start lg:self-auto">
+          <span class="px-4 py-1.5 rounded-full bg-[#111318] text-white text-[12px] font-bold tracking-tight">
+            DW Snapshot
+          </span>
+          <button onclick="navigateToPage('page-spec')" class="px-4 py-1.5 rounded-full bg-[#111318] hover:bg-[#2379F5] text-white text-[12px] font-bold tracking-tight transition-colors duration-150">
+            Star Schema V2
+          </button>
+        </div>
+      </div>
+
+      <!-- Editorial Title Row + Global Filter Bar -->
+      <div class="pt-6 flex flex-col xl:flex-row xl:items-end justify-between gap-5">
         <div>
-          <div class="flex items-center gap-2 flex-wrap">
-            <h1 class="text-xl md:text-2xl font-black tracking-tight text-slate-900">
-              Wireframe Dashboard Penjualan Online
-            </h1>
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700 border border-blue-200">
-              Prinsip Visdat & Bus Matrix
-            </span>
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-pink-100 text-pink-700 border border-pink-200">
-              5–7 Visual per Halaman
-            </span>
-          </div>
-          <p class="text-xs text-slate-500 mt-1">
-            Struktur Hirarki: <strong>Ringkasan di Atas (KPI)</strong> $\rightarrow$ <strong>Tren di Tengah (Line)</strong> $\rightarrow$ <strong>Rincian di Bawah (Bar & Tabel)</strong>
+          <h1 class="text-[28px] sm:text-[32px] font-extrabold tracking-tight text-[#111318] leading-none">
+            Online Sales Overview.
+          </h1>
+          <p class="text-[13px] text-[#64748B] mt-2">
+            Rekapitulasi transaksi <strong>adventureworks_dw</strong> (60.398 baris detail • 27.659 pesanan unik • Mei 2011 – Juni 2014)
           </p>
         </div>
-      </div>
 
-      <!-- Navigation Pages (Splitting into Max 6 Visuals per page as instructed) -->
-      <div class="flex items-center gap-1.5 bg-slate-100/90 p-1.5 rounded-full border border-slate-200/80 self-start md:self-auto flex-wrap">
-        <button onclick="navigateToPage('page-1')" id="nav-page-1" class="active-page px-4 py-2 rounded-full text-xs font-bold transition-all duration-200">
-          Hal 1: Penjualan & Produk (P1, P2, P3, P4, P5)
-        </button>
-        <button onclick="navigateToPage('page-2')" id="nav-page-2" class="px-4 py-2 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/80 transition-all duration-200">
-          Hal 2: Pengiriman & Kualitas Data (P6, P7)
-        </button>
-        <button onclick="navigateToPage('page-spec')" id="nav-page-spec" class="px-4 py-2 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/80 transition-all duration-200">
-          Spesifikasi Kueri JSON Pekan 14
-        </button>
-      </div>
-    </div>
+        <!-- ========================================== -->
+        <!-- BAGIAN 2: FILTER GLOBAL                    -->
+        <!-- ========================================== -->
+        <div class="flex flex-wrap items-center gap-2.5 bg-[#F5F9FF] p-2 rounded-2xl border border-[#E1EEFF] text-[12px]">
+          <!-- Filter Tahun -->
+          <div class="flex items-center gap-1 bg-white px-2 py-1 rounded-xl border border-[#DCEBFE]" role="group" aria-label="Filter Tahun">
+            <span class="text-[12px] font-bold text-[#111318] px-1.5">Tahun</span>
+            <button onclick="applyYearFilter('ALL')" id="flt-all" class="filter-control px-3 py-1 rounded-lg font-bold bg-[#2379F5] text-white transition-colors duration-150">Semua</button>
+            <button onclick="applyYearFilter('2011')" id="flt-2011" class="filter-control px-2.5 py-1 rounded-lg font-semibold text-[#64748B] hover:text-[#111318] transition-colors duration-150">2011</button>
+            <button onclick="applyYearFilter('2012')" id="flt-2012" class="filter-control px-2.5 py-1 rounded-lg font-semibold text-[#64748B] hover:text-[#111318] transition-colors duration-150">2012</button>
+            <button onclick="applyYearFilter('2013')" id="flt-2013" class="filter-control px-2.5 py-1 rounded-lg font-semibold text-[#64748B] hover:text-[#111318] transition-colors duration-150">2013</button>
+            <button onclick="applyYearFilter('2014')" id="flt-2014" class="filter-control px-2.5 py-1 rounded-lg font-semibold text-[#64748B] hover:text-[#111318] transition-colors duration-150">2014</button>
+          </div>
 
-    <!-- ========================================== -->
-    <!-- FILTER GLOBAL (Berlaku untuk semua visual) -->
-    <!-- ========================================== -->
-    <div class="bg-white/80 backdrop-blur-sm border border-blue-100 rounded-2xl px-5 py-3 soft-shadow flex flex-wrap items-center justify-between gap-3 text-xs">
-      <div class="flex items-center gap-2 flex-wrap">
-        <span class="font-extrabold text-slate-700 flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
-          Filter Global:
-        </span>
+          <!-- Filter Wilayah -->
+          <div class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-[#DCEBFE]">
+            <label for="flt-region" class="font-bold text-[#111318]">Wilayah</label>
+            <select id="flt-region" onchange="triggerFilterChange()" class="filter-control bg-transparent text-[#17324F] font-semibold focus:outline-none cursor-pointer">
+              <option value="ALL">Semua Wilayah</option>
+              <option value="NA">North America ($11,37M)</option>
+              <option value="PAC">Pacific - Australia ($9,06M)</option>
+              <option value="EUR">Europe ($8,93M)</option>
+            </select>
+          </div>
+
+          <!-- Filter Kategori Produk -->
+          <div class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-[#DCEBFE]">
+            <label for="flt-category" class="font-bold text-[#111318]">Kategori</label>
+            <select id="flt-category" onchange="triggerFilterChange()" class="filter-control bg-transparent text-[#17324F] font-semibold focus:outline-none cursor-pointer">
+              <option value="ALL">Semua Kategori</option>
+              <option value="Bikes">Bikes ($28,32M)</option>
+              <option value="Accessories">Accessories ($700,8K)</option>
+              <option value="Clothing">Clothing ($339,8K)</option>
+            </select>
+          </div>
+
+          <button onclick="resetGlobalFilters()" class="filter-control px-3 py-1.5 rounded-xl bg-[#111318] hover:bg-[#2379F5] text-white font-bold transition-colors duration-150">
+            Reset
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ========================================================================= -->
+    <!-- HALAMAN 1: PENJUALAN & PRODUK (4 KPI -> Tren Bulanan -> 3 Visual Bawah)   -->
+    <!-- ========================================================================= -->
+    <main id="view-page-1" class="space-y-6">
+
+      <!-- ==================================================================== -->
+      <!-- BAGIAN 3: EMPAT KARTU KPI TONAL BLUE BENTO (1 Baris Desktop)         -->
+      <!-- ==================================================================== -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <!-- Filter Tahun -->
-        <div class="flex items-center gap-1 bg-blue-50/80 p-1 rounded-xl border border-blue-200/60">
-          <span class="text-[11px] font-bold text-blue-800 px-1.5">Tahun:</span>
-          <button onclick="applyYearFilter('ALL')" id="flt-all" class="px-2.5 py-0.5 rounded-lg font-bold bg-blue-600 text-white shadow-xs transition">Semua</button>
-          <button onclick="applyYearFilter('2011')" id="flt-2011" class="px-2.5 py-0.5 rounded-lg font-medium text-slate-600 hover:bg-white transition">2011</button>
-          <button onclick="applyYearFilter('2012')" id="flt-2012" class="px-2.5 py-0.5 rounded-lg font-medium text-slate-600 hover:bg-white transition">2012</button>
-          <button onclick="applyYearFilter('2013')" id="flt-2013" class="px-2.5 py-0.5 rounded-lg font-medium text-slate-600 hover:bg-white transition">2013</button>
-          <button onclick="applyYearFilter('2014')" id="flt-2014" class="px-2.5 py-0.5 rounded-lg font-medium text-slate-600 hover:bg-white transition">2014</button>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-3 flex-wrap">
-        <!-- Filter Wilayah -->
-        <div class="flex items-center gap-1.5">
-          <span class="font-bold text-slate-600">Wilayah:</span>
-          <select id="flt-region" onchange="triggerFilterChange()" class="bg-blue-50/80 border border-blue-200 text-slate-700 rounded-xl px-3 py-1 font-medium focus:outline-none focus:ring-2 focus:ring-blue-400">
-            <option value="ALL">Semua Wilayah (Global)</option>
-            <option value="NA">North America ($15,2M)</option>
-            <option value="PAC">Pacific - Australia ($9,1M)</option>
-            <option value="EUR">Europe ($5,1M)</option>
-          </select>
-        </div>
-
-        <!-- Filter Kategori Produk -->
-        <div class="flex items-center gap-1.5">
-          <span class="font-bold text-slate-600">Kategori:</span>
-          <select id="flt-category" onchange="triggerFilterChange()" class="bg-pink-50/80 border border-pink-200 text-slate-700 rounded-xl px-3 py-1 font-medium focus:outline-none focus:ring-2 focus:ring-pink-400">
-            <option value="ALL">Semua Kategori</option>
-            <option value="Bikes">Bikes (Sepeda)</option>
-            <option value="Accessories">Accessories (Aksesoris)</option>
-            <option value="Clothing">Clothing (Pakaian)</option>
-          </select>
-        </div>
-
-        <button onclick="resetGlobalFilters()" class="text-slate-400 hover:text-slate-600 underline font-medium">Reset Filter</button>
-      </div>
-    </div>
-  </header>
-
-  <!-- ========================================================================= -->
-  <!-- HALAMAN 1: SALES & PRODUCT OVERVIEW (Tepat 6 Visual: 1 KPI + 5 Grafik/Tabel) -->
-  <!-- ========================================================================= -->
-  <main id="view-page-1" class="max-w-7xl mx-auto space-y-6">
-
-    <!-- ==================================================================== -->
-    <!-- BAGIAN ATAS: RINGKASAN KPI (Urutan Baca 1: Angka + Perubahan Periode) -->
-    <!-- ==================================================================== -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      
-      <!-- KPI 1: Nilai Penjualan (P1) -->
-      <div class="bg-white rounded-3xl p-5 border border-blue-100 soft-shadow soft-shadow-hover transition relative overflow-hidden">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-[11px] font-extrabold uppercase tracking-wider text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
-            KPI: Nilai Penjualan (P1)
-          </span>
-          <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs">$</span>
-        </div>
-        <div class="text-2xl font-black text-slate-900 tracking-tight" id="val-kpi-sales">$29.358.677</div>
-        <div class="flex items-center gap-1.5 mt-1.5 text-xs">
-          <span class="font-extrabold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md flex items-center gap-0.5">
-            ↑ +69,4%
-          </span>
-          <span class="text-slate-500 font-medium">dibanding periode lalu</span>
-        </div>
-        <div class="mt-3 pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex justify-between">
-          <span>Target Rekonsiliasi</span>
-          <span class="font-semibold text-blue-600">Lolos 100%</span>
-        </div>
-      </div>
-
-      <!-- KPI 2: Jumlah Pesanan (P1) -->
-      <div class="bg-white rounded-3xl p-5 border border-pink-100 soft-shadow soft-shadow-hover transition relative overflow-hidden">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-[11px] font-extrabold uppercase tracking-wider text-pink-700 bg-pink-50 px-2 py-0.5 rounded-full border border-pink-200">
-            KPI: Jumlah Pesanan (P1)
-          </span>
-          <span class="w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold text-xs">#</span>
-        </div>
-        <div class="text-2xl font-black text-slate-900 tracking-tight" id="val-kpi-orders">27.659</div>
-        <div class="flex items-center gap-1.5 mt-1.5 text-xs">
-          <span class="font-extrabold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">
-            ↑ +421,4% (2013)
-          </span>
-          <span class="text-slate-500 font-medium">pesanan unik distinct</span>
-        </div>
-        <div class="mt-3 pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex justify-between">
-          <span>Formula: <code>COUNT(DISTINCT ID)</code></span>
-          <span class="font-semibold text-pink-600">OnlineFlag = 1</span>
-        </div>
-      </div>
-
-      <!-- KPI 3: Pelanggan Aktif (P3) -->
-      <div class="bg-white rounded-3xl p-5 border border-sky-100 soft-shadow soft-shadow-hover transition relative overflow-hidden">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-[11px] font-extrabold uppercase tracking-wider text-sky-800 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
-            KPI: Pelanggan Aktif (P3)
-          </span>
-          <span class="w-6 h-6 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold text-xs">👥</span>
-        </div>
-        <div class="text-2xl font-black text-slate-900 tracking-tight" id="val-kpi-customers">18.484</div>
-        <div class="flex items-center gap-1.5 mt-1.5 text-xs">
-          <span class="font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">1,50 Pesanan</span>
-          <span class="text-slate-500 font-medium">rata-rata per pelanggan</span>
-        </div>
-        <div class="mt-3 pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex justify-between">
-          <span>Klasifikasi: Individual</span>
-          <span class="font-semibold text-sky-700">1.420 VIP (&gt;$10K)</span>
-        </div>
-      </div>
-
-      <!-- KPI 4: Nilai Diskon / Margin Promosi (P5) -->
-      <div class="bg-white rounded-3xl p-5 border border-violet-100 soft-shadow soft-shadow-hover transition relative overflow-hidden">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-[11px] font-extrabold uppercase tracking-wider text-violet-800 bg-violet-50 px-2 py-0.5 rounded-full border border-violet-200">
-            KPI: Total Diskon (P5)
-          </span>
-          <span class="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-xs">%</span>
-        </div>
-        <div class="text-2xl font-black text-slate-900 tracking-tight" id="val-kpi-discount">$84.320,12</div>
-        <div class="flex items-center gap-1.5 mt-1.5 text-xs">
-          <span class="font-bold text-pink-600 bg-pink-50 px-1.5 py-0.5 rounded-md">1,8% Promo</span>
-          <span class="text-slate-500 font-medium">98,2% harga reguler</span>
-        </div>
-        <div class="mt-3 pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex justify-between">
-          <span>Formula: <code>gross - line</code></span>
-          <span class="font-semibold text-violet-700">Terekonsiliasi</span>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ==================================================================== -->
-    <!-- BAGIAN TENGAH: TREN DI TENGAH (Urutan Baca 2: Line Chart)              -->
-    <!-- ==================================================================== -->
-    <div class="bg-white rounded-3xl p-6 border border-blue-100 soft-shadow">
-      <div class="flex items-center justify-between flex-wrap gap-2 mb-4">
-        <div class="flex items-center gap-2.5">
-          <span class="px-3 py-1 rounded-full text-xs font-black bg-blue-600 text-white shadow-xs">
-            Line Chart (P1)
-          </span>
+        <!-- KPI 1: Total Sales Revenue (Ice White Bento Card) -->
+        <div class="bento-ice p-6 flex flex-col justify-between" title="Pertanyaan Bisnis P1: Total Nilai Penjualan Online — SUM(line_total)">
           <div>
-            <h2 class="text-base md:text-lg font-bold text-slate-900">
-              Tren Penjualan Bulanan Selama Tiga Tahun (Mei 2011 – Juni 2014)
+            <span class="text-[13px] font-bold text-[#17324F] block mb-2">
+              Nilai Penjualan Online.
+            </span>
+            <div class="text-[28px] xl:text-[32px] font-extrabold text-[#111318] tracking-tight leading-none" id="val-kpi-sales">
+              $29.358.677,22
+            </div>
+          </div>
+          <div class="mt-5 pt-3 border-t border-[#DCEBFE] flex items-center justify-between text-[12px]">
+            <span id="val-kpi-units-badge" class="font-bold text-[#159C86]">
+              60.398 Unit
+            </span>
+            <span class="text-[#64748B] font-medium">SUM(line_total) • P1</span>
+          </div>
+        </div>
+
+        <!-- KPI 2: Total Orders + AOV (Soft Sky Blue Bento Card) -->
+        <div class="bento-sky p-6 flex flex-col justify-between" title="Pertanyaan Bisnis P1: Frekuensi Pesanan Unik — COUNT(DISTINCT sales_order_id)">
+          <div>
+            <span class="text-[13px] font-bold text-[#111318] block mb-2">
+              Jumlah Pesanan Unik.
+            </span>
+            <div class="text-[28px] xl:text-[32px] font-extrabold text-[#111318] tracking-tight leading-none" id="val-kpi-orders">
+              27.659
+            </div>
+          </div>
+          <div class="mt-5 pt-3 border-t border-[#86B4F8] flex items-center justify-between text-[12px]">
+            <span id="val-kpi-aov-badge" class="font-bold text-[#111318]">
+              AOV: $1.061,45
+            </span>
+            <span class="text-[#17324F] font-medium">Distinct Order • P1</span>
+          </div>
+        </div>
+
+        <!-- KPI 3: Active Customers (Powder Blue Bento Card) -->
+        <div class="bento-powder p-6 flex flex-col justify-between" title="Pertanyaan Bisnis P3: Pelanggan Aktif Online — COUNT(DISTINCT customer_key)">
+          <div>
+            <span class="text-[13px] font-bold text-[#111318] block mb-2">
+              Pelanggan Aktif.
+            </span>
+            <div class="text-[28px] xl:text-[32px] font-extrabold text-[#111318] tracking-tight leading-none" id="val-kpi-customers">
+              18.484
+            </div>
+          </div>
+          <div class="mt-5 pt-3 border-t border-[#A9CAFA] flex items-center justify-between text-[12px]">
+            <span id="val-kpi-freq-badge" class="font-bold text-[#111318]">
+              1,50 Pesanan
+            </span>
+            <span class="text-[#17324F] font-medium">29 VIP (&gt;$10K) • P3</span>
+          </div>
+        </div>
+
+        <!-- KPI 4: Estimated Promotion Discount (Royal Blue Emphasis Bento Card) -->
+        <div class="bento-royal p-6 flex flex-col justify-between" title="Pertanyaan Bisnis P5: Estimasi Diskon Promosi — SUM(line_total * discount_pct)">
+          <div>
+            <span class="text-[13px] font-bold text-[#C9DFFF] block mb-2">
+              Estimasi Diskon Promosi.
+            </span>
+            <div class="text-[28px] xl:text-[32px] font-extrabold text-white tracking-tight leading-none" id="val-kpi-discount">
+              $48.530,24
+            </div>
+          </div>
+          <div class="mt-5 pt-3 border-t border-white/20 flex items-center justify-between text-[12px]">
+            <span class="font-bold text-white">
+              2.151 Baris Promo
+            </span>
+            <span class="text-[#C9DFFF] font-medium">$2,05M Promo • P5</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- BAGIAN 4: GRAFIK TREN PENJUALAN BULANAN (Lebar Penuh di Tengah)      -->
+      <!-- ==================================================================== -->
+      <div class="bento-panel p-6">
+        <div class="flex items-start lg:items-center justify-between flex-wrap gap-3 mb-5">
+          <div>
+            <h2 class="text-[18px] font-extrabold text-[#111318] tracking-tight">
+              Monthly Sales &amp; Volume Trend.
             </h2>
-            <p class="text-xs text-slate-400">
-              Menjawab Pertanyaan Bisnis 1: <em>"Bagaimana tren nilai penjualan online setiap bulan?"</em> • Jenis Visual: <strong>Line Chart</strong> (Sesuai Prinsip Visdat)
+            <p class="text-[12px] text-[#64748B] mt-0.5">
+              Perkembangan nilai penjualan bulanan (sumbu kiri, USD) dan volume unit terjual (sumbu kanan, Qty) selama 38 bulan aktif (Mei 2011 – Juni 2014 • P1)
             </p>
           </div>
-        </div>
-        <!-- Legend Indicator -->
-        <div class="flex items-center gap-3 text-xs">
-          <span class="flex items-center gap-1.5 font-bold text-blue-600">
-            <span class="w-3.5 h-1 bg-blue-600 rounded-full inline-block"></span> Total Nilai Penjualan ($ LineTotal)
-          </span>
-          <span class="flex items-center gap-1.5 font-bold text-pink-500">
-            <span class="w-3.5 h-1 bg-pink-400 rounded-full inline-block border-dashed"></span> Tren Unit Terjual (Qty)
-          </span>
-        </div>
-      </div>
 
-      <!-- SVG Line Chart (Clean, precise, zero-clutter) -->
-      <div class="bg-gradient-to-b from-blue-50/30 to-transparent rounded-2xl p-4 border border-slate-100 h-64 flex flex-col justify-between">
-        <div class="w-full h-44 relative my-auto">
-          <svg viewBox="0 0 700 150" class="w-full h-full overflow-visible">
-            <!-- Guidelines -->
-            <line x1="0" y1="20" x2="700" y2="20" stroke="#E2E8F0" stroke-dasharray="3 3"/>
-            <text x="5" y="16" fill="#94A3B8" font-size="9">$2,0 Juta</text>
-
-            <line x1="0" y1="65" x2="700" y2="65" stroke="#E2E8F0" stroke-dasharray="3 3"/>
-            <text x="5" y="61" fill="#94A3B8" font-size="9">$1,0 Juta</text>
-
-            <line x1="0" y1="110" x2="700" y2="110" stroke="#E2E8F0" stroke-dasharray="3 3"/>
-            <text x="5" y="106" fill="#94A3B8" font-size="9">$500 Ribu</text>
-
-            <!-- Line: Sales Amount ($) in Royal Sky Blue -->
-            <path d="M 30 135 
-                     L 70 115 L 120 112 L 170 108 L 220 100 L 270 105 L 320 110 
-                     L 370 108 L 420 95 L 470 96 L 510 65 L 550 50 L 590 42 L 630 22 L 670 120" 
-                  fill="none" stroke="#2563EB" stroke-width="3" stroke-linecap="round"/>
-
-            <!-- Line: Units in Soft Pink -->
-            <path d="M 30 138 
-                     L 70 136 L 120 135 L 170 134 L 220 133 L 270 134 L 320 135 
-                     L 370 134 L 420 105 L 470 85 L 510 68 L 550 48 L 590 32 L 630 18 L 670 115" 
-                  fill="none" stroke="#FF6B8B" stroke-width="2.5" stroke-dasharray="4 4" stroke-linecap="round"/>
-
-            <!-- Data Point: Puncak Penjualan Mei 2014 -->
-            <circle cx="630" cy="22" r="5" fill="#2563EB" stroke="#FFFFFF" stroke-width="2"/>
-            <circle cx="630" cy="18" r="4" fill="#FF6B8B" stroke="#FFFFFF" stroke-width="1.5"/>
-
-            <!-- Callout Tooltip -->
-            <g transform="translate(530, 2)">
-              <rect width="135" height="32" rx="8" fill="#1E293B" opacity="0.95"/>
-              <text x="8" y="14" fill="#FFFFFF" font-size="10" font-weight="bold">Puncak: Mei 2014</text>
-              <text x="8" y="25" fill="#93C5FD" font-size="9">$1,95 Juta • 5.624 Unit</text>
-            </g>
-          </svg>
-        </div>
-
-        <div class="flex justify-between text-[11px] text-slate-400 font-semibold px-2 border-t border-slate-100 pt-1.5">
-          <span>Mei 2011</span>
-          <span>Jan 2012</span>
-          <span>Jul 2012</span>
-          <span>Jan 2013</span>
-          <span>Jul 2013 (Aksesoris & Pakaian Rilis)</span>
-          <span>Jan 2014</span>
-          <span>Mei 2014 (Puncak)</span>
-          <span>Jun 2014</span>
-        </div>
-      </div>
-
-      <div class="mt-3 flex items-center justify-between text-xs text-slate-500 bg-blue-50/50 p-2.5 rounded-xl border border-blue-100">
-        <span>💡 <strong>Insight Analisis P1:</strong> Volume unit (garis putus pink) melonjak drastis sejak Juli 2013 karena penambahan katalog aksesoris, sementara puncak omzet dicapai Mei 2014 ($1,95M).</span>
-        <button onclick="showQueryModal('P1')" class="font-bold text-blue-600 underline">Lihat Kueri JSON Pekan 14</button>
-      </div>
-    </div>
-
-    <!-- ==================================================================== -->
-    <!-- BAGIAN BAWAH: RINCIAN DI BAWAH (Urutan Baca 3: Bar & Tabel Rincian)  -->
-    <!-- ==================================================================== -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-      <!-- VISUAL 3: Bar Chart Kategori & 10 Produk Terlaris (P2) — 4 Cols -->
-      <div class="lg:col-span-4 bg-white rounded-3xl p-6 border border-pink-100 soft-shadow flex flex-col justify-between">
-        <div>
-          <div class="flex items-center justify-between mb-3">
-            <span class="px-2.5 py-1 rounded-full text-xs font-black bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-xs">
-              Bar Chart (P2)
+          <!-- Legend Indicator -->
+          <div class="flex items-center gap-5 text-[12px] bg-white px-4 py-2 rounded-full border border-[#DCEBFE]">
+            <span class="flex items-center gap-2 font-bold text-[#111318]">
+              <span class="w-3.5 h-2 bg-[#2379F5] rounded-full inline-block"></span>
+              Nilai Penjualan (Sumbu Kiri $)
             </span>
-            <span class="text-[11px] font-bold text-pink-600 bg-pink-50 px-2 py-0.5 rounded-full border border-pink-200">130 Produk Unik</span>
+            <span class="flex items-center gap-2 font-semibold text-[#64748B]">
+              <span class="w-3.5 h-0.5 border-b-2 border-dashed border-[#639DF5] inline-block"></span>
+              Unit Terjual (Sumbu Kanan Qty)
+            </span>
+          </div>
+        </div>
+
+        <!-- Dual-Axis SVG Line Chart -->
+        <div class="bg-white rounded-2xl p-4 border border-[#E1EEFF] h-72 flex flex-col justify-between">
+          <div class="w-full h-52 relative my-auto">
+            <svg viewBox="0 0 740 165" class="w-full h-full overflow-visible" role="img" aria-label="Grafik Tren Penjualan Bulanan Mei 2011 hingga Juni 2014">
+              <defs>
+                <linearGradient id="skyAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#2379F5" stop-opacity="0.14"/>
+                  <stop offset="100%" stop-color="#C9DFFF" stop-opacity="0.0"/>
+                </linearGradient>
+              </defs>
+
+              <!-- Subtle Horizontal Gridlines & Dual Axis Labels -->
+              <line x1="48" y1="22" x2="685" y2="22" stroke="#E8F1FD" stroke-width="1"/>
+              <text x="42" y="25" text-anchor="end" fill="#111318" font-size="10" font-weight="700">$2,0M</text>
+              <text x="692" y="25" text-anchor="start" fill="#639DF5" font-size="10" font-weight="700">6.000 u</text>
+
+              <line x1="48" y1="54" x2="685" y2="54" stroke="#E8F1FD" stroke-width="1"/>
+              <text x="42" y="57" text-anchor="end" fill="#64748B" font-size="10">$1,5M</text>
+              <text x="692" y="57" text-anchor="start" fill="#64748B" font-size="10">4.500 u</text>
+
+              <line x1="48" y1="86" x2="685" y2="86" stroke="#E8F1FD" stroke-width="1"/>
+              <text x="42" y="89" text-anchor="end" fill="#64748B" font-size="10">$1,0M</text>
+              <text x="692" y="89" text-anchor="start" fill="#64748B" font-size="10">3.000 u</text>
+
+              <line x1="48" y1="118" x2="685" y2="118" stroke="#E8F1FD" stroke-width="1"/>
+              <text x="42" y="121" text-anchor="end" fill="#64748B" font-size="10">$500K</text>
+              <text x="692" y="121" text-anchor="start" fill="#64748B" font-size="10">1.500 u</text>
+
+              <!-- Baseline: $0 / 0 Unit -->
+              <line x1="48" y1="148" x2="685" y2="148" stroke="#C9DFFF" stroke-width="1.2"/>
+              <text x="42" y="151" text-anchor="end" fill="#64748B" font-size="10">$0</text>
+              <text x="692" y="151" text-anchor="start" fill="#64748B" font-size="10">0 u</text>
+
+              <!-- Area Fill under Revenue Line -->
+              <path d="M 55 146 
+                       L 95 116 L 140 113 L 185 109 L 230 102 L 275 106 L 320 112 
+                       L 365 110 L 410 94 L 455 95 L 500 66 L 545 50 L 590 40 L 635 24 L 675 144
+                       L 675 148 L 55 148 Z" 
+                    fill="url(#skyAreaGrad)"/>
+
+              <!-- Line: Sales Amount ($) in Primary Royal Blue (#2379F5) -->
+              <path d="M 55 146 
+                       L 95 116 L 140 113 L 185 109 L 230 102 L 275 106 L 320 112 
+                       L 365 110 L 410 94 L 455 95 L 500 66 L 545 50 L 590 40 L 635 24 L 675 144" 
+                    fill="none" stroke="#2379F5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+              <!-- Line: Units Sold (Qty) in Azure Blue (#639DF5) -->
+              <path d="M 55 147 
+                       L 95 145 L 140 144 L 185 143 L 230 142 L 275 143 L 320 144 
+                       L 365 143 L 410 118 L 455 68 L 500 45 L 545 48 L 590 36 L 635 29 L 675 104" 
+                    fill="none" stroke="#639DF5" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round" stroke-linejoin="round"/>
+
+              <!-- Key Milestone Dots (Dark Ink & Primary Blue Accents) -->
+              <circle cx="455" cy="95" r="4" fill="#FFFFFF" stroke="#2379F5" stroke-width="2"/>
+              <circle cx="635" cy="24" r="5" fill="#111318" stroke="#FFFFFF" stroke-width="2"/>
+              <circle cx="635" cy="29" r="3.5" fill="#639DF5" stroke="#FFFFFF" stroke-width="1.5"/>
+
+              <!-- Navy Tooltip for Peak Month (Mei 2014) -->
+              <g transform="translate(475, 4)">
+                <rect width="152" height="36" rx="10" fill="#17324F"/>
+                <text x="10" y="15" fill="#FFFFFF" font-size="10" font-weight="700">Puncak: Mei 2014</text>
+                <text x="10" y="28" fill="#C9DFFF" font-size="9.5" font-weight="600">$1.951.195,90 • 5.624 Unit</text>
+              </g>
+            </svg>
           </div>
 
-          <h3 class="font-bold text-slate-900 text-base">
-            Kategori & Produk Penjualan Terbesar
-          </h3>
-          <p class="text-[11px] text-slate-400 mb-3">
-            Menjawab P2: <em>"Kategori produk mana yang penjualannya paling besar?"</em> (Sesuai Prinsip Visdat: <strong>Bar Chart</strong>)
-          </p>
-
-          <!-- Bar Chart Kategori Produk -->
-          <div class="space-y-2 mb-4 bg-pink-50/40 p-3 rounded-2xl border border-pink-100">
-            <span class="text-[11px] font-bold text-slate-700 block">Perbandingan Nilai Penjualan Kategori:</span>
-            
-            <!-- Category 1: Bikes -->
-            <div>
-              <div class="flex justify-between text-xs font-bold mb-0.5">
-                <span class="text-blue-800">1. Bikes (Sepeda)</span>
-                <span class="text-blue-700">$27,77 Juta (94,6%)</span>
-              </div>
-              <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                <div class="bg-blue-600 h-full rounded-full" style="width: 94.6%"></div>
-              </div>
-            </div>
-
-            <!-- Category 2: Accessories -->
-            <div>
-              <div class="flex justify-between text-xs font-bold mb-0.5">
-                <span class="text-pink-800">2. Accessories</span>
-                <span class="text-pink-600">$848 Ribu (2,9%)</span>
-              </div>
-              <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                <div class="bg-pink-500 h-full rounded-full" style="width: 20%"></div>
-              </div>
-            </div>
-
-            <!-- Category 3: Clothing -->
-            <div>
-              <div class="flex justify-between text-xs font-bold mb-0.5">
-                <span class="text-violet-800">3. Clothing (Pakaian)</span>
-                <span class="text-violet-600">$740 Ribu (2,5%)</span>
-              </div>
-              <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                <div class="bg-violet-500 h-full rounded-full" style="width: 17%"></div>
-              </div>
-            </div>
+          <div class="flex justify-between text-[12px] text-[#64748B] font-semibold px-8 border-t border-[#E8F1FD] pt-2">
+            <span>Mei 2011 ($14,5K)</span>
+            <span>Jan 2012 ($614,6K)</span>
+            <span>Jul 2012 ($532,6K)</span>
+            <span>Jan 2013 ($523,9K)</span>
+            <span class="text-[#111318] font-bold">Jul 2013 ($847,1K • 3.793 u)</span>
+            <span>Jan 2014 ($1,55M)</span>
+            <span class="text-[#2379F5] font-bold">Mei 2014 ($1,95M)</span>
+            <span>Jun 2014 ($49,0K)</span>
           </div>
+        </div>
 
-          <!-- Bar Horizontal: Top 4 Produk Terlaris -->
-          <span class="text-[11px] font-bold text-slate-700 block mb-1.5">Top Produk Terlaris:</span>
-          <div class="space-y-2 text-xs">
-            <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 flex justify-between items-center">
+        <div class="mt-4 flex items-center justify-between flex-wrap gap-2 text-[12px] text-[#17324F] bg-[#C9DFFF]/55 px-4 py-2.5 rounded-xl">
+          <span><strong>Ringkasan Tahunan:</strong> 2011 ($3,86M / 1.201 pesanan) &rarr; 2012 ($6,39M / 2.743 pesanan) &rarr; 2013 ($10,73M / 12.584 pesanan) &rarr; 2014 ($8,37M / 11.131 pesanan).</span>
+          <button onclick="showQueryModal('P1')" class="font-bold text-[#2379F5] hover:text-[#111318] underline shrink-0">Lihat Kueri SQL (P1)</button>
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- BAGIAN 5: TIGA VISUAL ANALITIK DI BAWAH (Produk, Wilayah, Promosi)   -->
+      <!-- ==================================================================== -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- KOLOM 1: Product Performance (P2) — 4 Cols -->
+        <div class="lg:col-span-4 bento-panel p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="font-extrabold text-[#111318] text-[17px] tracking-tight">
+                Product Performance.
+              </h3>
+              <span class="text-[12px] font-semibold text-[#64748B]" title="Pertanyaan Bisnis 2: Kontribusi kategori dan produk">
+                130 Produk
+              </span>
+            </div>
+            <p class="text-[12px] text-[#64748B] mb-4">
+              Proporsi nilai penjualan per kategori dan 3 produk teratas pada <code>dim_product</code>
+            </p>
+
+            <!-- Capsule Bar Chart Kategori Produk -->
+            <div class="space-y-3.5 mb-5 bg-white p-4 rounded-2xl border border-[#E1EEFF]">
+              <!-- Category 1: Bikes -->
               <div>
-                <span class="font-bold text-slate-800 block">Mountain-200 Black, 38</span>
-                <span class="text-[10px] text-slate-400">1.196 unit terjual</span>
+                <div class="flex justify-between text-[12px] font-bold mb-1.5">
+                  <span class="text-[#111318]">1. Bikes (15.205 unit)</span>
+                  <span class="text-[#2379F5]">$28,32M (96,46%)</span>
+                </div>
+                <div class="w-full h-3.5 capsule-track">
+                  <div class="capsule-fill-primary h-full" style="width: 96.46%"></div>
+                </div>
               </div>
-              <span class="font-extrabold text-blue-700">$1,37 Juta</span>
-            </div>
-            <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 flex justify-between items-center">
+
+              <!-- Category 2: Accessories -->
               <div>
-                <span class="font-bold text-slate-800 block">Road-150 Red, 62</span>
-                <span class="text-[10px] text-slate-400">524 unit terjual</span>
+                <div class="flex justify-between text-[12px] font-semibold mb-1.5">
+                  <span class="text-[#17324F]">2. Accessories (36.092 unit)</span>
+                  <span class="text-[#64748B]">$700,8K (2,39%)</span>
+                </div>
+                <div class="w-full h-3.5 capsule-track">
+                  <div class="capsule-fill-azure h-full" style="width: 16%"></div>
+                </div>
               </div>
-              <span class="font-extrabold text-blue-700">$1,20 Juta</span>
-            </div>
-            <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 flex justify-between items-center">
+
+              <!-- Category 3: Clothing -->
               <div>
-                <span class="font-bold text-slate-800 block">Mountain-100 Silver, 44</span>
-                <span class="text-[10px] text-slate-400">388 unit terjual</span>
+                <div class="flex justify-between text-[12px] font-semibold mb-1.5">
+                  <span class="text-[#17324F]">3. Clothing (9.101 unit)</span>
+                  <span class="text-[#64748B]">$339,8K (1,16%)</span>
+                </div>
+                <div class="w-full h-3.5 capsule-track">
+                  <div class="capsule-fill-sky h-full" style="width: 10%"></div>
+                </div>
               </div>
-              <span class="font-extrabold text-pink-600">$1,12 Juta</span>
             </div>
+
+            <!-- Top 3 Produk Terlaris (Penekanan pada Peringkat #1) -->
+            <span class="text-[12px] font-bold text-[#111318] block mb-2">Top 3 Produk Terlaris:</span>
+            <div class="space-y-2 text-[12px]">
+              <!-- Rank 1 Emphasized -->
+              <div class="bg-[#2379F5] text-white px-3.5 py-2.5 rounded-xl flex justify-between items-center">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-5 h-5 rounded-full bg-[#111318] text-white text-[11px] font-bold flex items-center justify-center shrink-0">1</span>
+                  <div>
+                    <span class="font-bold block">Mountain-200 Black, 46</span>
+                    <span class="text-[11px] text-[#C9DFFF]">620 unit terjual • Bikes</span>
+                  </div>
+                </div>
+                <span class="font-extrabold text-white">$1.373.469,55</span>
+              </div>
+
+              <!-- Rank 2 -->
+              <div class="bg-white px-3.5 py-2 rounded-xl border border-[#E1EEFF] flex justify-between items-center">
+                <div>
+                  <span class="font-bold text-[#17324F] block">2. Mountain-200 Black, 42</span>
+                  <span class="text-[11px] text-[#64748B]">614 unit terjual • Bikes</span>
+                </div>
+                <span class="font-bold text-[#111318]">$1.363.142,09</span>
+              </div>
+
+              <!-- Rank 3 -->
+              <div class="bg-white px-3.5 py-2 rounded-xl border border-[#E1EEFF] flex justify-between items-center">
+                <div>
+                  <span class="font-bold text-[#17324F] block">3. Mountain-200 Silver, 38</span>
+                  <span class="text-[11px] text-[#64748B]">596 unit terjual • Bikes</span>
+                </div>
+                <span class="font-bold text-[#17324F]">$1.339.462,79</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-[#DCEBFE] flex justify-between items-center text-[12px]">
+            <span class="text-[#64748B]">Dimensi: <code>dim_product</code> • P2</span>
+            <button onclick="showQueryModal('P2')" class="font-bold text-[#2379F5] hover:text-[#111318] underline">Lihat Kueri SQL</button>
           </div>
         </div>
 
-        <div class="mt-3 pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
-          <span class="text-[11px] text-slate-400">Dimensi: <code>dim_product</code></span>
-          <button onclick="showQueryModal('P2')" class="font-bold text-pink-600 underline">Kueri JSON P2</button>
+        <!-- KOLOM 2: Territory Performance (P4) — 4 Cols -->
+        <div class="lg:col-span-4 bento-panel p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="font-extrabold text-[#111318] text-[17px] tracking-tight">
+                Territory Performance.
+              </h3>
+              <span class="text-[12px] font-semibold text-[#64748B]" title="Pertanyaan Bisnis 4: Kontribusi wilayah pemasaran">
+                10 Wilayah
+              </span>
+            </div>
+            <p class="text-[12px] text-[#64748B] mb-4">
+              Peringkat kontribusi nilai penjualan dan pesanan unik menurut <code>dim_territory</code>
+            </p>
+
+            <!-- Capsule Bar Wilayah Group -->
+            <div class="space-y-4 mb-5 bg-white p-4 rounded-2xl border border-[#E1EEFF]">
+              <!-- Territory 1: Royal Blue -->
+              <div>
+                <div class="flex justify-between text-[12px] font-bold mb-1.5">
+                  <span class="text-[#111318]">1. North America (US &amp; Canada)</span>
+                  <span class="text-[#2379F5]">$11,37M (38,72%)</span>
+                </div>
+                <div class="w-full h-3.5 capsule-track">
+                  <div class="capsule-fill-primary h-full" style="width: 38.72%"></div>
+                </div>
+                <span class="text-[11px] text-[#64748B] block mt-1">12.942 pesanan • Southwest $5,72M, Northwest $3,65M, Canada $1,98M</span>
+              </div>
+
+              <!-- Territory 2: Azure Blue -->
+              <div>
+                <div class="flex justify-between text-[12px] font-bold mb-1.5">
+                  <span class="text-[#17324F]">2. Pacific (Australia)</span>
+                  <span class="text-[#111318]">$9,06M (30,86%)</span>
+                </div>
+                <div class="w-full h-3.5 capsule-track">
+                  <div class="capsule-fill-azure h-full" style="width: 30.86%"></div>
+                </div>
+                <span class="text-[11px] text-[#64748B] block mt-1">6.718 pesanan • 13.345 unit (Negara tunggal tertinggi)</span>
+              </div>
+
+              <!-- Territory 3: Soft Sky Blue -->
+              <div>
+                <div class="flex justify-between text-[12px] font-bold mb-1.5">
+                  <span class="text-[#17324F]">3. Europe (UK, Germany, France)</span>
+                  <span class="text-[#17324F]">$8,93M (30,42%)</span>
+                </div>
+                <div class="w-full h-3.5 capsule-track">
+                  <div class="capsule-fill-sky h-full" style="width: 30.42%"></div>
+                </div>
+                <span class="text-[11px] text-[#64748B] block mt-1">7.999 pesanan • UK $3,39M, Germany $2,89M, France $2,64M</span>
+              </div>
+            </div>
+
+            <div class="bento-powder p-4 text-[12px]">
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-bold text-[#111318]">Wilayah Teratas (Territory Level)</span>
+                <span class="px-2 py-0.5 rounded-full bg-[#111318] text-white text-[10px] font-bold">Top 2</span>
+              </div>
+              <span class="text-[#17324F] block"><strong>1. Australia:</strong> $9.061.000,58 (6.718 pesanan)</span>
+              <span class="text-[#17324F] block mt-0.5"><strong>2. US Southwest:</strong> $5.718.150,81 (5.473 pesanan)</span>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-[#DCEBFE] flex justify-between items-center text-[12px]">
+            <span class="text-[#64748B]">Dimensi: <code>dim_territory</code> • P4</span>
+            <button onclick="showQueryModal('P4')" class="font-bold text-[#2379F5] hover:text-[#111318] underline">Lihat Kueri SQL</button>
+          </div>
         </div>
+
+        <!-- KOLOM 3: Promotion Table (P5) — 4 Cols (White Surface & Powder Blue Header) -->
+        <div class="lg:col-span-4 bento-white p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="font-extrabold text-[#111318] text-[17px] tracking-tight">
+                Promotion &amp; Discount.
+              </h3>
+              <span class="text-[12px] font-semibold text-[#64748B]" title="Pertanyaan Bisnis 5: Distribusi promosi dan diskon">
+                4 Penawaran
+              </span>
+            </div>
+            <p class="text-[12px] text-[#64748B] mb-4">
+              Distribusi baris detail penjualan dan estimasi potongan pada <code>dim_promotion</code>
+            </p>
+
+            <!-- Clean Table with Powder Blue Header -->
+            <div class="overflow-x-auto rounded-2xl border border-[#E1EEFF] mb-4 bg-white">
+              <table class="w-full text-left text-[12px]">
+                <thead class="bg-[#C9DFFF] text-[#111318] font-bold">
+                  <tr>
+                    <th class="py-3 px-3">Jenis Penawaran</th>
+                    <th class="py-3 px-2.5 text-right">Baris</th>
+                    <th class="py-3 px-2.5 text-right">Nilai ($)</th>
+                    <th class="py-3 px-3 text-right">Est. Diskon</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[#EBF3FF]">
+                  <tr class="bg-white">
+                    <td class="py-2.5 px-3 font-semibold text-[#17324F]">No Discount (0%)</td>
+                    <td class="py-2.5 px-2.5 text-right text-[#64748B]">58.247</td>
+                    <td class="py-2.5 px-2.5 text-right font-bold text-[#111318]">$27,31M</td>
+                    <td class="py-2.5 px-3 text-right text-[#64748B]">$0,00</td>
+                  </tr>
+                  <tr class="bg-[#F5F9FF]">
+                    <td class="py-2.5 px-3 font-semibold text-[#111318]">Volume Discount 11–14 (2%)</td>
+                    <td class="py-2.5 px-2.5 text-right text-[#17324F]">2.118</td>
+                    <td class="py-2.5 px-2.5 text-right font-bold text-[#2379F5]">$2,01M</td>
+                    <td class="py-2.5 px-3 text-right text-[#111318] font-bold">$40.104,60</td>
+                  </tr>
+                  <tr class="bg-white">
+                    <td class="py-2.5 px-3 font-semibold text-[#111318]">Touring-1000 Promo (20%)</td>
+                    <td class="py-2.5 px-2.5 text-right text-[#17324F]">13</td>
+                    <td class="py-2.5 px-2.5 text-right font-bold text-[#2379F5]">$30,99K</td>
+                    <td class="py-2.5 px-3 text-right text-[#111318] font-bold">$6.198,58</td>
+                  </tr>
+                  <tr class="bg-[#F5F9FF]">
+                    <td class="py-2.5 px-3 font-semibold text-[#111318]">Touring-3000 Promo (15%)</td>
+                    <td class="py-2.5 px-2.5 text-right text-[#17324F]">20</td>
+                    <td class="py-2.5 px-2.5 text-right font-bold text-[#2379F5]">$14,85K</td>
+                    <td class="py-2.5 px-3 text-right text-[#111318] font-bold">$2.227,05</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="bg-[#F5F9FF] p-3.5 rounded-xl border border-[#E1EEFF] text-[12px]">
+              <span class="font-bold text-[#111318] block">Catatan Metodologi Estimasi:</span>
+              <span class="text-[#64748B]">Sebanyak 2.151 baris berpromosi menghasilkan <strong>$2.051.070,14</strong> dengan estimasi diskon <code>line_total &times; discount_pct</code> sebesar <strong>$48.530,24</strong>.</span>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-[#E1EEFF] flex justify-between items-center text-[12px]">
+            <span class="text-[#64748B]">Dimensi: <code>dim_promotion</code> • P5</span>
+            <button onclick="showQueryModal('P5')" class="font-bold text-[#2379F5] hover:text-[#111318] underline">Lihat Kueri SQL</button>
+          </div>
+        </div>
+
       </div>
 
-      <!-- VISUAL 4: Bar Penjualan per Wilayah (P4) — 4 Cols -->
-      <div class="lg:col-span-4 bg-white rounded-3xl p-6 border border-blue-100 soft-shadow flex flex-col justify-between">
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- HALAMAN 2: PENGIRIMAN & KUALITAS DATA MATA UANG (P6, P7 — 2 Panel Utama)  -->
+    <!-- ========================================================================= -->
+    <section id="view-page-2" class="space-y-6 hidden">
+      
+      <!-- Top Summary Banner -->
+      <div class="bento-panel p-5 flex items-center justify-between flex-wrap gap-4">
         <div>
-          <div class="flex items-center justify-between mb-3">
-            <span class="px-2.5 py-1 rounded-full text-xs font-black bg-blue-600 text-white shadow-xs">
-              Bar Chart (P4)
-            </span>
-            <span class="text-[11px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">10 Wilayah</span>
-          </div>
-
-          <h3 class="font-bold text-slate-900 text-base">
-            Penjualan per Wilayah & Negara
-          </h3>
-          <p class="text-[11px] text-slate-400 mb-3">
-            Menjawab P4: <em>"Wilayah mana yang menghasilkan penjualan online tertinggi?"</em> (Sesuai Prinsip Visdat: <strong>Bar Chart</strong>)
-          </p>
-
-          <!-- Bar Wilayah Group -->
-          <div class="space-y-3 mb-4">
-            <div>
-              <div class="flex justify-between text-xs font-bold mb-1">
-                <span class="text-slate-800">North America (US & Canada)</span>
-                <span class="text-blue-700">$15,21 Juta (51,8%)</span>
-              </div>
-              <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                <div class="bg-blue-600 h-full rounded-full" style="width: 51.8%"></div>
-              </div>
-              <span class="text-[10px] text-slate-400 block mt-0.5">14.332 Pesanan Unik</span>
-            </div>
-
-            <div>
-              <div class="flex justify-between text-xs font-bold mb-1">
-                <span class="text-slate-800">Pacific (Australia — Negara #1)</span>
-                <span class="text-pink-600">$9,06 Juta (30,9%)</span>
-              </div>
-              <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                <div class="bg-gradient-to-r from-pink-500 to-rose-400 h-full rounded-full" style="width: 30.9%"></div>
-              </div>
-              <span class="text-[10px] text-slate-400 block mt-0.5">8.584 Pesanan Unik (Pasar Tunggal Terbesar)</span>
-            </div>
-
-            <div>
-              <div class="flex justify-between text-xs font-bold mb-1">
-                <span class="text-slate-800">Europe (UK, France, Germany)</span>
-                <span class="text-indigo-700">$5,08 Juta (17,3%)</span>
-              </div>
-              <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                <div class="bg-indigo-500 h-full rounded-full" style="width: 17.3%"></div>
-              </div>
-              <span class="text-[10px] text-slate-400 block mt-0.5">4.743 Pesanan Unik</span>
-            </div>
-          </div>
-
-          <div class="bg-blue-50/60 p-2.5 rounded-xl border border-blue-100 text-xs">
-            <span class="font-bold text-blue-900 block">Top 1 Negara Penjualan Tertinggi:</span>
-            <span class="text-slate-700">🇦🇺 <strong>Australia</strong> mendominasi $9.061.005,58 penjualan online global.</span>
-          </div>
+          <span class="px-3 py-1 rounded-full text-[11px] font-bold bg-[#111318] text-white">Halaman 2 • Logistik &amp; Kualitas Kurs</span>
+          <h2 class="text-[20px] font-extrabold text-[#111318] mt-2 tracking-tight">Shipping &amp; Currency Quality.</h2>
+          <p class="text-[12px] text-[#64748B]">Evaluasi metode pengiriman pesanan online (P7) serta kelengkapan referensi kurs pada <code>dim_currency</code> (P6).</p>
         </div>
-
-        <div class="mt-3 pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
-          <span class="text-[11px] text-slate-400">Dimensi: <code>dim_territory</code></span>
-          <button onclick="showQueryModal('P4')" class="font-bold text-blue-600 underline">Kueri JSON P4</button>
-        </div>
+        <button onclick="navigateToPage('page-1')" class="px-4 py-2 rounded-full bg-[#2379F5] text-white font-bold text-[12px] hover:bg-[#111318] transition-colors duration-150">
+          &larr; Kembali ke Halaman 1
+        </button>
       </div>
 
-      <!-- VISUAL 5: Tabel Rincian Promosi & Nilai Diskon (P5) — 4 Cols -->
-      <div class="lg:col-span-4 bg-white rounded-3xl p-6 border border-violet-100 soft-shadow flex flex-col justify-between">
-        <div>
-          <div class="flex items-center justify-between mb-3">
-            <span class="px-2.5 py-1 rounded-full text-xs font-black bg-violet-600 text-white shadow-xs">
-              Tabel (P5)
-            </span>
-            <span class="text-[11px] font-bold text-violet-700 bg-violet-50 px-2 py-0.5 rounded-full border border-violet-200">dim_promotion</span>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- PANEL 1: [P7] Shipping Method Distribution -->
+        <div class="bento-panel p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="font-extrabold text-[#111318] text-[18px] tracking-tight">
+                Shipping Method Distribution.
+              </h3>
+              <span class="text-[12px] font-semibold text-[#64748B]">P7 • Logistik</span>
+            </div>
+            <p class="text-[12px] text-[#64748B] mb-5">
+              Frekuensi pesanan unik per metode pengiriman berdasarkan <code>COUNT(DISTINCT sales_order_id)</code> pada <code>dim_ship_method</code>
+            </p>
+
+            <div class="space-y-4">
+              <div class="bg-white p-4 rounded-2xl border border-[#E1EEFF]">
+                <div class="flex justify-between text-[13px] font-bold mb-2">
+                  <span class="text-[#111318]">XRQ - TRUCK GROUND (ship_method_id = 1)</span>
+                  <span class="text-[#2379F5]">27.659 pesanan (100,0%)</span>
+                </div>
+                <div class="w-full h-3.5 capsule-track">
+                  <div class="capsule-fill-primary h-full" style="width: 100%"></div>
+                </div>
+                <div class="flex justify-between text-[12px] text-[#64748B] mt-2">
+                  <span>60.398 baris detail produk</span>
+                  <span>Nilai transaksi: <strong class="text-[#111318]">$29.358.677,22</strong></span>
+                </div>
+              </div>
+
+              <div class="bg-white p-4 rounded-2xl border border-[#E1EEFF]">
+                <div class="flex justify-between text-[13px] font-semibold mb-2">
+                  <span class="text-[#64748B]">ZY - EXPRESS / OVERSEAS / CARGO TRANSPORT (Metode Katalog Lainnya)</span>
+                  <span class="text-[#64748B]">0 pesanan (0,0%)</span>
+                </div>
+                <div class="w-full h-3 capsule-track">
+                  <div class="capsule-fill-sky h-full" style="width: 0%"></div>
+                </div>
+                <span class="text-[12px] text-[#64748B] block mt-1.5">Metode pengiriman lain pada master OLTP hanya digunakan pada transaksi offline (reseller).</span>
+              </div>
+            </div>
+
+            <div class="mt-5 p-4 rounded-2xl bento-powder text-[12px] text-[#17324F]">
+              <strong class="text-[#111318]">Catatan Audit Grain:</strong> Seluruh 27.659 pesanan online menggunakan metode tunggal <strong>XRQ - TRUCK GROUND</strong> (tarif dasar $3,95 / rate $0,99). Perhitungan jumlah pengiriman wajib menggunakan <code>COUNT(DISTINCT sales_order_id)</code>.
+            </div>
           </div>
 
-          <h3 class="font-bold text-slate-900 text-base">
-            Rincian Promosi & Nilai Diskon
-          </h3>
-          <p class="text-[11px] text-slate-400 mb-3">
-            Menjawab P5: <em>"Bagaimana distribusi nilai penjualan berdasarkan promosi/diskon?"</em> (Sesuai Contoh: <strong>Tabel Rincian</strong>)
-          </p>
-
-          <!-- Table Container -->
-          <div class="overflow-x-auto rounded-2xl border border-slate-200 mb-3">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-100 text-slate-700 font-bold text-[11px]">
-                <tr>
-                  <th class="p-2">Jenis Penawaran</th>
-                  <th class="p-2 text-right">Baris</th>
-                  <th class="p-2 text-right">Nilai ($)</th>
-                  <th class="p-2 text-right">Diskon ($)</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100 text-[11px]">
-                <tr class="hover:bg-slate-50">
-                  <td class="p-2 font-medium text-slate-800">No Discount (Reguler)</td>
-                  <td class="p-2 text-right text-slate-600">59.340</td>
-                  <td class="p-2 text-right font-bold text-blue-700">$28,84M</td>
-                  <td class="p-2 text-right text-slate-400">$0,00</td>
-                </tr>
-                <tr class="hover:bg-pink-50/50 bg-pink-50/20">
-                  <td class="p-2 font-medium text-slate-800">Volume Discount (11–14)</td>
-                  <td class="p-2 text-right text-slate-600">412</td>
-                  <td class="p-2 text-right font-bold text-pink-600">$215K</td>
-                  <td class="p-2 text-right text-pink-700 font-bold">$34.120</td>
-                </tr>
-                <tr class="hover:bg-pink-50/50 bg-pink-50/20">
-                  <td class="p-2 font-medium text-slate-800">Mountain Season Promo</td>
-                  <td class="p-2 text-right text-slate-600">388</td>
-                  <td class="p-2 text-right font-bold text-pink-600">$189K</td>
-                  <td class="p-2 text-right text-pink-700 font-bold">$28.450</td>
-                </tr>
-                <tr class="hover:bg-pink-50/50 bg-pink-50/20">
-                  <td class="p-2 font-medium text-slate-800">Road Promo (Discount 10%)</td>
-                  <td class="p-2 text-right text-slate-600">258</td>
-                  <td class="p-2 text-right font-bold text-pink-600">$114K</td>
-                  <td class="p-2 text-right text-pink-700 font-bold">$21.750</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="bg-violet-50/60 p-2.5 rounded-xl border border-violet-100 text-xs">
-            <span class="font-bold text-violet-900 block">Total Realisasi Diskon:</span>
-            <span class="text-slate-700">Formula <code>gross_amount − LineTotal</code> = <strong>$84.320,12</strong> (Tervalidasi).</span>
+          <div class="mt-5 pt-3 border-t border-[#DCEBFE] flex justify-between items-center text-[12px]">
+            <span class="text-[#64748B]">Dimensi: <code>dim_ship_method</code></span>
+            <button onclick="showQueryModal('P7')" class="font-bold text-[#2379F5] hover:text-[#111318] underline">Lihat Kueri SQL (P7)</button>
           </div>
         </div>
 
-        <div class="mt-3 pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
-          <span class="text-[11px] text-slate-400">Tabel Rincian Promosi</span>
-          <button onclick="showQueryModal('P5')" class="font-bold text-violet-600 underline">Kueri JSON P5</button>
+        <!-- PANEL 2: [P6] Currency & Exchange Rate Quality -->
+        <div class="bento-panel p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="font-extrabold text-[#111318] text-[18px] tracking-tight">
+                Currency &amp; Exchange Rate Quality.
+              </h3>
+              <span class="text-[12px] font-semibold text-[#64748B]">P6 • Kualitas Data</span>
+            </div>
+            <p class="text-[12px] text-[#64748B] mb-5">
+              Proporsi ketersediaan <code>CurrencyRateID</code> dan distribusi mata uang tujuan pada <code>dim_currency</code>
+            </p>
+
+            <!-- Split Visual -->
+            <div class="bg-white p-4 rounded-2xl border border-[#E1EEFF] mb-4">
+              <div class="flex justify-between text-[12px] font-bold mb-2">
+                <span class="text-[#111318]">Proporsi Referensi Kurs Pesanan Online</span>
+                <span class="text-[#17324F]">Total: 27.659 Pesanan</span>
+              </div>
+              
+              <div class="w-full h-5 bg-[#F5F9FF] rounded-full flex overflow-hidden mb-3">
+                <div class="bg-[#D99A32] h-full flex items-center justify-center text-[11px] text-white font-bold" style="width: 53.73%" title="Tanpa Kurs (NULL di Sumber -> Default USD)">
+                  Tanpa Kurs 53,73%
+                </div>
+                <div class="bg-[#2379F5] h-full flex items-center justify-center text-[11px] text-white font-bold" style="width: 46.27%" title="Dengan Kurs Teridentifikasi">
+                  Dengan Kurs 46,27%
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3 text-[12px]">
+                <div class="bg-[#F5F9FF] p-3 rounded-xl border border-[#E1EEFF]">
+                  <span class="text-[12px] text-[#64748B] block">Tanpa Kurs (<code>currency_rate_id = -1</code>):</span>
+                  <span class="font-extrabold text-[#D99A32] text-[15px]">14.860 Pesanan (53,73%)</span>
+                  <span class="text-[11px] text-[#64748B] block mt-0.5">33.400 detail • $14.693.465,32</span>
+                </div>
+                <div class="bg-[#F5F9FF] p-3 rounded-xl border border-[#E1EEFF]">
+                  <span class="text-[12px] text-[#64748B] block">Dengan Kurs (<code>currency_rate_id &gt; 0</code>):</span>
+                  <span class="font-extrabold text-[#2379F5] text-[15px]">12.799 Pesanan (46,27%)</span>
+                  <span class="text-[11px] text-[#64748B] block mt-0.5">26.998 detail • $14.665.211,90</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Currency Breakdown -->
+            <div class="space-y-1.5 text-[12px] bg-white p-4 rounded-2xl border border-[#E1EEFF]">
+              <span class="font-bold text-[#111318] block mb-1">Distribusi Pesanan Menurut Kode Valuta (<code>to_currency_code</code>):</span>
+              <div class="flex justify-between py-1.5 px-2.5 rounded-lg bg-[#F5F9FF]">
+                <span class="font-semibold text-[#111318]">USD — US Dollar (Default Base • <code>currency_key = 1</code>)</span>
+                <span class="font-bold text-[#111318]">14.860 pesanan ($14,69M)</span>
+              </div>
+              <div class="flex justify-between py-1.5 px-2.5 border-b border-[#EBF3FF]">
+                <span class="text-[#64748B]"><strong class="text-[#111318]">AUD</strong> — Australian Dollar</span>
+                <span class="font-bold text-[#2379F5]">6.550 pesanan ($9,05M)</span>
+              </div>
+              <div class="flex justify-between py-1.5 px-2.5 border-b border-[#EBF3FF]">
+                <span class="text-[#64748B]"><strong class="text-[#111318]">CAD</strong> — Canadian Dollar</span>
+                <span class="font-bold text-[#17324F]">3.147 pesanan ($1,81M)</span>
+              </div>
+              <div class="flex justify-between py-1.5 px-2.5 border-b border-[#EBF3FF]">
+                <span class="text-[#64748B]"><strong class="text-[#111318]">GBP</strong> — British Pound</span>
+                <span class="font-bold text-[#17324F]">2.967 pesanan ($3,39M)</span>
+              </div>
+              <div class="flex justify-between py-1.5 px-2.5">
+                <span class="text-[#64748B]"><strong class="text-[#111318]">DEM</strong> (76 pesanan) &amp; <strong class="text-[#111318]">FRF</strong> (59 pesanan)</span>
+                <span class="font-bold text-[#17324F]">135 pesanan ($418,4K)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-3 border-t border-[#DCEBFE] flex justify-between items-center text-[12px]">
+            <span class="text-[#64748B]">Dimensi: <code>dim_currency (9.865 rows)</code></span>
+            <button onclick="showQueryModal('P6')" class="font-bold text-[#2379F5] hover:text-[#111318] underline">Lihat Kueri SQL (P6)</button>
+          </div>
         </div>
+
       </div>
 
-    </div>
+    </section>
 
-  </main>
-
-  <!-- ========================================================================= -->
-  <!-- HALAMAN 2: PENGIRIMAN & KUALITAS DATA MATA UANG (P6, P7 — 2 Visual Inti)  -->
-  <!-- ========================================================================= -->
-  <section id="view-page-2" class="max-w-7xl mx-auto space-y-6 hidden">
-    
-    <!-- Top Summary Banner -->
-    <div class="bg-white rounded-3xl p-5 border border-blue-100 soft-shadow flex items-center justify-between flex-wrap gap-4">
-      <div>
-        <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">Halaman 2 dari 2</span>
-        <h2 class="text-lg font-black text-slate-900 mt-1">Logistik Pengiriman & Tata Kelola Data Mata Uang</h2>
-        <p class="text-xs text-slate-500">Fokus pada penyebaran metode kirim (P7) serta audit integritas referensi kurs (P6).</p>
-      </div>
-      <button onclick="navigateToPage('page-1')" class="px-4 py-2 rounded-xl bg-blue-50 text-blue-700 font-bold text-xs hover:bg-blue-100 transition">
-        ← Kembali ke Halaman 1 (Penjualan)
-      </button>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-      <!-- VISUAL 6: [P7] Distribusi Metode Pengiriman (Bar / List) -->
-      <div class="bg-white rounded-3xl p-6 border border-pink-100 soft-shadow flex flex-col justify-between">
-        <div>
-          <div class="flex items-center justify-between mb-3">
-            <span class="px-3 py-1 rounded-full text-xs font-black bg-pink-600 text-white shadow-xs">
-              Bar Chart (P7)
-            </span>
-            <span class="text-[11px] font-bold text-pink-600 bg-pink-50 px-2 py-0.5 rounded-full border border-pink-200">dim_ship_method</span>
+    <!-- ========================================================================= -->
+    <!-- HALAMAN 3: SPESIFIKASI KUERI SQL & JSON (Backend Developer Ready)         -->
+    <!-- ========================================================================= -->
+    <section id="view-page-spec" class="space-y-6 hidden">
+      <div class="bento-panel p-6">
+        <div class="mb-6 pb-4 border-b border-[#DCEBFE] flex items-start justify-between flex-wrap gap-4">
+          <div>
+            <span class="px-3 py-1 rounded-full text-[11px] font-bold bg-[#111318] text-white">Dokumentasi Teknis Pekan 14</span>
+            <h2 class="text-[22px] font-extrabold text-[#111318] mt-2 tracking-tight">
+              SQL &amp; API Specification.
+            </h2>
+            <p class="text-[12px] text-[#64748B] mt-0.5">
+              Daftar kueri SQL untuk setiap komponen visual terhadap skema <code>adventureworks_dw</code> (saat ini prototipe menggunakan DW Data Snapshot pada JavaScript).
+            </p>
           </div>
-
-          <h3 class="font-bold text-slate-900 text-base">
-            Sebaran Metode Pengiriman Pesanan Online
-          </h3>
-          <p class="text-xs text-slate-400 mb-4">
-            Menjawab P7: <em>"Metode kirim apa paling sering dipakai oleh pesanan online?"</em> • Grain: <code>COUNT(DISTINCT SalesOrderID)</code>
-          </p>
-
-          <div class="space-y-3">
-            <div>
-              <div class="flex justify-between text-xs font-bold mb-1">
-                <span class="text-slate-800">✈️ XRX - AIR (Pengiriman Udara Cepat)</span>
-                <span class="text-blue-700">10.450 pesanan (37,8%)</span>
-              </div>
-              <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                <div class="bg-blue-600 h-full rounded-full" style="width: 37.8%"></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between text-xs font-bold mb-1">
-                <span class="text-slate-800">🚚 CARGO TRANSPORT 5 (Kargo Darat)</span>
-                <span class="text-pink-600">7.210 pesanan (26,1%)</span>
-              </div>
-              <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                <div class="bg-pink-500 h-full rounded-full" style="width: 26.1%"></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between text-xs font-bold mb-1">
-                <span class="text-slate-800">⚡ OVERNIGHT J-FAST (1 Hari Sampai)</span>
-                <span class="text-slate-700">5.040 pesanan (18,2%)</span>
-              </div>
-              <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                <div class="bg-indigo-500 h-full rounded-full" style="width: 18.2%"></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between text-xs font-bold mb-1">
-                <span class="text-slate-800">📦 STANDARD GROUND & LAINNYA</span>
-                <span class="text-slate-700">4.959 pesanan (17,9%)</span>
-              </div>
-              <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                <div class="bg-slate-400 h-full rounded-full" style="width: 17.9%"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-4 p-3 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-600">
-            <strong>Catatan Audit Grain Bus Matrix:</strong> Ongkos kirim (Freight) berada pada tingkat header pesanan, sehingga analisis kuantitatif menggunakan <code>COUNT(DISTINCT SalesOrderID)</code> agar tidak terlipat ganda.
-          </div>
+          <button onclick="navigateToPage('page-1')" class="px-4 py-2 rounded-full bg-[#2379F5] text-white font-bold text-[12px] hover:bg-[#111318] transition-colors duration-150">
+            &larr; Kembali ke Dashboard Utama
+          </button>
         </div>
 
-        <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
-          <span class="text-slate-400">27.659 Pesanan Unik</span>
-          <button onclick="showQueryModal('P7')" class="font-bold text-pink-600 underline">Kueri JSON P7</button>
-        </div>
-      </div>
-
-      <!-- VISUAL 7: [P6] Distribusi Mata Uang & Kelengkapan Kurs -->
-      <div class="bg-white rounded-3xl p-6 border border-amber-100 soft-shadow flex flex-col justify-between">
-        <div>
-          <div class="flex items-center justify-between mb-3">
-            <span class="px-3 py-1 rounded-full text-xs font-black bg-amber-500 text-white shadow-xs">
-              Quality Split (P6)
-            </span>
-            <span class="text-[11px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">dim_currency</span>
-          </div>
-
-          <h3 class="font-bold text-slate-900 text-base">
-            Kelengkapan Informasi Mata Uang & Kurs
-          </h3>
-          <p class="text-xs text-slate-400 mb-4">
-            Menjawab P6: <em>"Berapa transaksi tanpa referensi kurs & bagaimana distribusinya?"</em>
-          </p>
-
-          <!-- Split Visual -->
-          <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-200 mb-4">
-            <div class="flex justify-between text-xs font-bold mb-1.5">
-              <span class="text-amber-900">Proporsi Referensi Kurs:</span>
-              <span class="text-slate-900">Total: 27.659 Pesanan</span>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          
+          <!-- Endpoint 1: KPI Summary -->
+          <div class="p-4 rounded-2xl bg-white border border-[#E1EEFF] text-[12px]">
+            <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
+              <span class="font-bold text-[#111318]">1. Endpoint: <code>GET /api/kpi/summary</code> (KPI P1, P3, P5)</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-[#C9DFFF] text-[#111318] font-bold text-[11px]">JSON Spec</span>
             </div>
-            
-            <div class="w-full h-4 bg-slate-200 rounded-full flex overflow-hidden shadow-inner mb-3">
-              <div class="bg-amber-400 h-full flex items-center justify-center text-[10px] text-amber-950 font-extrabold" style="width: 53.73%">
-                Tanpa Kurs 53,7%
-              </div>
-              <div class="bg-blue-600 h-full flex items-center justify-center text-[10px] text-white font-extrabold" style="width: 46.27%">
-                Dengan Kurs 46,3%
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2 text-xs">
-              <div class="bg-white p-2.5 rounded-xl border border-amber-200">
-                <span class="text-[10px] text-slate-500 block">Tanpa Kurs (NULL):</span>
-                <span class="font-black text-amber-800 text-sm">14.860 (53,73%)</span>
-                <span class="text-[10px] text-slate-400">Injeksi Base Default: USD</span>
-              </div>
-              <div class="bg-white p-2.5 rounded-xl border border-blue-200">
-                <span class="text-[10px] text-slate-500 block">Dengan Kurs:</span>
-                <span class="font-black text-blue-700 text-sm">12.799 (46,27%)</span>
-                <span class="text-[10px] text-slate-400">2.466 ID Kurs Unik</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Currency Breakdown -->
-          <div class="space-y-1.5 text-xs">
-            <span class="font-bold text-slate-700 block">Distribusi Pesanan per Mata Uang:</span>
-            <div class="flex justify-between py-1 border-b border-slate-100">
-              <span class="text-slate-600">💵 USD (US Dollar Base)</span>
-              <span class="font-bold text-slate-800">14.860 pesanan</span>
-            </div>
-            <div class="flex justify-between py-1 border-b border-slate-100">
-              <span class="text-slate-600">🇦🇺 AUD (Australian Dollar)</span>
-              <span class="font-bold text-blue-600">8.584 pesanan</span>
-            </div>
-            <div class="flex justify-between py-1 border-b border-slate-100">
-              <span class="text-slate-600">🇨🇦 CAD (Canadian Dollar)</span>
-              <span class="font-bold text-slate-800">2.680 pesanan</span>
-            </div>
-            <div class="flex justify-between py-1">
-              <span class="text-slate-600">💶 EUR & 💷 GBP (Eropa)</span>
-              <span class="font-bold text-slate-800">1.535 pesanan</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
-          <span class="text-slate-400">Injeksi: <code>currency_key = 1</code></span>
-          <button onclick="showQueryModal('P6')" class="font-bold text-amber-600 underline">Kueri JSON P6</button>
-        </div>
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- HALAMAN 3: SPESIFIKASI KUERI JSON PEKAN 14 (Backend Developer Ready)      -->
-  <!-- ========================================================================= -->
-  <section id="view-page-spec" class="max-w-7xl mx-auto space-y-6 hidden">
-    <div class="bg-white rounded-3xl p-6 border border-blue-100 soft-shadow">
-      <div class="mb-5">
-        <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">Persiapan Pekan 14</span>
-        <h2 class="text-xl font-black text-slate-900 mt-1">
-          Kamus Endpoint API & Kueri SQL Data Warehouse (JSON Backend)
-        </h2>
-        <p class="text-xs text-slate-500">
-          Setiap visual mengambil data dari database target <code>adventureworks_dw</code> melalui backend kecil yang mengembalikan format JSON.
-        </p>
-      </div>
-
-      <div class="space-y-4">
-        
-        <!-- Endpoint 1: KPI Summary -->
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
-          <div class="flex justify-between items-center mb-1.5 flex-wrap gap-2">
-            <span class="font-bold text-slate-900">1. Endpoint: <code>GET /api/kpi/summary</code> (Menjawab KPI P1, P3, P5)</span>
-            <span class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 font-bold text-[10px]">JSON Output</span>
-          </div>
-          <pre class="bg-slate-900 text-emerald-400 p-3 rounded-xl overflow-x-auto font-mono text-[11px] mb-2">
+            <pre class="bg-[#111318] text-[#F5F9FF] p-3.5 rounded-xl overflow-x-auto font-mono text-[11px] mb-2 leading-relaxed">
 SELECT 
-    ROUND(SUM(line_total), 2) AS total_sales,
-    COUNT(DISTINCT sales_order_id) AS total_orders,
-    SUM(order_qty) AS total_units,
-    ROUND(SUM(line_total) / COUNT(DISTINCT sales_order_id), 2) AS aov,
-    ROUND(SUM(unit_price_discount * order_qty * unit_price), 2) AS total_discount
-FROM fact_online_sales;
-          </pre>
-          <span class="text-slate-500">Format Return: <code>{"total_sales": 29358677.22, "total_orders": 27659, "total_units": 60398, "aov": 1061.45, "total_discount": 84320.12}</code></span>
-        </div>
-
-        <!-- Endpoint 2: Monthly Trend -->
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
-          <div class="flex justify-between items-center mb-1.5 flex-wrap gap-2">
-            <span class="font-bold text-slate-900">2. Endpoint: <code>GET /api/trends/monthly</code> (Menjawab Line Chart P1)</span>
-            <span class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 font-bold text-[10px]">JSON Output</span>
+    ROUND(SUM(f.line_total), 2) AS total_sales,
+    COUNT(DISTINCT f.sales_order_id) AS total_orders,
+    COUNT(DISTINCT f.customer_key) AS active_customers,
+    SUM(f.order_qty) AS total_units,
+    ROUND(SUM(f.line_total) / COUNT(DISTINCT f.sales_order_id), 2) AS aov,
+    ROUND(SUM(f.line_total * p.discount_pct), 2) AS est_promo_discount
+FROM fact_online_sales f
+JOIN dim_promotion p ON f.promotion_key = p.promotion_key;</pre>
+            <span class="text-[#64748B] block">Output Snapshot: <code>{"total_sales": 29358677.22, "total_orders": 27659, "active_customers": 18484, "total_units": 60398, "aov": 1061.45, "est_promo_discount": 48530.24}</code></span>
           </div>
-          <pre class="bg-slate-900 text-emerald-400 p-3 rounded-xl overflow-x-auto font-mono text-[11px] mb-2">
+
+          <!-- Endpoint 2: Monthly Trend -->
+          <div class="p-4 rounded-2xl bg-white border border-[#E1EEFF] text-[12px]">
+            <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
+              <span class="font-bold text-[#111318]">2. Endpoint: <code>GET /api/trends/monthly</code> (Line Chart P1)</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-[#C9DFFF] text-[#111318] font-bold text-[11px]">JSON Spec</span>
+            </div>
+            <pre class="bg-[#111318] text-[#F5F9FF] p-3.5 rounded-xl overflow-x-auto font-mono text-[11px] mb-2 leading-relaxed">
 SELECT 
-    d.year, d.month_number, d.month_name,
+    d.tahun, d.bulan, d.nama_bulan,
     COUNT(DISTINCT f.sales_order_id) AS monthly_orders,
     SUM(f.order_qty) AS monthly_units,
     ROUND(SUM(f.line_total), 2) AS monthly_sales
 FROM fact_online_sales f
-JOIN dim_date d ON f.date_key = d.date_key
-GROUP BY d.year, d.month_number, d.month_name
-ORDER BY d.year, d.month_number;
-          </pre>
-        </div>
-
-        <!-- Endpoint 3: Products & Categories -->
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
-          <div class="flex justify-between items-center mb-1.5 flex-wrap gap-2">
-            <span class="font-bold text-slate-900">3. Endpoint: <code>GET /api/products/top</code> (Menjawab Bar Chart P2)</span>
-            <span class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 font-bold text-[10px]">JSON Output</span>
+JOIN dim_date d ON f.tanggal_key = d.tanggal_key
+GROUP BY d.tahun, d.bulan, d.nama_bulan
+ORDER BY d.tahun, d.bulan;</pre>
+            <span class="text-[#64748B] block">Menghasilkan 38 baris deret waktu bulanan (Mei 2011 – Juni 2014).</span>
           </div>
-          <pre class="bg-slate-900 text-emerald-400 p-3 rounded-xl overflow-x-auto font-mono text-[11px] mb-2">
+
+          <!-- Endpoint 3: Products & Categories -->
+          <div class="p-4 rounded-2xl bg-white border border-[#E1EEFF] text-[12px]">
+            <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
+              <span class="font-bold text-[#111318]">3. Endpoint: <code>GET /api/products/top</code> (Bar Chart P2)</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-[#C9DFFF] text-[#111318] font-bold text-[11px]">JSON Spec</span>
+            </div>
+            <pre class="bg-[#111318] text-[#F5F9FF] p-3.5 rounded-xl overflow-x-auto font-mono text-[11px] leading-relaxed">
 SELECT 
     p.category_name, p.product_name,
     SUM(f.order_qty) AS units_sold,
     ROUND(SUM(f.line_total), 2) AS sales_amount
 FROM fact_online_sales f
 JOIN dim_product p ON f.product_key = p.product_key
-GROUP BY p.category_name, p.product_name
-ORDER BY sales_amount DESC LIMIT 10;
-          </pre>
-        </div>
-
-        <!-- Endpoint 4: Regions -->
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
-          <div class="flex justify-between items-center mb-1.5 flex-wrap gap-2">
-            <span class="font-bold text-slate-900">4. Endpoint: <code>GET /api/regions/sales</code> (Menjawab Bar Chart P4)</span>
-            <span class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 font-bold text-[10px]">JSON Output</span>
+GROUP BY p.product_key, p.category_name, p.product_name
+ORDER BY sales_amount DESC LIMIT 10;</pre>
           </div>
-          <pre class="bg-slate-900 text-emerald-400 p-3 rounded-xl overflow-x-auto font-mono text-[11px] mb-2">
+
+          <!-- Endpoint 4: Regions -->
+          <div class="p-4 rounded-2xl bg-white border border-[#E1EEFF] text-[12px]">
+            <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
+              <span class="font-bold text-[#111318]">4. Endpoint: <code>GET /api/regions/sales</code> (Bar Chart P4)</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-[#C9DFFF] text-[#111318] font-bold text-[11px]">JSON Spec</span>
+            </div>
+            <pre class="bg-[#111318] text-[#F5F9FF] p-3.5 rounded-xl overflow-x-auto font-mono text-[11px] leading-relaxed">
 SELECT 
     t.territory_group, t.country_code, t.territory_name,
     COUNT(DISTINCT f.sales_order_id) AS distinct_orders,
@@ -779,105 +903,140 @@ SELECT
 FROM fact_online_sales f
 JOIN dim_territory t ON f.territory_key = t.territory_key
 GROUP BY t.territory_group, t.country_code, t.territory_name
-ORDER BY sales_amount DESC;
-          </pre>
-        </div>
+ORDER BY sales_amount DESC;</pre>
+          </div>
 
+          <!-- Endpoint 5: Promotions -->
+          <div class="p-4 rounded-2xl bg-white border border-[#E1EEFF] text-[12px]">
+            <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
+              <span class="font-bold text-[#111318]">5. Endpoint: <code>GET /api/promotions/details</code> (Tabel P5)</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-[#C9DFFF] text-[#111318] font-bold text-[11px]">JSON Spec</span>
+            </div>
+            <pre class="bg-[#111318] text-[#F5F9FF] p-3.5 rounded-xl overflow-x-auto font-mono text-[11px] leading-relaxed">
+SELECT 
+    p.description, p.discount_pct,
+    COUNT(*) AS items_sold,
+    ROUND(SUM(f.line_total), 2) AS sales,
+    ROUND(SUM(f.line_total * p.discount_pct), 2) AS est_discount
+FROM fact_online_sales f
+JOIN dim_promotion p ON f.promotion_key = p.promotion_key
+GROUP BY p.promotion_key, p.description, p.discount_pct
+ORDER BY sales DESC;</pre>
+          </div>
+
+          <!-- Endpoint 6 & 7: Currency & Shipping -->
+          <div class="p-4 rounded-2xl bg-white border border-[#E1EEFF] text-[12px]">
+            <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
+              <span class="font-bold text-[#111318]">6 &amp; 7. Endpoint: <code>/api/currency/quality</code> &amp; <code>/api/shipping</code> (P6, P7)</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-[#C9DFFF] text-[#111318] font-bold text-[11px]">JSON Spec</span>
+            </div>
+            <pre class="bg-[#111318] text-[#F5F9FF] p-3.5 rounded-xl overflow-x-auto font-mono text-[11px] leading-relaxed">
+-- P6: Kelengkapan Kurs & Valuta
+SELECT c.to_currency_code, COUNT(DISTINCT f.sales_order_id) AS orders_count,
+       ROUND(SUM(f.line_total), 2) AS sales_amount
+FROM fact_online_sales f JOIN dim_currency c ON f.currency_key = c.currency_key
+GROUP BY c.to_currency_code ORDER BY orders_count DESC;
+
+-- P7: Distribusi Metode Kirim
+SELECT s.ship_method_name, COUNT(DISTINCT f.sales_order_id) AS total_orders
+FROM fact_online_sales f JOIN dim_ship_method s ON f.ship_method_key = s.ship_method_key
+GROUP BY s.ship_method_name ORDER BY total_orders DESC;</pre>
+          </div>
+
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- Footer Inside Main Canvas -->
+    <footer class="mt-8 pt-5 border-t border-[#E8F1FD] flex flex-col sm:flex-row items-center justify-between gap-2 text-[12px] text-[#64748B]">
+      <span><strong>AdventureWorks.</strong> Soft Geometric Blue Analytics • Kelompok 2 Data Warehouse</span>
+      <span>Semester Ganjil 2026/2027 • Sistem Informasi UPN "Veteran" Jawa Timur</span>
+    </footer>
+
+  </div>
 
   <!-- ========================================== -->
   <!-- MODAL DETAIL KUERI PER PERTANYAAN BISNIS   -->
   <!-- ========================================== -->
-  <div id="query-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-lg w-full p-6 soft-shadow border border-blue-100 relative">
-      <button onclick="closeQueryModal()" class="absolute right-4 top-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center">✕</button>
+  <div id="query-modal" class="fixed inset-0 bg-[#111318]/55 z-50 flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 border border-[#DCEBFE] shadow-xl relative">
+      <button onclick="closeQueryModal()" aria-label="Tutup Modal" class="absolute right-4 top-4 w-8 h-8 rounded-full bg-[#111318] hover:bg-[#2379F5] text-white font-bold flex items-center justify-center transition-colors duration-150">✕</button>
       <div id="modal-body">
         <!-- Injected via JavaScript -->
       </div>
     </div>
   </div>
 
-  <footer class="max-w-7xl mx-auto mt-8 text-center text-xs text-slate-400 pb-8">
-    <p>Wireframe Dashboard Penjualan Online • Sesuai Prinsip Visualisasi Data & Bus Matrix Kelompok 2</p>
-    <p class="mt-1">Semester Ganjil 2026/2027 • UPN "Veteran" Jawa Timur</p>
-  </footer>
-
-  <!-- Interactive JavaScript logic -->
+  <!-- Interactive JavaScript logic with real DW slices -->
   <script>
+    let currentYear = 'ALL';
+
+    // 80 irisan hasil kueri aktual dari sql/adventureworks_dw.sql: [sales, orders, customers, units, est_discount]
+    const DW_SLICES = {"ALL|ALL|ALL": [29358677.22, 27659, 18484, 60398, 48530.24], "ALL|ALL|Bikes": [28318144.65, 15205, 9132, 15205, 48364.93], "ALL|ALL|Accessories": [700759.96, 18208, 15114, 36092, 38.61], "ALL|ALL|Clothing": [339772.61, 7461, 6852, 9101, 126.7], "ALL|NA|ALL": [11367634.37, 12942, 9390, 28964, 19626.11], "ALL|NA|Bikes": [10821161.92, 5831, 4225, 5831, 19525.58], "ALL|NA|Accessories": [359799.92, 9145, 7492, 18414, 19.83], "ALL|NA|Clothing": [186672.53, 3754, 3382, 4719, 80.69], "ALL|PAC|ALL": [9061000.58, 6718, 3591, 13345, 12376.16], "ALL|PAC|Bikes": [8852050.0, 4472, 2155, 4472, 12353.01], "ALL|PAC|Accessories": [138690.63, 3671, 2905, 7004, 7.1], "ALL|PAC|Clothing": [70259.95, 1554, 1436, 1869, 16.05], "ALL|EUR|ALL": [8930042.26, 7999, 5503, 18089, 16527.97], "ALL|EUR|Bikes": [8644932.72, 4902, 2752, 4902, 16486.34], "ALL|EUR|Accessories": [202269.41, 5392, 4717, 10674, 11.68], "ALL|EUR|Clothing": [82840.13, 2153, 2034, 2513, 29.95], "2011|ALL|ALL": [3863120.21, 1201, 1201, 1201, 0.0], "2011|ALL|Bikes": [3863120.21, 1201, 1201, 1201, 0.0], "2011|ALL|Accessories": [0, 0, 0, 0, 0], "2011|ALL|Clothing": [0, 0, 0, 0, 0], "2011|NA|ALL": [1507396.99, 470, 470, 470, 0.0], "2011|NA|Bikes": [1507396.99, 470, 470, 470, 0.0], "2011|NA|Accessories": [0, 0, 0, 0, 0], "2011|NA|Clothing": [0, 0, 0, 0, 0], "2011|PAC|ALL": [1532156.31, 463, 463, 463, 0.0], "2011|PAC|Bikes": [1532156.31, 463, 463, 463, 0.0], "2011|PAC|Accessories": [0, 0, 0, 0, 0], "2011|PAC|Clothing": [0, 0, 0, 0, 0], "2011|EUR|ALL": [823566.92, 268, 268, 268, 0.0], "2011|EUR|Bikes": [823566.92, 268, 268, 268, 0.0], "2011|EUR|Accessories": [0, 0, 0, 0, 0], "2011|EUR|Clothing": [0, 0, 0, 0, 0], "2012|ALL|ALL": [6390599.95, 2743, 2743, 2743, 9270.21], "2012|ALL|Bikes": [6390599.95, 2743, 2743, 2743, 9270.21], "2012|ALL|Accessories": [0, 0, 0, 0, 0], "2012|ALL|Clothing": [0, 0, 0, 0, 0], "2012|NA|ALL": [2611291.09, 1080, 1080, 1080, 3414.26], "2012|NA|Bikes": [2611291.09, 1080, 1080, 1080, 3414.26], "2012|NA|Accessories": [0, 0, 0, 0, 0], "2012|NA|Clothing": [0, 0, 0, 0, 0], "2012|PAC|ALL": [2124783.18, 892, 892, 892, 3266.1], "2012|PAC|Bikes": [2124783.18, 892, 892, 892, 3266.1], "2012|PAC|Accessories": [0, 0, 0, 0, 0], "2012|PAC|Clothing": [0, 0, 0, 0, 0], "2012|EUR|ALL": [1654525.67, 771, 771, 771, 2589.85], "2012|EUR|Bikes": [1654525.67, 771, 771, 771, 2589.85], "2012|EUR|Accessories": [0, 0, 0, 0, 0], "2012|EUR|Clothing": [0, 0, 0, 0, 0], "2013|ALL|ALL": [10732127.33, 12584, 10541, 28959, 27829.4], "2013|ALL|Bikes": [10210873.92, 6268, 5286, 6268, 27737.3], "2013|ALL|Accessories": [352909.43, 9125, 8077, 18181, 21.16], "2013|ALL|Clothing": [168343.98, 3674, 3457, 4510, 70.94], "2013|NA|ALL": [3806138.65, 5906, 4990, 13893, 11469.87], "2013|NA|Bikes": [3533601.89, 2287, 2110, 2287, 11413.83], "2013|NA|Accessories": [183030.6, 4595, 3985, 9329, 11.18], "2013|NA|Clothing": [89506.16, 1815, 1673, 2277, 44.87], "2013|PAC|ALL": [3243352.09, 2937, 2428, 6237, 6342.6], "2013|PAC|Bikes": [3139580.42, 1813, 1525, 1813, 6332.43], "2013|PAC|Accessories": [68821.99, 1823, 1624, 3490, 3.89], "2013|PAC|Clothing": [34949.68, 770, 740, 934, 6.28], "2013|EUR|ALL": [3682636.6, 3741, 3123, 8829, 10016.92], "2013|EUR|Bikes": [3537691.62, 2168, 1651, 2168, 9991.04], "2013|EUR|Accessories": [101056.84, 2707, 2468, 5362, 6.09], "2013|EUR|Clothing": [43888.14, 1089, 1044, 1299, 19.79], "2014|ALL|ALL": [8372829.73, 11131, 9898, 27495, 11430.63], "2014|ALL|Bikes": [7853550.57, 4993, 4753, 4993, 11357.42], "2014|ALL|Accessories": [347850.53, 9083, 8160, 17911, 17.45], "2014|ALL|Clothing": [171428.63, 3787, 3604, 4591, 55.76], "2014|NA|ALL": [3442807.65, 5486, 4803, 13521, 4741.97], "2014|NA|Bikes": [3168871.96, 1994, 1986, 1994, 4697.49], "2014|NA|Accessories": [176769.32, 4550, 3986, 9085, 8.66], "2014|NA|Clothing": [97166.37, 1939, 1820, 2442, 35.83], "2014|PAC|ALL": [2160709.01, 2426, 2117, 5753, 2767.46], "2014|PAC|Bikes": [2055530.1, 1304, 1225, 1304, 2754.48], "2014|PAC|Accessories": [69868.64, 1848, 1646, 3514, 3.21], "2014|PAC|Clothing": [35310.27, 784, 753, 935, 9.78], "2014|EUR|ALL": [2769313.07, 3219, 2978, 8221, 3921.2], "2014|EUR|Bikes": [2629148.51, 1695, 1542, 1695, 3905.45], "2014|EUR|Accessories": [101212.57, 2685, 2528, 5312, 5.59], "2014|EUR|Clothing": [38951.99, 1064, 1031, 1214, 10.16]};
+
+    function formatIdNumber(num, decimals = 0) {
+      return num.toLocaleString('id-ID', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    }
+
     function navigateToPage(pageId) {
       document.getElementById('view-page-1').classList.add('hidden');
       document.getElementById('view-page-2').classList.add('hidden');
       document.getElementById('view-page-spec').classList.add('hidden');
 
-      document.getElementById('nav-page-1').className = "px-4 py-2 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/80 transition-all duration-200";
-      document.getElementById('nav-page-2').className = "px-4 py-2 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/80 transition-all duration-200";
-      document.getElementById('nav-page-spec').className = "px-4 py-2 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/80 transition-all duration-200";
+      const inactiveClass = "px-4 py-2 rounded-full text-[13px] font-semibold text-[#64748B] hover:text-[#111318] transition-colors duration-150";
+      const activeClass = "active-page px-5 py-2 rounded-full text-[13px] font-bold transition-colors duration-150";
+
+      document.getElementById('nav-page-1').className = inactiveClass;
+      document.getElementById('nav-page-2').className = inactiveClass;
+      document.getElementById('nav-page-spec').className = inactiveClass;
 
       if (pageId === 'page-1') {
         document.getElementById('view-page-1').classList.remove('hidden');
-        document.getElementById('nav-page-1').className = "active-page px-4 py-2 rounded-full text-xs font-bold transition-all duration-200";
+        document.getElementById('nav-page-1').className = activeClass;
       } else if (pageId === 'page-2') {
         document.getElementById('view-page-2').classList.remove('hidden');
-        document.getElementById('nav-page-2').className = "active-page px-4 py-2 rounded-full text-xs font-bold transition-all duration-200";
+        document.getElementById('nav-page-2').className = activeClass;
       } else if (pageId === 'page-spec') {
         document.getElementById('view-page-spec').classList.remove('hidden');
-        document.getElementById('nav-page-spec').className = "active-page px-4 py-2 rounded-full text-xs font-bold transition-all duration-200";
+        document.getElementById('nav-page-spec').className = activeClass;
       }
     }
 
     function applyYearFilter(yr) {
+      currentYear = yr;
       ['all', '2011', '2012', '2013', '2014'].forEach(y => {
         const btn = document.getElementById('flt-' + y);
         if (y === yr.toLowerCase()) {
-          btn.className = "px-2.5 py-0.5 rounded-lg font-bold bg-blue-600 text-white shadow-xs transition";
+          btn.className = "filter-control px-3 py-1 rounded-lg font-bold bg-[#2379F5] text-white transition-colors duration-150";
         } else {
-          btn.className = "px-2.5 py-0.5 rounded-lg font-medium text-slate-600 hover:bg-white transition";
+          btn.className = "filter-control px-2.5 py-1 rounded-lg font-semibold text-[#64748B] hover:text-[#111318] transition-colors duration-150";
         }
       });
-
-      const sSales = document.getElementById('val-kpi-sales');
-      const sOrders = document.getElementById('val-kpi-orders');
-      const sCust = document.getElementById('val-kpi-customers');
-      const sDisc = document.getElementById('val-kpi-discount');
-
-      if (yr === 'ALL') {
-        sSales.innerText = "$29.358.677";
-        sOrders.innerText = "27.659";
-        sCust.innerText = "18.484";
-        sDisc.innerText = "$84.320,12";
-      } else if (yr === '2011') {
-        sSales.innerText = "$3.863.098";
-        sOrders.innerText = "1.069";
-        sCust.innerText = "1.069";
-        sDisc.innerText = "$0,00";
-      } else if (yr === '2012') {
-        sSales.innerText = "$5.989.949";
-        sOrders.innerText = "2.686";
-        sCust.innerText = "2.686";
-        sDisc.innerText = "$0,00";
-      } else if (yr === '2013') {
-        sSales.innerText = "$10.147.289";
-        sOrders.innerText = "14.004";
-        sCust.innerText = "11.230";
-        sDisc.innerText = "$42.150,00";
-      } else if (yr === '2014') {
-        sSales.innerText = "$9.358.341";
-        sOrders.innerText = "9.900";
-        sCust.innerText = "8.410";
-        sDisc.innerText = "$42.170,12";
-      }
+      triggerFilterChange();
     }
 
     function resetGlobalFilters() {
-      applyYearFilter('ALL');
       document.getElementById('flt-region').value = 'ALL';
       document.getElementById('flt-category').value = 'ALL';
+      applyYearFilter('ALL');
     }
 
     function triggerFilterChange() {
-      // simulated filter event
+      const reg = document.getElementById('flt-region').value || 'ALL';
+      const cat = document.getElementById('flt-category').value || 'ALL';
+      const key = `${currentYear}|${reg}|${cat}`;
+      const [sales, orders, cust, units, disc] = DW_SLICES[key] || [0, 0, 0, 0, 0];
+
+      document.getElementById('val-kpi-sales').innerText = '$' + formatIdNumber(sales, 2);
+      document.getElementById('val-kpi-orders').innerText = formatIdNumber(orders, 0);
+      document.getElementById('val-kpi-customers').innerText = formatIdNumber(cust, 0);
+      document.getElementById('val-kpi-discount').innerText = '$' + formatIdNumber(disc, 2);
+
+      document.getElementById('val-kpi-units-badge').innerText = formatIdNumber(units, 0) + ' Unit';
+      const aov = orders > 0 ? (sales / orders) : 0;
+      document.getElementById('val-kpi-aov-badge').innerText = 'AOV: $' + formatIdNumber(aov, 2);
+      const freq = cust > 0 ? (orders / cust) : 0;
+      document.getElementById('val-kpi-freq-badge').innerText = formatIdNumber(freq, 2) + ' Pesanan';
     }
 
     function showQueryModal(pId) {
@@ -886,51 +1045,51 @@ ORDER BY sales_amount DESC;
 
       const queries = {
         'P1': {
-          title: 'Pertanyaan Bisnis 1 (Line Chart Tren)',
+          title: 'Pertanyaan Bisnis 1 (Line Chart Tren Bulanan)',
           q: 'Bagaimana tren nilai penjualan online setiap bulan?',
           vis: 'Line chart tren bulanan (P1)',
-          sql: 'SELECT d.year, d.month_number, ROUND(SUM(f.line_total), 2) AS sales_amount, COUNT(DISTINCT f.sales_order_id) AS total_orders FROM fact_online_sales f JOIN dim_date d ON f.date_key = d.date_key GROUP BY d.year, d.month_number ORDER BY d.year, d.month_number;'
+          sql: 'SELECT d.tahun, d.bulan, d.nama_bulan, ROUND(SUM(f.line_total), 2) AS sales_amount, COUNT(DISTINCT f.sales_order_id) AS total_orders, SUM(f.order_qty) AS total_units FROM fact_online_sales f JOIN dim_date d ON f.tanggal_key = d.tanggal_key GROUP BY d.tahun, d.bulan, d.nama_bulan ORDER BY d.tahun, d.bulan;'
         },
         'P2': {
           title: 'Pertanyaan Bisnis 2 (Bar Chart Produk & Kategori)',
           q: 'Kategori produk mana yang penjualannya paling besar?',
-          vis: 'Bar chart kategori & bar horizontal 10 produk terlaris (P2)',
-          sql: 'SELECT p.category_name, ROUND(SUM(f.line_total), 2) AS category_sales FROM fact_online_sales f JOIN dim_product p ON f.product_key = p.product_key GROUP BY p.category_name ORDER BY category_sales DESC;'
+          vis: 'Bar chart kategori & top produk terlaris (P2)',
+          sql: 'SELECT p.category_name, COUNT(DISTINCT p.product_id) AS products, SUM(f.order_qty) AS units_sold, ROUND(SUM(f.line_total), 2) AS category_sales FROM fact_online_sales f JOIN dim_product p ON f.product_key = p.product_key GROUP BY p.category_name ORDER BY category_sales DESC;'
         },
         'P4': {
           title: 'Pertanyaan Bisnis 4 (Bar Chart Wilayah)',
           q: 'Wilayah mana yang menghasilkan penjualan online tertinggi?',
           vis: 'Bar chart penjualan per wilayah (P4)',
-          sql: 'SELECT t.territory_group, t.country_code, ROUND(SUM(f.line_total), 2) AS region_sales FROM fact_online_sales f JOIN dim_territory t ON f.territory_key = t.territory_key GROUP BY t.territory_group, t.country_code ORDER BY region_sales DESC;'
+          sql: 'SELECT t.territory_group, t.country_code, t.territory_name, COUNT(DISTINCT f.sales_order_id) AS total_orders, ROUND(SUM(f.line_total), 2) AS region_sales FROM fact_online_sales f JOIN dim_territory t ON f.territory_key = t.territory_key GROUP BY t.territory_group, t.country_code, t.territory_name ORDER BY region_sales DESC;'
         },
         'P5': {
           title: 'Pertanyaan Bisnis 5 (Tabel Promosi & Diskon)',
           q: 'Bagaimana rincian promosi dan nilai diskon yang terealisasi?',
-          vis: 'Tabel rincian promosi dan nilai diskon (P5)',
-          sql: 'SELECT p.description, COUNT(*) AS items_sold, ROUND(SUM(f.line_total), 2) AS sales, ROUND(SUM(f.unit_price_discount * f.order_qty * f.unit_price), 2) AS discount FROM fact_online_sales f JOIN dim_promotion p ON f.promotion_key = p.promotion_key GROUP BY p.description;'
+          vis: 'Tabel rincian promosi dan estimasi diskon (P5)',
+          sql: 'SELECT p.description, p.discount_pct, COUNT(*) AS items_sold, ROUND(SUM(f.line_total), 2) AS sales, ROUND(SUM(f.line_total * p.discount_pct), 2) AS est_discount FROM fact_online_sales f JOIN dim_promotion p ON f.promotion_key = p.promotion_key GROUP BY p.promotion_key, p.description, p.discount_pct ORDER BY sales DESC;'
         },
         'P6': {
           title: 'Pertanyaan Bisnis 6 (Kelengkapan Kurs & Mata Uang)',
           q: 'Berapa transaksi tanpa referensi kurs & distribusi mata uangnya?',
           vis: 'Quality split bar & tabel mata uang (P6)',
-          sql: 'SELECT c.to_currency_code, COUNT(DISTINCT f.sales_order_id) AS orders_count FROM fact_online_sales f JOIN dim_currency c ON f.currency_key = c.currency_key GROUP BY c.to_currency_code;'
+          sql: 'SELECT CASE WHEN c.currency_rate_id = -1 THEN \'Tanpa Kurs (Default USD)\' ELSE \'Dengan Kurs\' END AS status_kurs, c.to_currency_code, COUNT(DISTINCT f.sales_order_id) AS orders_count, ROUND(SUM(f.line_total), 2) AS sales_amount FROM fact_online_sales f JOIN dim_currency c ON f.currency_key = c.currency_key GROUP BY status_kurs, c.to_currency_code ORDER BY orders_count DESC;'
         },
         'P7': {
           title: 'Pertanyaan Bisnis 7 (Metode Pengiriman)',
           q: 'Metode kirim apa paling sering dipakai oleh pesanan online?',
           vis: 'Bar chart distribusi metode pengiriman (P7)',
-          sql: 'SELECT s.ship_method_name, COUNT(DISTINCT f.sales_order_id) AS total_orders FROM fact_online_sales f JOIN dim_ship_method s ON f.ship_method_key = s.ship_method_key GROUP BY s.ship_method_name ORDER BY total_orders DESC;'
+          sql: 'SELECT s.ship_method_id, s.ship_method_name, COUNT(DISTINCT f.sales_order_id) AS total_orders, COUNT(*) AS detail_rows, ROUND(SUM(f.line_total), 2) AS sales_amount FROM fact_online_sales f JOIN dim_ship_method s ON f.ship_method_key = s.ship_method_key GROUP BY s.ship_method_id, s.ship_method_name ORDER BY total_orders DESC;'
         }
       };
 
       const item = queries[pId] || queries['P1'];
       body.innerHTML = `
-        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700">${item.title}</span>
-        <h4 class="text-sm font-bold text-slate-900 mt-2">${item.q}</h4>
-        <p class="text-xs text-slate-500 mt-1">Jenis Visual: <strong>${item.vis}</strong></p>
-        <div class="mt-3">
-          <span class="text-[11px] font-bold text-slate-700 block mb-1">Kueri SQL Backend (Pekan 14):</span>
-          <pre class="bg-slate-900 text-emerald-400 p-3 rounded-xl overflow-x-auto font-mono text-[11px]">${item.sql}</pre>
+        <span class="px-3 py-1 rounded-full text-[11px] font-bold bg-[#C9DFFF] text-[#111318]">${item.title}</span>
+        <h4 class="text-[16px] font-extrabold text-[#111318] mt-3">${item.q}</h4>
+        <p class="text-[12px] text-[#64748B] mt-1">Komponen Visual: <strong class="text-[#17324F]">${item.vis}</strong></p>
+        <div class="mt-3.5">
+          <span class="text-[12px] font-bold text-[#111318] block mb-1.5">Kueri SQL Data Warehouse (Skema adventureworks_dw):</span>
+          <pre class="bg-[#111318] text-[#F5F9FF] p-3.5 rounded-xl overflow-x-auto font-mono text-[11px] leading-relaxed">${item.sql}</pre>
         </div>
       `;
       modal.classList.remove('hidden');
