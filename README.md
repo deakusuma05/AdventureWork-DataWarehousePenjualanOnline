@@ -189,12 +189,19 @@ adventureworks-online-sales-dw/
 ├── docs/
 │   ├── bus-matrix.md
 │   ├── bus-matrix.png
+│   ├── dashboard-improvement-report.md
+│   ├── desain-cube-online-sales-bus-matrix-v1.1.xlsx
 │   ├── grain.md
+│   ├── mapping.md
 │   ├── piagam-proyek.md
 │   ├── risiko-awal.md
-│   └── star-schema-v1.png
+│   ├── scd-strategy.md
+│   ├── star-schema-v1.png
+│   ├── Star-Schema-V2.png
+│   └── wireframe-dashboard.md
 │
 ├── sql/
+│   ├── dump_adventureworks_dw.sql
 │   └── profiling/
 │       ├── 07-penjualan-online-per-bulan.sql
 │       ├── 08-profiling-null-online-sales.sql
@@ -221,19 +228,29 @@ adventureworks-online-sales-dw/
 │       ├── 07-penjualan-online-per-bulan.png
 │       ├── 08-profiling-null-online-sales.png
 │       ├── 09-profiling-currency-online.png
-│       └── 10-profiling-rentang-tanggal.png
+│       ├── 10-profiling-rentang-tanggal.png
+│       └── validation-fact-online-sales.png
 │
 ├── laporan/
-│   └── pekan-10.md
+│   ├── pekan-10.md
+│   └── pekan-11.md
 │
 ├── etl/
-│   └── .gitkeep
+│   ├── 01-dim-date.ktr .. 08-fact-online-sales.ktr
+│   ├── online-sales-etl.kjb
+│   ├── documentation/
+│   │   ├── 00-job-orchestration-success.png
+│   │   └── 00-job-orchestration-success-new.png
+│   ├── jobs/
+│   └── transformation/
 │
 ├── olap/
 │   └── .gitkeep
 │
 └── dashboard/
-    └── .gitkeep
+    ├── wireframe-dashboard.html
+    ├── wireframe dashboard.png
+    └── wireframe dashboard 2.png
 ```
 Struktur dapat disesuaikan dengan ketentuan resmi proyek.
 

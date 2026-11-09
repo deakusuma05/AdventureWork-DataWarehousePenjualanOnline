@@ -7,8 +7,8 @@
 **Periode:** Semester Ganjil 2026/2027  
 **Proses bisnis:** Penjualan Online (*Online Sales*)  
 **Database sumber:** `adventureworks` (MySQL/MariaDB melalui XAMPP dan phpMyAdmin)  
-**Project sponsor:** Dosen pengampu mata kuliah (nama diisi tim)  
-**Status dokumen:** Draf Steering Review; lampiran dan persetujuan yang belum tersedia harus dilengkapi tim.
+**Project sponsor:** Dosen pengampu mata kuliah  
+**Status dokumen:** Final — Steering Review Pekan 10 Selesai (Seluruh artefak Pekan 9–10 telah lengkap dan terverifikasi).
 
 ## 1. Tim dan Pembagian Peran
 
@@ -187,20 +187,20 @@ Ketujuh dimensi merupakan **kandidat conformed dimension** sesuai bus matrix kel
 
 Lampiran: `docs/risiko-awal.md`.
 
-## 9. Progres Checklist Pekan 9
+## 9. Progres Checklist Pekan 9–10
 
 | Kebutuhan tugas | Status saat penyusunan | Bukti/aksi lanjutan |
 |---|---|---|
-| Repositori dan undangan dosen | **Repositori aktif; menunggu bukti undangan** | Tautan repo, screenshot anggota/undangan di `bukti/github/` |
+| Repositori dan undangan dosen | **Selesai** | Repositori GitHub aktif & terintegrasi (`bukti/github/`) |
 | Piagam proyek dan peran | **Selesai** | `docs/piagam-proyek.md` |
 | Database AdventureWorks berjalan | **Terverifikasi** | `bukti/database/01-verifikasi-database.png` |
-| ≥5 pertanyaan bisnis | **7 pertanyaan disusun** | Tercantum pada `docs/piagam-proyek.md`, `README.md`, & Bagian 4 laporan ini |
+| ≥5 pertanyaan bisnis | **Selesai (7 pertanyaan)** | Tercantum pada `docs/piagam-proyek.md`, `README.md`, & Bagian 4 laporan ini |
 | Profil data tersimpan | **Lengkap (SQL, CSV, PNG)** | `sql/profiling/`, `hasil-profiling/`, `bukti/database/` |
 | Grain satu kalimat | **Selesai** | `docs/grain.md` |
-| Star Schema v1 | **Selesai** | `docs/star-schema-v1.png` |
+| Star Schema v1 & v2 | **Selesai** | `docs/star-schema-v1.png`, `docs/Star-Schema-V2.png` |
 | Bus matrix tim | **Selesai** | `docs/bus-matrix.md`, `docs/bus-matrix.png` |
-| ≥3 risiko beserta mitigasi | **Enam risiko disusun** | `docs/risiko-awal.md` |
-| Laporan pekan 10 | **Tersedia** | `laporan/pekan-10.md` |
+| ≥3 risiko beserta mitigasi | **Selesai (6 risiko)** | `docs/risiko-awal.md` |
+| Laporan pekan 10 | **Selesai** | `laporan/pekan-10.md` |
 
 ## 10. Hambatan dan Keputusan
 
