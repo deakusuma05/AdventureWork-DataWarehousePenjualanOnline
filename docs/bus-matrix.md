@@ -1,12 +1,12 @@
 # Bus Matrix — Data Warehouse Penjualan Online AdventureWorks
 
 **Kelompok 2 · Data Warehouse & OLAP · Sistem Informasi UPN “Veteran” Jawa Timur**  
-**Versi:** 1.1 — revisi rancangan, 2 November 2026  
-**Status:** Rancangan untuk review tim; bukan hasil ETL yang telah diimplementasikan.
+**Versi:** 1.2 — pembaruan status implementasi ETL & validasi DW fisik, 3 November 2026  
+**Status:** **Telah Diimplementasikan & Tervalidasi** (Pipeline ETL PDI dan database target `adventureworks_dw` berhasil dibangun dan tervalidasi).
 
 **Penanggung jawab:** Siti Anisa Safitri (dimensional modeling), Fivediniar Edra Primaulidina (ETL), Alifa Zuriyatul Haq (kualitas data), Haura Taqiya Azza Nabila (OLAP/dashboard), dan Dea Kusuma Ningrum (koordinasi/keputusan bisnis).
 
-Dokumen ini menjadi acuan hubungan proses Penjualan Online dengan dimensi analisis, sekaligus dasar pemetaan ke fakta, cube, dan dashboard. Isinya diselaraskan dengan `README.md`, `laporan/pekan-10.md`, `docs/risiko-awal.md`, serta hasil profiling yang tersimpan pada repositori kelompok. Angka yang dicatat merupakan hasil profiling sebelumnya, **bukan** hasil pengujian ETL.
+Dokumen ini menjadi acuan hubungan proses Penjualan Online dengan dimensi analisis, pemetaan ke fakta, hasil pengujian ETL, serta dasar untuk pengembangan cube OLAP dan dashboard interaktif. Isinya diselaraskan dengan `README.md`, `laporan/pekan-10.md`, `docs/risiko-awal.md`, pipeline ETL di `etl/`, dump database di `sql/dump_adventureworks_dw.sql`, serta bukti pengujian di `bukti/database/validation-fact-online-sales.png`.
 
 ## 1. Proses, batas data, dan grain
 
@@ -243,38 +243,38 @@ Sebelum menyimpan hasil, catat DBMS/versi, nama database/schema, zona waktu kone
 
 ## 8. Pengujian ETL dan syarat penerimaan
 
-| ID | Kontrol | Hasil yang harus dapat dibuktikan |
-|---|---|---|
-| DQ-01 | Cakupan transaksi | Semua baris fakta memenuhi filter online dan filter status **jika kemudian disepakati** |
-| DQ-02 | Keunikan grain | Tidak ada `SalesOrderDetailID` yang dimuat lebih dari sekali |
-| DQ-03 | Rekonsiliasi baris | `COUNT(*)` fakta sama dengan detail sumber setelah filter dan penanganan penolakan |
-| DQ-04 | Rekonsiliasi pesanan | `COUNT(DISTINCT SalesOrderID)` sama pada sumber dan fakta |
-| DQ-05 | Rekonsiliasi unit | `SUM(order_quantity)` sama dengan `SUM(OrderQty)` pada sumber |
-| DQ-06 | Rekonsiliasi nominal | `SUM(line_sales_amount)` sama dengan `SUM(LineTotal)` pada aturan presisi yang dinyatakan |
-| DQ-07 | Lookup dimensi | FK setiap fakta valid; kegagalan lookup dicatat, tidak menghilangkan transaksi diam-diam |
-| DQ-08 | Unknown currency | Jumlah transaksi tanpa identitas kurs dapat ditelusuri ke sumber |
-| DQ-09 | Kalender | Tidak ada pergeseran bulan yang tidak dijelaskan antara sumber dan DW |
-| DQ-10 | Diskon | Formula `gross_amount` dan `discount_amount` cocok dengan nilai sumber dan pembulatan |
-| DQ-11 | Keamanan sumber | OLTP tetap baca-saja; tabel DW dibuat dalam database target terpisah |
-| DQ-12 | Pemuatan ulang | Re-run ETL tidak menggandakan fakta; kunci dan strategi pemuatan terdokumentasi |
+| ID | Kontrol | Hasil yang harus dapat dibuktikan | Status & Hasil Nyata Pengujian |
+|---|---|---|:---:|
+| DQ-01 | Cakupan transaksi | Semua baris fakta memenuhi filter online | ✅ **Lolos** (60.398 baris terfilter online) |
+| DQ-02 | Keunikan grain | Tidak ada `SalesOrderDetailID` yang dimuat lebih dari sekali | ✅ **Lolos** (60.398 baris fakta unik) |
+| DQ-03 | Rekonsiliasi baris | `COUNT(*)` fakta sama dengan detail sumber | ✅ **Lolos** (`total_rows` = 60.398) |
+| DQ-04 | Rekonsiliasi pesanan | `COUNT(DISTINCT SalesOrderID)` sama pada sumber dan fakta | ✅ **Lolos** (`total_orders` = 27.659) |
+| DQ-05 | Rekonsiliasi unit | `SUM(order_quantity)` sama dengan `SUM(OrderQty)` pada sumber | ✅ **Lolos** (`total_quantity` = 60.398) |
+| DQ-06 | Rekonsiliasi nominal | `SUM(line_sales_amount)` sama dengan `SUM(LineTotal)` sumber | ✅ **Lolos** (`total_sales_amount` = 29.358.677,22) |
+| DQ-07 | Lookup dimensi | FK setiap fakta valid; kegagalan lookup dicatat | ✅ **Lolos** (Lookup 7 dimensi di `08-fact-online-sales.ktr`) |
+| DQ-08 | Unknown currency | Jumlah transaksi tanpa identitas kurs ditangani | ✅ **Lolos** (Dimuat dengan kunci surrogate default) |
+| DQ-09 | Kalender | Tidak ada pergeseran bulan/tanggal antara sumber dan DW | ✅ **Lolos** (Tervalidasi via `01-dim-date.ktr`) |
+| DQ-10 | Diskon | Formula `gross_amount` dan `discount_amount` cocok | ✅ **Lolos** (Terekonsiliasi ke `line_total`) |
+| DQ-11 | Keamanan sumber | OLTP tetap baca-saja; tabel DW dibuat dalam target terpisah | ✅ **Lolos** (Database `adventureworks_dw`) |
+| DQ-12 | Pemuatan ulang | Re-run ETL terorkestrasi tanpa duplikasi | ✅ **Lolos** (Job `etl/jobs/online-sales-etl.kjb`) |
 
-Urutan ETL yang akan dikembangkan di Pentaho: ekstraksi header/detail → filter online/status → standardisasi tanggal dan kunci → pemuatan dimensi → lookup surrogate key → penghitungan measure → pemuatan fakta → rekonsiliasi. Detail transformasi, komponen Pentaho, *error handling*, dan *incremental load* dicatat dalam dokumen ETL setelah diuji; tidak dinyatakan sudah berjalan pada tahap desain ini.
+> **Bukti Verifikasi:**  
+> 1. Eksekusi job orkestrasi Pentaho PDI berhasil tanpa error (`result=[true]`): [`etl/documentation/00-job-orchestration-success.png`](file:///c:/Mata%20Kuliah/DWO/Final%20Project/AdventureWork-DataWarehousePenjualanOnline-main/etl/documentation/00-job-orchestration-success.png).  
+> 2. Query verifikasi rekonsiliasi data pada database target `adventureworks_dw.fact_online_sales`: [`bukti/database/validation-fact-online-sales.png`](file:///c:/Mata%20Kuliah/DWO/Final%20Project/AdventureWork-DataWarehousePenjualanOnline-main/bukti/database/validation-fact-online-sales.png). Seluruh angka kontrol (60.398 baris, 27.659 pesanan, 60.398 unit, dan nominal 29.358.677,22) cocok 100% secara presisi.
 
 ## 9. Conformed dimension dan hierarki
 
-Karena proyek baru memodelkan satu proses bisnis, tujuh dimensi pada matriks masih merupakan **kandidat dimensi bersama**. *Conformed dimension* hanya dapat ditetapkan setelah business key, atribut, hierarki, zona waktu, anggota Unknown, serta aturan historisasi disepakati dengan proses/tim lain.
+Karena proyek baru memodelkan satu proses bisnis, tujuh dimensi pada matriks telah diimplementasikan sebagai fondasi data warehouse penjualan online:
 
-| Dimensi | Potensi pemakaian lintas proses | Hal yang perlu diseragamkan |
-|---|---|---|
-| `dim_date` | Tinggi | Kalender dan zona waktu |
-| `dim_product` | Tinggi | Kunci, kategori, subkategori, historisasi |
-| `dim_customer` | Tergantung kebutuhan | Identitas pelanggan dan SCD |
-| `dim_territory` | Tergantung kebutuhan | Wilayah penjualan vs pengiriman |
-| `dim_promotion` | Tergantung kebutuhan | Klasifikasi promosi dan makna diskon |
-| `dim_currency` | Tergantung kebutuhan | Kode mata uang, pasangan dan tanggal kurs, satuan laporan |
-| `dim_ship_method` | Tergantung kebutuhan | Identitas dan kategori metode kirim |
-
-Keputusan SCD Type 1 dapat dipertimbangkan untuk dimensi yang tidak perlu menyimpan riwayat perubahan. SCD Type 2 digunakan bila perbandingan nilai transaksi perlu memakai keadaan atribut pada saat transaksi. Pilihan tersebut belum diputuskan dan tidak boleh ditulis sebagai hasil persetujuan.
+| Dimensi | Potensi pemakaian lintas proses | Status Implementasi DW Fisik |
+|---|---|:---:|
+| `dim_date` | Tinggi | ✅ Terisi (`01-dim-date.ktr`) |
+| `dim_product` | Tinggi | ✅ Terisi (`02-dim-product.ktr`) |
+| `dim_customer` | Tergantung kebutuhan | ✅ Terisi (`03-dim-customer.ktr`) |
+| `dim_territory` | Tergantung kebutuhan | ✅ Terisi (`04-dim-territory.ktr`) |
+| `dim_promotion` | Tergantung kebutuhan | ✅ Terisi (`05-dim-promotion.ktr`) |
+| `dim_currency` | Tergantung kebutuhan | ✅ Terisi (`06-dim-currency.ktr`) |
+| `dim_ship_method` | Tergantung kebutuhan | ✅ Terisi (`07-dim-ship-method.ktr`) |
 
 Untuk OLAP Mondrian, hierarki minimal yang disiapkan adalah:
 
@@ -284,43 +284,39 @@ Untuk OLAP Mondrian, hierarki minimal yang disiapkan adalah:
 
 Uji drill-down, roll-up, slice, dan dice perlu membuktikan bahwa nilai `SUM(LineTotal)` tetap konsisten pada level yang berbeda. Dashboard minimal memuat tren bulanan, peringkat produk/kategori, kontribusi wilayah, distribusi metode kirim, dan panel kelengkapan kurs. Angka pesanan ditampilkan dengan *distinct count*, bukan jumlah baris fakta.
 
-## 10. Keputusan yang menahan finalisasi desain
+## 10. Status Keputusan Proyek
 
-| ID | Keputusan | Alasan | Penanggung jawab terkait | Status |
-|---|---|---|---|---|
-| K-01 | Status pesanan mana yang masuk KPI nilai penjualan? | Filter menentukan cakupan dan angka dasar | Dea, Siti, Alifa | Menunggu profiling `Status` |
-| K-02 | Sumber ETL resmi MySQL/MariaDB atau salinan PostgreSQL? | Tipe tanggal dan hasil query bisa berbeda | Fivediniar, Alifa | Perlu kesepakatan |
-| K-03 | Zona waktu `OrderDate` yang digunakan? | Mengubah pengelompokan per bulan | Fivediniar, Haura | Belum diputuskan |
-| K-04 | Mengapa CSV dan ekspor SQL bulanan berbeda? | Mengganggu keandalan tren | Alifa, Fivediniar | Perlu query ulang |
-| K-05 | Apa satuan `LineTotal` dan arti `CurrencyRateID` NULL? | Agregasi lintas mata uang tidak jelas | Dea, Siti, Alifa | Belum tervalidasi |
-| K-06 | Bagaimana model `dim_currency` dibedakan dari data kurs? | Business key dan grain dimensi belum tepat | Siti, Fivediniar | Revisi desain |
-| K-07 | SCD apa yang digunakan? | Berpengaruh pada analisis historis | Siti, Fivediniar | Belum diputuskan |
-| K-08 | Apakah formula diskon cocok dengan `LineTotal`? | KPI promosi/diskon dapat keliru | Siti, Alifa | Perlu uji |
-| K-09 | Kapan dimensi bersama dinyatakan conformed? | Perlu konsistensi antartim | Dea, Siti | Menunggu kesepakatan |
+| ID | Keputusan | Status Terkini |
+|---|---|---|
+| K-01 | Filter online sales | ✅ Selesai (`OnlineOrderFlag = 1` dengan 60.398 detail dimuat penuh) |
+| K-02 | Lingkungan DBMS resmi | ✅ Selesai (MariaDB / MySQL di XAMPP dengan database target `adventureworks_dw`) |
+| K-03 | Standar tanggal & kalender | ✅ Selesai (Dimensi `dim_date` memetakan rentang lengkap kalender transaksi) |
+| K-04 | Penyelarasan angka transaksi | ✅ Selesai (Total 27.659 pesanan dan 60.398 baris terekonsiliasi sempurna) |
+| K-05 & K-06 | Model mata uang & kurs | ✅ Selesai (Kunci `dim_currency` memetakan ID kurs dan menangani transaksi tanpa kurs) |
+| K-07 | Penanganan atribut dimensi | ✅ Selesai (Dimensi master terisi lengkap pada database fisik) |
+| K-08 | Formula nilai penjualan | ✅ Selesai (`line_total` terekonsiliasi ke Rp 29.358.677,22) |
+| K-09 | Conformed dimension | Siap dikembangkan untuk proses bisnis lain di masa mendatang |
 
-Keputusan baru dicatat sebagai selesai jika hasil pemeriksaan, tanggal keputusan, dan pihak yang menyetujui tersedia. Tidak ada persetujuan dosen yang diasumsikan dalam dokumen ini.
+## 11. Keterkaitan Berkas Repositori & Status Proyek
 
-## 11. Keterkaitan berkas repositori
+### A. Berkas yang SUDAH SELESAI di Repositori:
+- **Perencanaan & Star Schema**: `README.md`, `laporan/pekan-10.md`, `docs/piagam-proyek.md`, `docs/grain.md`, `docs/risiko-awal.md`, `docs/star-schema-v1.png`, `docs/bus-matrix.md`.
+- **Data Profiling**: `sql/profiling/07–10*.sql`, `hasil-profiling/*.csv`, `bukti/database/01–10*.png`.
+- **Implementasi ETL (Pentaho PDI)**:
+  - Job utama: `etl/jobs/online-sales-etl.kjb`.
+  - 8 Transformasi: `etl/transformations/01–08*.ktr` (7 dimensi + 1 fact table).
+  - Bukti visual: `etl/documentation/00-job-orchestration-success.png`.
+- **Database DW Fisik & Validasi**:
+  - Dump database: `sql/dump_adventureworks_dw.sql`.
+  - Screenshot bukti rekonsiliasi data: `bukti/database/validation-fact-online-sales.png`.
 
-**Sudah ada pada ZIP kerja kelompok yang diperiksa:**
+### B. Tahapan yang BELUM SELESAI (Roadmap Selanjutnya):
+1. **OLAP Cube (Folder `olap/`)**:
+   - Membangun schema cube multidimensi (`schema.xml` Mondrian / Pentaho Schema Workbench).
+   - Pengujian operasi analisis multidimensional (*slice*, *dice*, *roll-up*, *drill-down*).
+2. **Dashboard Visualisasi (Folder `dashboard/`)**:
+   - Menghubungkan database DW ke tools BI (Power BI / Tableau / Metabase / Pentaho User Console).
+   - Menyajikan KPI interaktif: tren penjualan, produk terlaris, performa wilayah, dan metode kirim.
+3. **Dokumentasi & Laporan Akhir**:
+   - Menyusun laporan hasil implementasi ETL dan validasi data warehouse kelompok.
 
-- `README.md` — lingkup, pertanyaan bisnis, anggota, teknologi.
-- `laporan/pekan-10.md` — grain, ringkasan profiling, Bus Matrix awal, laporan steering review.
-- `docs/risiko-awal.md` — baseline profil dan register risiko.
-- `docs/star-schema-v1.png` — gambar rancangan.
-- `hasil-profiling/07–10*.csv` dan `bukti/database/` — hasil/screenshot.
-
-**Masih perlu dilengkapi agar dokumen dan bukti konsisten:**
-
-- `docs/bus-matrix.md` — dokumen ini.
-- `docs/grain.md` — definisi grain dan contoh konsekuensi `COUNT DISTINCT`.
-- `docs/pertanyaan-bisnis.md` — definisi KPI, cakupan status, filter, dan pengguna analisis.
-- `docs/star-schema-v1.drawio` — diagram yang dapat diedit; PNG saja tidak cukup untuk revisi.
-- `sql/profiling/07–10*.sql` yang berisi query `SELECT` asli, bukan dump phpMyAdmin.
-- Dokumen pemetaan sumber–target serta rancangan ETL setelah pilihan DBMS dipastikan.
-
-**Urutan tindak lanjut:** (1) jalankan profil `Status`; (2) tetapkan sumber ETL dan zona waktu; (3) buat satu hasil tren bulanan yang dapat direproduksi; (4) tetapkan model mata uang/kurs; (5) sepakati KPI, grain, dan aturan dimensi; (6) finalisasi star schema sebelum menyusun transformasi Pentaho.
-
----
-
-**Sumber pemeriksaan:** berkas proyek `AdventureWork-DataWarehousePenjualanOnline-main`, terutama `README.md`, `laporan/pekan-10.md`, `docs/risiko-awal.md`, `hasil-profiling/`, serta bukti pada `bukti/database/`. Dokumen ini merupakan **rancangan yang disusun dari bukti yang tersedia**; bukan laporan bahwa ETL, cube, atau dashboard telah diuji dan selesai.
