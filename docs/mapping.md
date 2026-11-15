@@ -1,6 +1,6 @@
 # Source-to-Target Mapping — AdventureWorks Online Sales DW
 
-**Versi:** 1.0 (rancangan Pekan 10)  
+**Versi:** 2.0 (Penyelarasan Pekan 11 — Pelaporan Steering Review Pekan 12)  
 **Database sumber:** AdventureWorks pada MySQL/XAMPP  
 **Database target:** `adventureworks_dw`  
 **Proses bisnis:** Penjualan Online (`OnlineOrderFlag = 1`)  
@@ -148,8 +148,9 @@ Tanpa metadata versi dan aturan lookup tersebut, Type 2 belum dapat diimplementa
 | Kolom target | Tipe target | Tabel.kolom sumber | Transformasi | Aturan NULL |
 |---|---|---|---|---|
 | `sales_detail_key` | INT | `Sales.SalesOrderDetail.SalesOrderDetailID` | Salin sebagai identitas detail sumber atau gunakan strategi key yang disetujui | Tidak boleh NULL |
-| `sales_order_id` | INT | `Sales.SalesOrderDetail.SalesOrderID` | Salin ID pesanan | Tidak boleh NULL |
-| `product_key` | INT | `Sales.SalesOrderDetail.ProductID` | Lookup `dim_product` berdasarkan `product_id`; untuk Type 2 pilih versi yang berlaku pada `SalesOrderHeader.OrderDate` | Jika tidak ditemukan, gunakan Unknown dan catat exception |
+| `sales_order_id` | INT | `Sales.SalesOrderDetail.SalesOrderID` | Salin ID pesanan (Degenerate Dimension) | Tidak boleh NULL |
+| `tanggal_key` | INT | `Sales.SalesOrderHeader.OrderDate` | Format integer YYYYMMDD, lookup ke `dim_date.tanggal_key` | Tidak boleh NULL; jika invalid petakan ke `-1` |
+| `product_key` | INT | `Sales.SalesOrderDetail.ProductID` | Lookup `dim_product` berdasarkan `product_id`; untuk Type 2 pilih versi yang berlaku pada `SalesOrderHeader.OrderDate` | Jika tidak ditemukan, gunakan Unknown (-1) dan catat exception |
 | `customer_key` | INT | `Sales.SalesOrderHeader.CustomerID` | Lookup `dim_customer` berdasarkan `customer_id` | Jika tidak ditemukan, gunakan Unknown dan catat exception |
 | `territory_key` | INT | `Sales.SalesOrderHeader.TerritoryID` | Lookup `dim_territory` berdasarkan `territory_id` | Jika NULL/tidak ditemukan, gunakan Unknown |
 | `promotion_key` | INT | `Sales.SalesOrderDetail.SpecialOfferID` | Lookup `dim_promotion` berdasarkan `special_offer_id` | Jika tidak ditemukan, gunakan Unknown |
@@ -166,7 +167,58 @@ Tanpa metadata versi dan aturan lookup tersebut, Type 2 belum dapat diimplementa
 
 **Validasi yang sudah dilaporkan tim:** 60.398 baris detail online; 27.659 pesanan online; 130 produk unik; `LineTotal` tidak NULL. Nilai tersebut menjadi baseline rekonsiliasi, bukan angka yang harus dipaksakan jika data sumber berubah.
 
-## 3. Urutan load
+## 3. Daftar Tabel Staging (Staging Layer Mapping)
+
+Lapisan *staging* (*landing zone*) berfungsi sebagai area transisi untuk menampung data mentah hasil ekstraksi dari database operasional OLTP `adventureworks` sebelum dibersihkan (*cleansing*), ditransformasi (*conforming*), dan dimuat ke tabel dimensi serta fakta di `adventureworks_dw`.
+
+Pada implementasi pipeline ETL tim kami:
+* **Jalur Pentaho Data Integration (PDI / Spoon):** Transformasi mengekstrak data dari tabel sumber dan mengalirkannya secara *in-memory* (stream) melalui langkah-langkah `.ktr`.
+* **Jalur Tabel Staging Fisik / n8n:** Jika diimplementasikan dalam bentuk tabel fisik di database DW (misalnya melalui skrip `00_staging_ddl.sql`), berikut adalah spesifikasi pemetaan tabel staging:
+
+### 3.1. Pemetaan Tabel Staging ke Target Data Warehouse
+
+| Tabel Staging | Tabel Sumber (OLTP) | Filter & Logika Ekstraksi | Tabel Target DW | Peran dalam Transformasi |
+|---|---|---|---|---|
+| `stg_sales_order_header` | `sales_salesorderheader` | `OnlineOrderFlag = 1` | `dim_customer`, `dim_territory`, `dim_currency`, `dim_ship_method`, `fact_online_sales` | Menampung transaksi pesanan tingkat header; menyediakan business key untuk lookup dimensi dan tanggal order. |
+| `stg_sales_order_detail` | `sales_salesorderdetail` | Inner join ke header online | `fact_online_sales` | Menampung detail produk per pesanan (grain fakta); menyuplai kuantitas dan nilai transaksi. |
+| `stg_product_catalog` | `production_product` JOIN `production_productsubcategory` JOIN `production_productcategory` | Left join lengkap; penanganan kategori NULL | `dim_product` | Menampung denormalisasi katalog produk, subkategori, dan kategori. |
+| `stg_customer_person` | `sales_customer` JOIN `person_person` | Penggabungan nama pelanggan individu | `dim_customer` | Menampung business key pelanggan (`CustomerID`) dan nama lengkap. |
+| `stg_territory` | `sales_salesterritory` | Salin seluruh wilayah pemasaran | `dim_territory` | Menampung nama distrik, kode negara, dan kelompok benua. |
+| `stg_special_offer` | `sales_specialoffer` | Salin program diskon dan penawaran | `dim_promotion` | Menampung deskripsi promosi dan persentase potongan harga. |
+| `stg_currency_rate` | `sales_currencyrate` | Salin kurs harian + penanganan NULL | `dim_currency` | Menampung kurs konversi mata uang asing dan pasangan valuta. |
+| `stg_ship_method` | `purchasing_shipmethod` | Salin seluruh metode kurir pengiriman | `dim_ship_method` | Menampung nama kurir ekspedisi beserta tarif dasar kirim. |
+
+### 3.2. Struktur Kolom dan Tipe Data Tabel Staging Utama
+
+#### A. Tabel `stg_sales_order_header`
+* `SalesOrderID` : `INT(11) NOT NULL` (PK Staging)
+* `OrderDate` : `DATETIME NOT NULL`
+* `Status` : `TINYINT(3) NOT NULL`
+* `OnlineOrderFlag` : `TINYINT(1) NOT NULL` (Nilai konstan `1`)
+* `CustomerID` : `INT(11) NOT NULL`
+* `TerritoryID` : `INT(11) DEFAULT NULL`
+* `CurrencyRateID` : `INT(11) DEFAULT NULL`
+* `ShipMethodID` : `INT(11) NOT NULL`
+* `SubTotal` : `DECIMAL(19,4) NOT NULL`
+
+#### B. Tabel `stg_sales_order_detail`
+* `SalesOrderID` : `INT(11) NOT NULL`
+* `SalesOrderDetailID` : `INT(11) NOT NULL` (PK Staging)
+* `OrderQty` : `SMALLINT(6) NOT NULL`
+* `ProductID` : `INT(11) NOT NULL`
+* `SpecialOfferID` : `INT(11) NOT NULL`
+* `UnitPrice` : `DECIMAL(19,4) NOT NULL`
+* `UnitPriceDiscount` : `DECIMAL(19,4) NOT NULL`
+* `LineTotal` : `DECIMAL(19,4) NOT NULL`
+
+#### C. Tabel `stg_product_catalog`
+* `ProductID` : `INT(11) NOT NULL` (PK Staging)
+* `ProductName` : `VARCHAR(100) NOT NULL`
+* `ProductNumber` : `VARCHAR(50) NOT NULL`
+* `SubcategoryName` : `VARCHAR(100) DEFAULT NULL`
+* `CategoryName` : `VARCHAR(100) DEFAULT NULL`
+
+## 4. Urutan load
 
 1. **Extract** tabel sumber yang diperlukan dari AdventureWorks ke staging tanpa mengubah database sumber.
 2. **Validasi staging**: tipe data, duplikasi business key, NULL, jumlah baris, dan relasi.
@@ -182,19 +234,16 @@ Tanpa metadata versi dan aturan lookup tersebut, Type 2 belum dapat diimplementa
 
 > Urutan antar-dimensi dapat disesuaikan berdasarkan dependensi ETL. Semua dimensi harus selesai/siap di-lookup sebelum fakta dimuat. Jika menggunakan tabel pendamping untuk metadata Type 2, muat tabel tersebut bersama proses `dim_product`.
 
-## 4. Catatan dan keputusan yang masih harus dikonfirmasi
+## 5. Catatan dan keputusan yang telah ditetapkan
 
 - Pastikan nama fisik tabel MySQL sesuai dump yang diimpor.
-- Konfirmasi apakah `dim_product` boleh ditambah metadata Type 2 atau harus memakai tabel pendamping.
-- Konfirmasi nilai surrogate key Unknown (misalnya `-1`) dan pastikan tipe/constraint PK mendukungnya.
-- Pastikan sumber `customer_name` untuk pelanggan individu dan toko: `Person.Person` atau `Sales.Store`.
-- Pastikan definisi `customer_type` disetujui tim.
-- Pastikan definisi minggu dalam `dim_date` mengikuti standar dosen.
-- Pastikan presisi `DECIMAL` target tidak mengurangi presisi sumber.
-- `currency_rate_id` NULL pada header tidak boleh dianggap kurs nol.
-- Jangan mengubah isi database AdventureWorks sumber.
+- Nilai surrogate key Unknown ditetapkan `-1` pada seluruh dimensi.
+- Sumber `customer_name` khusus online sales adalah `Person.Person` (tipe `Individual`).
+- Definisi kalender dan minggu dalam `dim_date` mengikuti skrip standar v1.0.
+- `currency_rate_id` NULL pada header dipetakan ke baris default `currency_key = -1` (USD).
+- Database AdventureWorks sumber tetap bersifat read-only.
 
-## 5. Validasi sebelum implementasi Pentaho
+## 6. Validasi integritas dan rekonsiliasi data target
 
 - [ ] Semua kolom target dimensi dan fakta sudah mempunyai sumber/aturan derivasi.
 - [ ] Nama tabel/kolom fisik MySQL sudah diverifikasi di phpMyAdmin.
