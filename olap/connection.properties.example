@@ -1,0 +1,6 @@
+# CONTOH konfigurasi koneksi Mondrian 3.x. JANGAN commit password.
+# MySQL JDBC driver: com.mysql.cj.jdbc.Driver
+# JDBC: jdbc:mysql://127.0.0.1:3306/adventureworks_dw?useUnicode=true&characterEncoding=utf8
+# Catalog: file:/ABSOLUTE/PATH/olap/adventureworks_online_sales.xml
+# Mondrian connection string example (fill locally):
+# Provider=mondrian;Jdbc=<jdbc-url>;JdbcDrivers=com.mysql.cj.jdbc.Driver;JdbcUser=<username>;JdbcPassword=<password>;Catalog=file:/ABSOLUTE/PATH/olap/adventureworks_online_sales.xml

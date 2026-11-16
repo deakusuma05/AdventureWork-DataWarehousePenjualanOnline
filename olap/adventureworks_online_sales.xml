@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ATLAS OLAP audited package: legacy-schema Mondrian 3.x (not eMondrian new modeling syntax).
+REQUIRES: olap/sql/01_create_olap_view.sql on SINGLE selected original dump.
+This is a real SQL cube definition, not a frontend fake MDX runtime.
+OLAP runtime unverified in this environment; run MDX smoke tests on your server.
+-->
+<Schema name="AdventureWorksOnlineSales">
+  <Cube name="OnlineSalesCube" defaultMeasure="Sales Amount" cache="true" enabled="true">
+    <Table schema="adventureworks_dw" name="v_online_sales_cube"/>
+    <Dimension name="Tanggal" type="TimeDimension" foreignKey="tanggal_key">
+      <Hierarchy name="Kalender" hasAll="true" allMemberName="Semua Tanggal" primaryKey="tanggal_key">
+        <Table schema="adventureworks_dw" name="dim_date"/>
+        <Level name="Tahun" column="tahun" type="Numeric" uniqueMembers="true" levelType="TimeYears"/>
+        <Level name="Kuartal" column="kuartal" type="Numeric" uniqueMembers="false" levelType="TimeQuarters"/>
+        <Level name="Bulan" column="bulan" nameColumn="nama_bulan" type="Numeric" uniqueMembers="false" levelType="TimeMonths"/>
+        <Level name="Tanggal" column="tanggal" type="Date" uniqueMembers="true" levelType="TimeDays"/>
+      </Hierarchy>
+    </Dimension>
+    <Dimension name="Produk" foreignKey="product_key">
+      <Hierarchy name="Katalog" hasAll="true" allMemberName="Semua Produk" primaryKey="product_key">
+        <Table schema="adventureworks_dw" name="dim_product"/>
+        <Level name="Kategori" column="category_name" type="String" uniqueMembers="false"/>
+        <Level name="Subkategori" column="subcategory_name" type="String" uniqueMembers="false"/>
+        <Level name="Produk" column="product_id" nameColumn="product_name" type="Numeric" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+    <Dimension name="Pelanggan" foreignKey="customer_key">
+      <Hierarchy name="Profil" hasAll="true" allMemberName="Semua Pelanggan" primaryKey="customer_key">
+        <Table schema="adventureworks_dw" name="dim_customer"/>
+        <Level name="Tipe Pelanggan" column="customer_type" type="String" uniqueMembers="false"/>
+        <Level name="Pelanggan" column="customer_id" nameColumn="customer_name" type="Numeric" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+    <Dimension name="Wilayah" foreignKey="territory_key">
+      <Hierarchy name="Geografi" hasAll="true" allMemberName="Semua Wilayah" primaryKey="territory_key">
+        <Table schema="adventureworks_dw" name="dim_territory"/>
+        <Level name="Grup" column="territory_group" type="String" uniqueMembers="false"/>
+        <Level name="Negara" column="country_code" type="String" uniqueMembers="false"/>
+        <Level name="Wilayah" column="territory_id" nameColumn="territory_name" type="Numeric" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+    <Dimension name="Promosi" foreignKey="promotion_key">
+      <Hierarchy name="Penawaran" hasAll="true" allMemberName="Semua Promosi" primaryKey="promotion_key">
+        <Table schema="adventureworks_dw" name="dim_promotion"/>
+        <Level name="Kategori Promosi" column="category" type="String" uniqueMembers="false"/>
+        <Level name="Tipe Promosi" column="type" type="String" uniqueMembers="false"/>
+        <Level name="Penawaran" column="special_offer_id" nameColumn="description" type="Numeric" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+    <Dimension name="Kurs" foreignKey="currency_key">
+      <Hierarchy name="Referensi" hasAll="true" allMemberName="Semua Kurs" primaryKey="currency_key">
+        <Table schema="adventureworks_dw" name="v_dim_currency_cube"/>
+        <Level name="Status Kurs" column="rate_status" type="String" uniqueMembers="true"/>
+        <Level name="Kode Tujuan" column="to_currency_code" type="String" uniqueMembers="false"/>
+        <Level name="ID Kurs" column="currency_rate_id" type="Numeric" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+    <Dimension name="Pengiriman" foreignKey="ship_method_key">
+      <Hierarchy name="Layanan" hasAll="true" allMemberName="Semua Pengiriman" primaryKey="ship_method_key">
+        <Table schema="adventureworks_dw" name="dim_ship_method"/>
+        <Level name="Metode" column="ship_method_id" nameColumn="ship_method_name" type="Numeric" uniqueMembers="true"/>
+      </Hierarchy>
+    </Dimension>
+    <Measure name="Sales Amount" column="line_total" aggregator="sum" formatString="#,##0.00"/>
+    <Measure name="Order Quantity" column="order_qty" aggregator="sum" formatString="#,##0"/>
+    <Measure name="Detail Count" column="sales_detail_key" aggregator="count" formatString="#,##0"/>
+    <Measure name="Distinct Orders" column="sales_order_id" aggregator="distinct-count" formatString="#,##0"/>
+    <Measure name="Active Customers" column="customer_business_id" aggregator="distinct-count" formatString="#,##0"/>
+    <Measure name="Promo Discount Estimate Raw" column="estimated_promo_discount_value" aggregator="sum" formatString="#,##0.00" visible="false"/>
+    <Measure name="Orders Without CurrencyRate" column="orders_without_currencyrate_key" aggregator="distinct-count" formatString="#,##0"/>
+    <CalculatedMember name="Average Order Value" dimension="Measures"
+      formula="IIf([Measures].[Distinct Orders] = 0, NULL, [Measures].[Sales Amount] / [Measures].[Distinct Orders])">
+      <CalculatedMemberProperty name="FORMAT_STRING" value="#,##0.00"/>
+    </CalculatedMember>
+    <CalculatedMember name="Estimated Promo Discount" dimension="Measures"
+      formula="[Measures].[Promo Discount Estimate Raw]">
+      <CalculatedMemberProperty name="FORMAT_STRING" value="#,##0.00"/>
+    </CalculatedMember>
+    <CalculatedMember name="Unknown Currency Order %" dimension="Measures"
+      formula="IIf([Measures].[Distinct Orders] = 0, NULL, [Measures].[Orders Without CurrencyRate] / [Measures].[Distinct Orders])">
+      <CalculatedMemberProperty name="FORMAT_STRING" value="0.00%"/>
+    </CalculatedMember>
+    <CalculatedMember name="Revenue Per Unit" dimension="Measures"
+      formula="IIf([Measures].[Order Quantity] = 0, NULL, [Measures].[Sales Amount] / [Measures].[Order Quantity])">
+      <CalculatedMemberProperty name="FORMAT_STRING" value="#,##0.00"/>
+    </CalculatedMember>
+  </Cube>
+</Schema>

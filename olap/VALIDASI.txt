@@ -1,0 +1,7 @@
+PASS: XML well-formed; 7 dimensions, 7 base measures, 4 calculated members.
+PASS: referenced MDX measures/levels checked against XML in both naming sets.
+PASS: synthetic view fixture preserves 4 details, deduplicates customer versions, excludes unknown customer, computes discount and distinct unknown orders.
+NOT RUN: MySQL/Mondrian/JDBC/MDX engine, actual dump data, or ETL. Static reference checks are not an MDX syntax parser.
+
+Perbaikan: Active Customers memakai natural customer_id; dua mode nama hierarki; uniqueMembers konservatif; view SQL SECURITY INVOKER; preflight schema/key/orphan; rekonsiliasi parent hierarki dan grain.
+Baseline arsip tidak diverifikasi ulang karena dump asli tidak berada dalam paket sumber OLAP.

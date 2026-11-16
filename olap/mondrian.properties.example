@@ -1,0 +1,4 @@
+# Merge into the properties loaded by your Mondrian runtime. Restart it.
+# Main mdx/ directory uses legacy hierarchy naming.
+mondrian.olap.SsasCompatibleNaming=false
+# For mdx/ssas/ only, use true instead. Do not mix query sets.

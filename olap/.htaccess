@@ -1,0 +1,4 @@
+Options -Indexes
+<FilesMatch "^(connection\.properties|.*\.env|.*\.secret)$">
+  Require all denied
+</FilesMatch>

@@ -1,0 +1,66 @@
+{
+  "dim_date": [
+    "bulan",
+    "kuartal",
+    "nama_bulan",
+    "tahun",
+    "tanggal",
+    "tanggal_key"
+  ],
+  "dim_product": [
+    "category_name",
+    "product_id",
+    "product_key",
+    "product_name",
+    "subcategory_name"
+  ],
+  "dim_customer": [
+    "customer_id",
+    "customer_key",
+    "customer_name",
+    "customer_type"
+  ],
+  "dim_territory": [
+    "country_code",
+    "territory_group",
+    "territory_id",
+    "territory_key",
+    "territory_name"
+  ],
+  "dim_promotion": [
+    "category",
+    "description",
+    "discount_pct",
+    "promotion_key",
+    "special_offer_id",
+    "type"
+  ],
+  "dim_currency": [
+    "average_rate",
+    "currency_key",
+    "currency_rate_id",
+    "end_of_day_rate",
+    "from_currency_code",
+    "to_currency_code"
+  ],
+  "dim_ship_method": [
+    "ship_method_id",
+    "ship_method_key",
+    "ship_method_name"
+  ],
+  "fact_online_sales": [
+    "currency_key",
+    "customer_key",
+    "line_total",
+    "order_qty",
+    "product_key",
+    "promotion_key",
+    "sales_detail_key",
+    "sales_order_id",
+    "ship_method_key",
+    "tanggal_key",
+    "territory_key",
+    "unit_price",
+    "unit_price_discount"
+  ]
+}
