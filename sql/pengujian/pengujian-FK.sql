@@ -1,0 +1,29 @@
+INSERT INTO fact_online_sales (
+  sales_detail_key, 
+  sales_order_id, 
+  tanggal_key, 
+  product_key, 
+  customer_key, 
+  territory_key, 
+  promotion_key, 
+  currency_key, 
+  ship_method_key, 
+  order_qty, 
+  unit_price, 
+  unit_price_discount, 
+  line_total
+) VALUES (
+  999991, 
+  43697, 
+  -1, 
+  999999, 
+  -1, 
+  -1, 
+  -1, 
+  -1, 
+  -1, 
+  1, 
+  100.0000, 
+  0.0000, 
+  100.0000
+);
