@@ -191,7 +191,9 @@ adventureworks-online-sales-dw/
 │   ├── bus-matrix.png
 │   ├── dashboard-improvement-report.md
 │   ├── desain-cube-online-sales-bus-matrix-v1.1.xlsx
+│   ├── erd-dbeaver-reverse-engineering.png
 │   ├── grain.md
+│   ├── kamus-data.md
 │   ├── mapping.md
 │   ├── piagam-proyek.md
 │   ├── risiko-awal.md
@@ -201,12 +203,18 @@ adventureworks-online-sales-dw/
 │   └── wireframe-dashboard.md
 │
 ├── sql/
+│   ├── ddl.sql
 │   ├── dump_adventureworks_dw.sql
-│   └── profiling/
-│       ├── 07-penjualan-online-per-bulan.sql
-│       ├── 08-profiling-null-online-sales.sql
-│       ├── 09-profiling-currency-online.sql
-│       └── 10-profiling-rentang-tanggal.sql
+│   ├── profiling/
+│   │   ├── 07-penjualan-online-per-bulan.sql
+│   │   ├── 08-profiling-null-online-sales.sql
+│   │   ├── 09-profiling-currency-online.sql
+│   │   └── 10-profiling-rentang-tanggal.sql
+│   └── pengujian/
+│       ├── Pengujian-PK.sql
+│       ├── pengujian-FK.sql
+│       ├── pengujian-NotNull.sql
+│       └── pengujian-rekonsiliasi.sql
 │
 ├── hasil-profiling/
 │   ├── 07-penjualan-online-per-bulan.csv
@@ -218,31 +226,43 @@ adventureworks-online-sales-dw/
 │   ├── github/
 │   │   └── .gitkeep
 │   │
-│   └── database/
-│       ├── 01-verifikasi-database.png
-│       ├── 02-profiling-transaksi-online.png
-│       ├── 03-profiling-produk.png
-│       ├── 04-validasi-grain.png
-│       ├── 05-profiling-orderqty.png
-│       ├── 06-validasi-tujuh-dimensi.png
-│       ├── 07-penjualan-online-per-bulan.png
-│       ├── 08-profiling-null-online-sales.png
-│       ├── 09-profiling-currency-online.png
-│       ├── 10-profiling-rentang-tanggal.png
-│       └── validation-fact-online-sales.png
+│   ├── database/
+│   │   ├── 01-verifikasi-database.png .. 10-profiling-rentang-tanggal.png
+│   │   ├── 11-pemeriksaan-dim-tanggal-standar.png
+│   │   ├── 12-uji-constraint-pk.png
+│   │   ├── 13-uji-constraint-fk.png
+│   │   ├── 14-uji-constraint-not-null.png
+│   │   ├── 15-eksekusi-ddl-sukses 1.png
+│   │   ├── 16-eksekusi-ddl-sukses 2.png
+│   │   └── validation-fact-online-sales.png
+│   │
+│   └── etl/
+│       ├── 01-eksekusi-t01-ekstrak.png
+│       ├── 02-scd2-dim-product.png
+│       ├── 03-job-utama-sukses.png
+│       ├── 04-rekonsiliasi-staging-fakta.png
+│       ├── 05-eksekusi-kitchen-terminal.png
+│       └── 06-audit-unknown-member.png
 │
 ├── laporan/
 │   ├── pekan-10.md
-│   └── pekan-11.md
+│   ├── pekan-11.md
+│   ├── pekan-12.md
+│   └── pekan-13.md
 │
 ├── etl/
-│   ├── 01-dim-date.ktr .. 08-fact-online-sales.ktr
+│   ├── t01_ekstrak.ktr
+│   ├── 01-dim-date.ktr
+│   ├── 02-dim-product.ktr
+│   ├── 03-dim-customer.ktr
+│   ├── 04-dim-territory.ktr
+│   ├── 05-dim-promotion.ktr
+│   ├── 06-dim-currency.ktr
+│   ├── 07-dim-ship-method.ktr
+│   ├── 08-fact-online-sales.ktr
+│   ├── job_utama.kjb
 │   ├── online-sales-etl.kjb
-│   ├── documentation/
-│   │   ├── 00-job-orchestration-success.png
-│   │   └── 00-job-orchestration-success-new.png
-│   ├── jobs/
-│   └── transformation/
+│   └── transformation (backup)/
 │
 ├── olap/
 │   └── .gitkeep
@@ -335,21 +355,23 @@ Setiap anggota wajib mendokumentasikan hasil pekerjaannya dan berkoordinasi apab
 
 ## 14. Status Proyek
 
-**Tahap saat ini: Pekan 9–10 — Perencanaan, Desain Awal, dan Steering Review**
+**Tahap saat ini: Pekan 13 — Implementasi ETL Pentaho PDI, Staging Layer, SCD Tipe 2, Eksekusi Kitchen CLI, dan Rekonsiliasi Data**
 
-- [x] Menentukan proses bisnis Penjualan Online
-- [x] Menyiapkan database AdventureWorks pada MySQL
-- [x] Melakukan impor database sumber
-- [x] Memverifikasi 71 tabel dan tabel sumber utama
-- [x] Mengidentifikasi dimensi berdasarkan bus matrix
-- [x] Melengkapi piagam dan peran anggota tim
-- [x] Memastikan undangan dosen diterima
-- [x] Memfinalisasi pertanyaan bisnis
-- [x] Menyimpan hasil profiling lengkap
-- [x] Memfinalisasi Star Schema versi 1
-- [x] Memfinalisasi bus matrix dan conformed dimension
-- [x] Melengkapi daftar risiko
-- [x] Menyusun laporan Steering Review pekan 10
+### Progres Tahapan Pengembangan:
+- [x] **Pekan 9–10:** Perencanaan, Desain Awal, Piagam Proyek, Profiling, Bus Matrix, Star Schema V1 & V2, dan Laporan Pekan 10
+- [x] **Pekan 11:** Implementasi Data Warehouse Fisik, Standarisasi `dim_date` v1.0, dan Laporan Pekan 11
+- [x] **Pekan 12:** DDL Idempotent, Uji Constraint Fisik (PK, FK, NOT NULL), Kamus Data, Reverse Engineering ERD DBeaver, dan Laporan Pekan 12
+- [x] **Pekan 13:** Implementasi Pipeline ETL Pentaho PDI Lengkap:
+  - [x] Transformasi ekstraksi staging `t01_ekstrak.ktr` (Header 27.659, Detail 60.398 baris)
+  - [x] 7 transformasi dimensi mandiri (`01-dim-date.ktr` s.d. `07-dim-ship-method.ktr`) dengan penanganan NULL
+  - [x] Implementasi SCD Tipe 2 pada `dim_product.ktr` (riwayat biaya produk, penanda aktif `9999-12-31`)
+  - [x] Transformasi fakta `08-fact-online-sales.ktr` dengan 7 Lookup return default `-1` dan lookup tanggal SCD 2
+  - [x] Orkestrasi Master Job dinamis (`job_utama.kjb` & `online-sales-etl.kjb`)
+  - [x] Uji Idempotensi: Job dijalankan 2x berturut-turut tanpa data ganda (*zero duplicates*)
+  - [x] Otomasi terminal Kitchen CLI tanpa GUI via Windows PowerShell
+  - [x] Uji rekonsiliasi data dan audit kualitas finansial ([`pengujian-rekonsiliasi.sql`](sql/pengujian/pengujian-rekonsiliasi.sql))
+  - [x] Penyusunan Laporan Progres Steering Review Pekan 13 ([`laporan/pekan-13.md`](laporan/pekan-13.md))
+- [ ] **Pekan 14:** Implementasi Kubus OLAP Mondrian (`olap/`) dan Integrasi Visual Dashboard Web (`dashboard/`)
 
 Checklist ini diperbarui berdasarkan bukti yang tersedia dalam repositori.
 
