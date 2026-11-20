@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>01-dim-date</name>
+    <name>t01_ekstrak</name>
     <description/>
     <extended_description/>
     <trans_version/>
@@ -427,10 +427,10 @@
     <clusterschemas>
     </clusterschemas>
     <created_user>-</created_user>
-    <created_date>2026/11/02 15:44:31.809</created_date>
+    <created_date>2026/11/20 21:25:55.171</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2026/11/02 15:44:31.809</modified_date>
-    <key_for_session_key>H4sIAAAAAAAA/wMAAAAAAAAAAAA=</key_for_session_key>
+    <modified_date>2026/11/20 21:25:55.171</modified_date>
+    <key_for_session_key/>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
@@ -563,13 +563,23 @@
   </connection>
   <order>
     <hop>
-      <from>Extract OrderDate</from>
-      <to>Insert / update</to>
+      <from>Extract Header Sumber</from>
+      <to>Load stg_salesorderheader</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Extract Detail Sumber</from>
+      <to>Load stg_salesorderdetail</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Extract Cost History Sumber</from>
+      <to>Load stg_productcosthistory</to>
       <enabled>Y</enabled>
     </hop>
   </order>
   <step>
-    <name>Extract OrderDate</name>
+    <name>Extract Header Sumber</name>
     <type>TableInput</type>
     <description/>
     <distribute>Y</distribute>
@@ -580,27 +590,314 @@
       <schema_name/>
     </partitioning>
     <connection>conn_adventureworks</connection>
-    <sql>SELECT DISTINCT
-    CAST(DATE_FORMAT(OrderDate, '%Y%m%d') AS UNSIGNED) AS tanggal_key,
-    DATE(OrderDate) AS tanggal,
-    YEAR(OrderDate) AS tahun,
-    IF(MONTH(OrderDate) &lt;= 6, 1, 2) AS semester,
-    QUARTER(OrderDate) AS kuartal,
-    MONTH(OrderDate) AS bulan,
-    ELT(MONTH(OrderDate), 
-        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
-        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-    ) AS nama_bulan,
-    WEEKOFYEAR(OrderDate) AS minggu_dalam_tahun,
-    DAY(OrderDate) AS tanggal_dalam_bulan,
-    DAYOFWEEK(OrderDate) AS hari_dalam_minggu,
-    ELT(DAYOFWEEK(OrderDate), 
-        'Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'
-    ) AS nama_hari,
-    IF(DAYOFWEEK(OrderDate) IN (1, 7), 1, 0) AS is_akhir_pekan
+    <sql>SELECT 
+    SalesOrderID,
+    RevisionNumber,
+    OrderDate,
+    DueDate,
+    ShipDate,
+    Status,
+    OnlineOrderFlag,
+    SalesOrderNumber,
+    PurchaseOrderNumber,
+    AccountNumber,
+    CustomerID,
+    SalesPersonID,
+    TerritoryID,
+    BillToAddressID,
+    ShipToAddressID,
+    ShipMethodID,
+    CreditCardID,
+    CreditCardApprovalCode,
+    CurrencyRateID,
+    SubTotal,
+    TaxAmt,
+    Freight,
+    TotalDue,
+    Comment,
+    rowguid,
+    ModifiedDate
 FROM sales_salesorderheader
-WHERE OnlineOrderFlag = 1
-ORDER BY tanggal;</sql>
+WHERE OnlineOrderFlag = 1;</sql>
+    <limit>0</limit>
+    <lookup/>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <lazy_conversion_active>N</lazy_conversion_active>
+    <cached_row_meta_active>N</cached_row_meta_active>
+    <row-meta/>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>64</xloc>
+      <yloc>48</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Load stg_salesorderheader</name>
+    <type>TableOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>conn_adventureworks_dw</connection>
+    <schema/>
+    <table>stg_salesorderheader</table>
+    <commit>1000</commit>
+    <truncate>Y</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
+    <fields>
+      <field>
+        <column_name>SalesOrderID</column_name>
+        <stream_name>SalesOrderID</stream_name>
+      </field>
+      <field>
+        <column_name>RevisionNumber</column_name>
+        <stream_name>RevisionNumber</stream_name>
+      </field>
+      <field>
+        <column_name>OrderDate</column_name>
+        <stream_name>OrderDate</stream_name>
+      </field>
+      <field>
+        <column_name>DueDate</column_name>
+        <stream_name>DueDate</stream_name>
+      </field>
+      <field>
+        <column_name>ShipDate</column_name>
+        <stream_name>ShipDate</stream_name>
+      </field>
+      <field>
+        <column_name>Status</column_name>
+        <stream_name>Status</stream_name>
+      </field>
+      <field>
+        <column_name>OnlineOrderFlag</column_name>
+        <stream_name>OnlineOrderFlag</stream_name>
+      </field>
+      <field>
+        <column_name>SalesOrderNumber</column_name>
+        <stream_name>SalesOrderNumber</stream_name>
+      </field>
+      <field>
+        <column_name>PurchaseOrderNumber</column_name>
+        <stream_name>PurchaseOrderNumber</stream_name>
+      </field>
+      <field>
+        <column_name>AccountNumber</column_name>
+        <stream_name>AccountNumber</stream_name>
+      </field>
+      <field>
+        <column_name>CustomerID</column_name>
+        <stream_name>CustomerID</stream_name>
+      </field>
+      <field>
+        <column_name>SalesPersonID</column_name>
+        <stream_name>SalesPersonID</stream_name>
+      </field>
+      <field>
+        <column_name>TerritoryID</column_name>
+        <stream_name>TerritoryID</stream_name>
+      </field>
+      <field>
+        <column_name>BillToAddressID</column_name>
+        <stream_name>BillToAddressID</stream_name>
+      </field>
+      <field>
+        <column_name>ShipToAddressID</column_name>
+        <stream_name>ShipToAddressID</stream_name>
+      </field>
+      <field>
+        <column_name>ShipMethodID</column_name>
+        <stream_name>ShipMethodID</stream_name>
+      </field>
+      <field>
+        <column_name>CreditCardID</column_name>
+        <stream_name>CreditCardID</stream_name>
+      </field>
+      <field>
+        <column_name>CreditCardApprovalCode</column_name>
+        <stream_name>CreditCardApprovalCode</stream_name>
+      </field>
+      <field>
+        <column_name>CurrencyRateID</column_name>
+        <stream_name>CurrencyRateID</stream_name>
+      </field>
+      <field>
+        <column_name>SubTotal</column_name>
+        <stream_name>SubTotal</stream_name>
+      </field>
+      <field>
+        <column_name>TaxAmt</column_name>
+        <stream_name>TaxAmt</stream_name>
+      </field>
+      <field>
+        <column_name>Freight</column_name>
+        <stream_name>Freight</stream_name>
+      </field>
+      <field>
+        <column_name>TotalDue</column_name>
+        <stream_name>TotalDue</stream_name>
+      </field>
+      <field>
+        <column_name>Comment</column_name>
+        <stream_name>Comment</stream_name>
+      </field>
+      <field>
+        <column_name>rowguid</column_name>
+        <stream_name>rowguid</stream_name>
+      </field>
+      <field>
+        <column_name>ModifiedDate</column_name>
+        <stream_name>ModifiedDate</stream_name>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>240</xloc>
+      <yloc>48</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Load stg_salesorderdetail</name>
+    <type>TableOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>conn_adventureworks_dw</connection>
+    <schema/>
+    <table>stg_salesorderdetail</table>
+    <commit>1000</commit>
+    <truncate>Y</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
+    <fields>
+      <field>
+        <column_name>SalesOrderID</column_name>
+        <stream_name>SalesOrderID</stream_name>
+      </field>
+      <field>
+        <column_name>SalesOrderDetailID</column_name>
+        <stream_name>SalesOrderDetailID</stream_name>
+      </field>
+      <field>
+        <column_name>CarrierTrackingNumber</column_name>
+        <stream_name>CarrierTrackingNumber</stream_name>
+      </field>
+      <field>
+        <column_name>OrderQty</column_name>
+        <stream_name>OrderQty</stream_name>
+      </field>
+      <field>
+        <column_name>ProductID</column_name>
+        <stream_name>ProductID</stream_name>
+      </field>
+      <field>
+        <column_name>SpecialOfferID</column_name>
+        <stream_name>SpecialOfferID</stream_name>
+      </field>
+      <field>
+        <column_name>UnitPrice</column_name>
+        <stream_name>UnitPrice</stream_name>
+      </field>
+      <field>
+        <column_name>UnitPriceDiscount</column_name>
+        <stream_name>UnitPriceDiscount</stream_name>
+      </field>
+      <field>
+        <column_name>LineTotal</column_name>
+        <stream_name>LineTotal</stream_name>
+      </field>
+      <field>
+        <column_name>ModifiedDate</column_name>
+        <stream_name>ModifiedDate</stream_name>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>240</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Extract Detail Sumber</name>
+    <type>TableInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>conn_adventureworks</connection>
+    <sql>SELECT 
+    d.SalesOrderID,
+    d.SalesOrderDetailID,
+    d.CarrierTrackingNumber,
+    d.OrderQty,
+    d.ProductID,
+    d.SpecialOfferID,
+    d.UnitPrice,
+    d.UnitPriceDiscount,
+    d.LineTotal,
+    d.ModifiedDate
+FROM sales_salesorderdetail d
+JOIN sales_salesorderheader h ON d.SalesOrderID = h.SalesOrderID
+WHERE h.OnlineOrderFlag = 1;</sql>
     <limit>0</limit>
     <lookup/>
     <execute_each_row>N</execute_each_row>
@@ -609,13 +906,151 @@ ORDER BY tanggal;</sql>
     <cached_row_meta_active>N</cached_row_meta_active>
     <row-meta>
       <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>SalesOrderID</name>
+        <length>9</length>
+        <precision>0</precision>
+        <origin>Extract Detail Sumber</origin>
+        <comments>SalesOrderID</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>SalesOrderDetailID</name>
+        <length>9</length>
+        <precision>0</precision>
+        <origin>Extract Detail Sumber</origin>
+        <comments>SalesOrderDetailID</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>CarrierTrackingNumber</name>
+        <length>25</length>
+        <precision>-1</precision>
+        <origin>Extract Detail Sumber</origin>
+        <comments>CarrierTrackingNumber</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>OrderQty</name>
+        <length>4</length>
+        <precision>0</precision>
+        <origin>Extract Detail Sumber</origin>
+        <comments>OrderQty</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>ProductID</name>
+        <length>9</length>
+        <precision>0</precision>
+        <origin>Extract Detail Sumber</origin>
+        <comments>ProductID</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>SpecialOfferID</name>
+        <length>9</length>
+        <precision>0</precision>
+        <origin>Extract Detail Sumber</origin>
+        <comments>SpecialOfferID</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
         <type>BigNumber</type>
         <storagetype>normal</storagetype>
-        <name>tanggal_key</name>
-        <length>16</length>
-        <precision>0</precision>
-        <origin>Extract OrderDate</origin>
-        <comments>tanggal_key</comments>
+        <name>UnitPrice</name>
+        <length>19</length>
+        <precision>4</precision>
+        <origin>Extract Detail Sumber</origin>
+        <comments>UnitPrice</comments>
         <conversion_Mask>######0.0###################;-######0.0###################</conversion_Mask>
         <decimal_symbol>.</decimal_symbol>
         <grouping_symbol/>
@@ -627,18 +1062,64 @@ ORDER BY tanggal;</sql>
         <sort_descending>N</sort_descending>
         <output_padding>N</output_padding>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
+        <date_format_locale>en_GB</date_format_locale>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
       <value-meta>
-        <type>Date</type>
+        <type>BigNumber</type>
         <storagetype>normal</storagetype>
-        <name>tanggal</name>
-        <length>-1</length>
+        <name>UnitPriceDiscount</name>
+        <length>19</length>
+        <precision>4</precision>
+        <origin>Extract Detail Sumber</origin>
+        <comments>UnitPriceDiscount</comments>
+        <conversion_Mask>######0.0###################;-######0.0###################</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>BigNumber</type>
+        <storagetype>normal</storagetype>
+        <name>LineTotal</name>
+        <length>38</length>
+        <precision>6</precision>
+        <origin>Extract Detail Sumber</origin>
+        <comments>LineTotal</comments>
+        <conversion_Mask>######0.0###################;-######0.0###################</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Timestamp</type>
+        <storagetype>normal</storagetype>
+        <name>ModifiedDate</name>
+        <length>0</length>
         <precision>-1</precision>
-        <origin>Extract OrderDate</origin>
-        <comments>tanggal</comments>
+        <origin>Extract Detail Sumber</origin>
+        <comments>ModifiedDate</comments>
         <conversion_Mask/>
         <decimal_symbol>.</decimal_symbol>
         <grouping_symbol>,</grouping_symbol>
@@ -650,237 +1131,7 @@ ORDER BY tanggal;</sql>
         <sort_descending>N</sort_descending>
         <output_padding>N</output_padding>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Asia/Jakarta</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>Integer</type>
-        <storagetype>normal</storagetype>
-        <name>tahun</name>
-        <length>9</length>
-        <precision>0</precision>
-        <origin>Extract OrderDate</origin>
-        <comments>tahun</comments>
-        <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Asia/Jakarta</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>Integer</type>
-        <storagetype>normal</storagetype>
-        <name>semester</name>
-        <length>9</length>
-        <precision>0</precision>
-        <origin>Extract OrderDate</origin>
-        <comments>semester</comments>
-        <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Asia/Jakarta</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>Integer</type>
-        <storagetype>normal</storagetype>
-        <name>kuartal</name>
-        <length>9</length>
-        <precision>0</precision>
-        <origin>Extract OrderDate</origin>
-        <comments>kuartal</comments>
-        <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Asia/Jakarta</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>Integer</type>
-        <storagetype>normal</storagetype>
-        <name>bulan</name>
-        <length>9</length>
-        <precision>0</precision>
-        <origin>Extract OrderDate</origin>
-        <comments>bulan</comments>
-        <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Asia/Jakarta</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>nama_bulan</name>
-        <length>9</length>
-        <precision>-1</precision>
-        <origin>Extract OrderDate</origin>
-        <comments>nama_bulan</comments>
-        <conversion_Mask/>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Asia/Jakarta</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>Integer</type>
-        <storagetype>normal</storagetype>
-        <name>minggu_dalam_tahun</name>
-        <length>9</length>
-        <precision>0</precision>
-        <origin>Extract OrderDate</origin>
-        <comments>minggu_dalam_tahun</comments>
-        <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Asia/Jakarta</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>Integer</type>
-        <storagetype>normal</storagetype>
-        <name>tanggal_dalam_bulan</name>
-        <length>9</length>
-        <precision>0</precision>
-        <origin>Extract OrderDate</origin>
-        <comments>tanggal_dalam_bulan</comments>
-        <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Asia/Jakarta</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>Integer</type>
-        <storagetype>normal</storagetype>
-        <name>hari_dalam_minggu</name>
-        <length>9</length>
-        <precision>0</precision>
-        <origin>Extract OrderDate</origin>
-        <comments>hari_dalam_minggu</comments>
-        <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Asia/Jakarta</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>nama_hari</name>
-        <length>6</length>
-        <precision>-1</precision>
-        <origin>Extract OrderDate</origin>
-        <comments>nama_hari</comments>
-        <conversion_Mask/>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Asia/Jakarta</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>Integer</type>
-        <storagetype>normal</storagetype>
-        <name>is_akhir_pekan</name>
-        <length>9</length>
-        <precision>0</precision>
-        <origin>Extract OrderDate</origin>
-        <comments>is_akhir_pekan</comments>
-        <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
+        <date_format_locale>en_GB</date_format_locale>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
@@ -894,14 +1145,14 @@ ORDER BY tanggal;</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>80</xloc>
-      <yloc>96</yloc>
+      <xloc>64</xloc>
+      <yloc>128</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Insert / update</name>
-    <type>InsertUpdate</type>
+    <name>Extract Cost History Sumber</name>
+    <type>TableInput</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -910,74 +1161,137 @@ ORDER BY tanggal;</sql>
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <connection>conn_adventureworks_dw</connection>
-    <commit>100</commit>
-    <update_bypassed>Y</update_bypassed>
-    <lookup>
-      <schema>adventureworks_dw</schema>
-      <table>dim_date</table>
-      <key>
-        <name>tanggal_key</name>
-        <field>tanggal_key</field>
-        <condition>=</condition>
-        <name2/>
-      </key>
-      <value>
-        <name>tanggal</name>
-        <rename>tanggal</rename>
-        <update>Y</update>
-      </value>
-      <value>
-        <name>tahun</name>
-        <rename>tahun</rename>
-        <update>Y</update>
-      </value>
-      <value>
-        <name>semester</name>
-        <rename>semester</rename>
-        <update>Y</update>
-      </value>
-      <value>
-        <name>kuartal</name>
-        <rename>kuartal</rename>
-        <update>Y</update>
-      </value>
-      <value>
-        <name>bulan</name>
-        <rename>bulan</rename>
-        <update>Y</update>
-      </value>
-      <value>
-        <name>nama_bulan</name>
-        <rename>nama_bulan</rename>
-        <update>Y</update>
-      </value>
-      <value>
-        <name>minggu_dalam_tahun</name>
-        <rename>minggu_dalam_tahun</rename>
-        <update>Y</update>
-      </value>
-      <value>
-        <name>tanggal_dalam_bulan</name>
-        <rename>tanggal_dalam_bulan</rename>
-        <update>Y</update>
-      </value>
-      <value>
-        <name>hari_dalam_minggu</name>
-        <rename>hari_dalam_minggu</rename>
-        <update>Y</update>
-      </value>
-      <value>
-        <name>nama_hari</name>
-        <rename>nama_hari</rename>
-        <update>Y</update>
-      </value>
-      <value>
-        <name>is_akhir_pekan</name>
-        <rename>is_akhir_pekan</rename>
-        <update>Y</update>
-      </value>
-    </lookup>
+    <connection>conn_adventureworks</connection>
+    <sql>SELECT 
+    ProductID,
+    StartDate,
+    EndDate,
+    StandardCost,
+    ModifiedDate
+FROM production_productcosthistory;</sql>
+    <limit>0</limit>
+    <lookup/>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <lazy_conversion_active>N</lazy_conversion_active>
+    <cached_row_meta_active>N</cached_row_meta_active>
+    <row-meta>
+      <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>ProductID</name>
+        <length>9</length>
+        <precision>0</precision>
+        <origin>Table input</origin>
+        <comments>ProductID</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Timestamp</type>
+        <storagetype>normal</storagetype>
+        <name>StartDate</name>
+        <length>0</length>
+        <precision>-1</precision>
+        <origin>Table input</origin>
+        <comments>StartDate</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Timestamp</type>
+        <storagetype>normal</storagetype>
+        <name>EndDate</name>
+        <length>0</length>
+        <precision>-1</precision>
+        <origin>Table input</origin>
+        <comments>EndDate</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>BigNumber</type>
+        <storagetype>normal</storagetype>
+        <name>StandardCost</name>
+        <length>19</length>
+        <precision>4</precision>
+        <origin>Table input</origin>
+        <comments>StandardCost</comments>
+        <conversion_Mask>######0.0###################;-######0.0###################</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Timestamp</type>
+        <storagetype>normal</storagetype>
+        <name>ModifiedDate</name>
+        <length>0</length>
+        <precision>-1</precision>
+        <origin>Table input</origin>
+        <comments>ModifiedDate</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+    </row-meta>
     <attributes/>
     <cluster_schema/>
     <remotesteps>
@@ -987,8 +1301,72 @@ ORDER BY tanggal;</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>224</xloc>
-      <yloc>96</yloc>
+      <xloc>64</xloc>
+      <yloc>208</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Load stg_productcosthistory</name>
+    <type>TableOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>conn_adventureworks_dw</connection>
+    <schema/>
+    <table>stg_productcosthistory</table>
+    <commit>1000</commit>
+    <truncate>Y</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
+    <fields>
+      <field>
+        <column_name>ProductID</column_name>
+        <stream_name>ProductID</stream_name>
+      </field>
+      <field>
+        <column_name>StartDate</column_name>
+        <stream_name>StartDate</stream_name>
+      </field>
+      <field>
+        <column_name>EndDate</column_name>
+        <stream_name>EndDate</stream_name>
+      </field>
+      <field>
+        <column_name>StandardCost</column_name>
+        <stream_name>StandardCost</stream_name>
+      </field>
+      <field>
+        <column_name>ModifiedDate</column_name>
+        <stream_name>ModifiedDate</stream_name>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>240</xloc>
+      <yloc>208</yloc>
       <draw>Y</draw>
     </GUI>
   </step>

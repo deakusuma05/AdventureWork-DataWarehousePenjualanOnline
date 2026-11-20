@@ -430,7 +430,7 @@
     <created_date>2026/11/02 16:53:20.874</created_date>
     <modified_user>-</modified_user>
     <modified_date>2026/11/02 16:53:20.874</modified_date>
-    <key_for_session_key/>
+    <key_for_session_key>H4sIAAAAAAAA/wMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
@@ -580,19 +580,26 @@
       <schema_name/>
     </partitioning>
     <connection>conn_adventureworks</connection>
-    <sql>SELECT DISTINCT
+    <sql>SELECT 
     p.ProductID AS product_id,
     p.Name AS product_name,
     p.ProductNumber AS product_number,
     COALESCE(psc.Name, 'Tanpa Subkategori') AS subcategory_name,
-    COALESCE(pc.Name, 'Tanpa Kategori') AS category_name
-FROM sales_salesorderdetail sod
-JOIN sales_salesorderheader soh ON sod.SalesOrderID = soh.SalesOrderID
-JOIN production_product p ON sod.ProductID = p.ProductID
+    COALESCE(pc.Name, 'Tanpa Kategori') AS category_name,
+    COALESCE(pch.StandardCost, p.StandardCost, 0) AS standard_cost,
+    COALESCE(CAST(pch.StartDate AS DATE), '1900-01-01') AS berlaku_mulai,
+    COALESCE(CAST(pch.EndDate AS DATE), '9999-12-31') AS berlaku_sampai
+FROM production_product p
+LEFT JOIN production_productcosthistory pch ON p.ProductID = pch.ProductID
 LEFT JOIN production_productsubcategory psc ON p.ProductSubcategoryID = psc.ProductSubcategoryID
 LEFT JOIN production_productcategory pc ON psc.ProductCategoryID = pc.ProductCategoryID
-WHERE soh.OnlineOrderFlag = 1
-ORDER BY p.ProductID;</sql>
+WHERE p.ProductID IN (
+    SELECT DISTINCT sod.ProductID 
+    FROM sales_salesorderdetail sod 
+    JOIN sales_salesorderheader soh ON sod.SalesOrderID = soh.SalesOrderID 
+    WHERE soh.OnlineOrderFlag = 1
+)
+ORDER BY p.ProductID, berlaku_mulai;</sql>
     <limit>0</limit>
     <lookup/>
     <execute_each_row>N</execute_each_row>
@@ -715,6 +722,75 @@ ORDER BY p.ProductID;</sql>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
+      <value-meta>
+        <type>BigNumber</type>
+        <storagetype>normal</storagetype>
+        <name>standard_cost</name>
+        <length>19</length>
+        <precision>4</precision>
+        <origin>Extract Products</origin>
+        <comments>standard_cost</comments>
+        <conversion_Mask>######0.0###################;-######0.0###################</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>berlaku_mulai</name>
+        <length>10</length>
+        <precision>-1</precision>
+        <origin>Extract Products</origin>
+        <comments>berlaku_mulai</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>berlaku_sampai</name>
+        <length>10</length>
+        <precision>-1</precision>
+        <origin>Extract Products</origin>
+        <comments>berlaku_sampai</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_GB</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
     </row-meta>
     <attributes/>
     <cluster_schema/>
@@ -732,7 +808,7 @@ ORDER BY p.ProductID;</sql>
   </step>
   <step>
     <name>Load dim_product</name>
-    <type>CombinationLookup</type>
+    <type>TableOutput</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -741,44 +817,57 @@ ORDER BY p.ProductID;</sql>
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <schema>adventureworks_dw</schema>
-    <table>dim_product</table>
     <connection>conn_adventureworks_dw</connection>
-    <commit>100</commit>
-    <cache_size>9999</cache_size>
-    <replace>N</replace>
-    <preloadCache>N</preloadCache>
-    <crc>N</crc>
-    <crcfield>hashcode</crcfield>
+    <schema/>
+    <table>dim_product</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
     <fields>
-      <key>
-        <name>product_id</name>
-        <lookup>product_id</lookup>
-      </key>
-      <key>
-        <name>product_name</name>
-        <lookup>product_name</lookup>
-      </key>
-      <key>
-        <name>product_number</name>
-        <lookup>product_number</lookup>
-      </key>
-      <key>
-        <name>subcategory_name</name>
-        <lookup>subcategory_name</lookup>
-      </key>
-      <key>
-        <name>category_name</name>
-        <lookup>category_name</lookup>
-      </key>
-      <return>
-        <name>product_key</name>
-        <creation_method>autoinc</creation_method>
-        <use_autoinc>Y</use_autoinc>
-      </return>
+      <field>
+        <column_name>product_id</column_name>
+        <stream_name>product_id</stream_name>
+      </field>
+      <field>
+        <column_name>product_name</column_name>
+        <stream_name>product_name</stream_name>
+      </field>
+      <field>
+        <column_name>product_number</column_name>
+        <stream_name>product_number</stream_name>
+      </field>
+      <field>
+        <column_name>subcategory_name</column_name>
+        <stream_name>subcategory_name</stream_name>
+      </field>
+      <field>
+        <column_name>category_name</column_name>
+        <stream_name>category_name</stream_name>
+      </field>
+      <field>
+        <column_name>standard_cost</column_name>
+        <stream_name>standard_cost</stream_name>
+      </field>
+      <field>
+        <column_name>berlaku_mulai</column_name>
+        <stream_name>berlaku_mulai</stream_name>
+      </field>
+      <field>
+        <column_name>berlaku_sampai</column_name>
+        <stream_name>berlaku_sampai</stream_name>
+      </field>
     </fields>
-    <sequence/>
-    <last_update_field/>
     <attributes/>
     <cluster_schema/>
     <remotesteps>

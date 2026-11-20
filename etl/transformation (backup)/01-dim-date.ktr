@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>08-fact-online-sales</name>
+    <name>01-dim-date</name>
     <description/>
     <extended_description/>
     <trans_version/>
@@ -427,9 +427,9 @@
     <clusterschemas>
     </clusterschemas>
     <created_user>-</created_user>
-    <created_date>2026/11/02 22:20:46.609</created_date>
+    <created_date>2026/11/02 15:44:31.809</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2026/11/02 22:20:46.609</modified_date>
+    <modified_date>2026/11/02 15:44:31.809</modified_date>
     <key_for_session_key>H4sIAAAAAAAA/wMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
@@ -563,43 +563,13 @@
   </connection>
   <order>
     <hop>
-      <from>Lookup Territory</from>
-      <to>Lookup Promotion</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Lookup Promotion</from>
-      <to>Lookup Currency</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Lookup Currency</from>
-      <to>Lookup Ship Method</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Lookup Ship Method</from>
-      <to>Load fact_online_sales</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Extract Fact Source</from>
-      <to>Lookup Product</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Lookup Product</from>
-      <to>Lookup Customer</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Lookup Customer</from>
-      <to>Lookup Territory</to>
+      <from>Extract OrderDate</from>
+      <to>Insert / update</to>
       <enabled>Y</enabled>
     </hop>
   </order>
   <step>
-    <name>Extract Fact Source</name>
+    <name>Extract OrderDate</name>
     <type>TableInput</type>
     <description/>
     <distribute>Y</distribute>
@@ -610,23 +580,27 @@
       <schema_name/>
     </partitioning>
     <connection>conn_adventureworks</connection>
-    <sql>SELECT
-    sod.SalesOrderDetailID AS sales_detail_key,
-    soh.SalesOrderID AS sales_order_id,
-    CAST(DATE_FORMAT(soh.OrderDate, '%Y%m%d') AS UNSIGNED) AS tanggal_key,
-    sod.ProductID AS product_id,
-    soh.CustomerID AS customer_id,
-    soh.TerritoryID AS territory_id,
-    sod.SpecialOfferID AS special_offer_id,
-    COALESCE(soh.CurrencyRateID, -1) AS currency_rate_id,
-    soh.ShipMethodID AS ship_method_id,
-    sod.OrderQty AS order_qty,
-    sod.UnitPrice AS unit_price,
-    sod.UnitPriceDiscount AS unit_price_discount,
-    sod.LineTotal AS line_total
-FROM sales_salesorderdetail sod
-JOIN sales_salesorderheader soh ON sod.SalesOrderID = soh.SalesOrderID
-WHERE soh.OnlineOrderFlag = 1;</sql>
+    <sql>SELECT DISTINCT
+    CAST(DATE_FORMAT(OrderDate, '%Y%m%d') AS UNSIGNED) AS tanggal_key,
+    DATE(OrderDate) AS tanggal,
+    YEAR(OrderDate) AS tahun,
+    IF(MONTH(OrderDate) &lt;= 6, 1, 2) AS semester,
+    QUARTER(OrderDate) AS kuartal,
+    MONTH(OrderDate) AS bulan,
+    ELT(MONTH(OrderDate), 
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ) AS nama_bulan,
+    WEEKOFYEAR(OrderDate) AS minggu_dalam_tahun,
+    DAY(OrderDate) AS tanggal_dalam_bulan,
+    DAYOFWEEK(OrderDate) AS hari_dalam_minggu,
+    ELT(DAYOFWEEK(OrderDate), 
+        'Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'
+    ) AS nama_hari,
+    IF(DAYOFWEEK(OrderDate) IN (1, 7), 1, 0) AS is_akhir_pekan
+FROM sales_salesorderheader
+WHERE OnlineOrderFlag = 1
+ORDER BY tanggal;</sql>
     <limit>0</limit>
     <lookup/>
     <execute_each_row>N</execute_each_row>
@@ -635,58 +609,12 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
     <cached_row_meta_active>N</cached_row_meta_active>
     <row-meta>
       <value-meta>
-        <type>Integer</type>
-        <storagetype>normal</storagetype>
-        <name>sales_detail_key</name>
-        <length>9</length>
-        <precision>0</precision>
-        <origin>Extract Fact Source</origin>
-        <comments>sales_detail_key</comments>
-        <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Asia/Jakarta</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>Integer</type>
-        <storagetype>normal</storagetype>
-        <name>sales_order_id</name>
-        <length>9</length>
-        <precision>0</precision>
-        <origin>Extract Fact Source</origin>
-        <comments>sales_order_id</comments>
-        <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Asia/Jakarta</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
         <type>BigNumber</type>
         <storagetype>normal</storagetype>
         <name>tanggal_key</name>
         <length>16</length>
         <precision>0</precision>
-        <origin>Extract Fact Source</origin>
+        <origin>Extract OrderDate</origin>
         <comments>tanggal_key</comments>
         <conversion_Mask>######0.0###################;-######0.0###################</conversion_Mask>
         <decimal_symbol>.</decimal_symbol>
@@ -704,13 +632,36 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
       <value-meta>
+        <type>Date</type>
+        <storagetype>normal</storagetype>
+        <name>tanggal</name>
+        <length>-1</length>
+        <precision>-1</precision>
+        <origin>Extract OrderDate</origin>
+        <comments>tanggal</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
         <type>Integer</type>
         <storagetype>normal</storagetype>
-        <name>product_id</name>
+        <name>tahun</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Extract Fact Source</origin>
-        <comments>product_id</comments>
+        <origin>Extract OrderDate</origin>
+        <comments>tahun</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
         <decimal_symbol>.</decimal_symbol>
         <grouping_symbol>,</grouping_symbol>
@@ -729,11 +680,11 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
       <value-meta>
         <type>Integer</type>
         <storagetype>normal</storagetype>
-        <name>customer_id</name>
+        <name>semester</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Extract Fact Source</origin>
-        <comments>customer_id</comments>
+        <origin>Extract OrderDate</origin>
+        <comments>semester</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
         <decimal_symbol>.</decimal_symbol>
         <grouping_symbol>,</grouping_symbol>
@@ -752,11 +703,11 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
       <value-meta>
         <type>Integer</type>
         <storagetype>normal</storagetype>
-        <name>territory_id</name>
+        <name>kuartal</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Extract Fact Source</origin>
-        <comments>territory_id</comments>
+        <origin>Extract OrderDate</origin>
+        <comments>kuartal</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
         <decimal_symbol>.</decimal_symbol>
         <grouping_symbol>,</grouping_symbol>
@@ -775,12 +726,35 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
       <value-meta>
         <type>Integer</type>
         <storagetype>normal</storagetype>
-        <name>special_offer_id</name>
+        <name>bulan</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Extract Fact Source</origin>
-        <comments>special_offer_id</comments>
+        <origin>Extract OrderDate</origin>
+        <comments>bulan</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Asia/Jakarta</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>nama_bulan</name>
+        <length>9</length>
+        <precision>-1</precision>
+        <origin>Extract OrderDate</origin>
+        <comments>nama_bulan</comments>
+        <conversion_Mask/>
         <decimal_symbol>.</decimal_symbol>
         <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
@@ -798,11 +772,11 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
       <value-meta>
         <type>Integer</type>
         <storagetype>normal</storagetype>
-        <name>currency_rate_id</name>
+        <name>minggu_dalam_tahun</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Extract Fact Source</origin>
-        <comments>currency_rate_id</comments>
+        <origin>Extract OrderDate</origin>
+        <comments>minggu_dalam_tahun</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
         <decimal_symbol>.</decimal_symbol>
         <grouping_symbol>,</grouping_symbol>
@@ -821,11 +795,11 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
       <value-meta>
         <type>Integer</type>
         <storagetype>normal</storagetype>
-        <name>ship_method_id</name>
+        <name>tanggal_dalam_bulan</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Extract Fact Source</origin>
-        <comments>ship_method_id</comments>
+        <origin>Extract OrderDate</origin>
+        <comments>tanggal_dalam_bulan</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
         <decimal_symbol>.</decimal_symbol>
         <grouping_symbol>,</grouping_symbol>
@@ -844,11 +818,11 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
       <value-meta>
         <type>Integer</type>
         <storagetype>normal</storagetype>
-        <name>order_qty</name>
-        <length>4</length>
+        <name>hari_dalam_minggu</name>
+        <length>9</length>
         <precision>0</precision>
-        <origin>Extract Fact Source</origin>
-        <comments>order_qty</comments>
+        <origin>Extract OrderDate</origin>
+        <comments>hari_dalam_minggu</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
         <decimal_symbol>.</decimal_symbol>
         <grouping_symbol>,</grouping_symbol>
@@ -865,16 +839,16 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
       <value-meta>
-        <type>BigNumber</type>
+        <type>String</type>
         <storagetype>normal</storagetype>
-        <name>unit_price</name>
-        <length>19</length>
-        <precision>4</precision>
-        <origin>Extract Fact Source</origin>
-        <comments>unit_price</comments>
-        <conversion_Mask>######0.0###################;-######0.0###################</conversion_Mask>
+        <name>nama_hari</name>
+        <length>6</length>
+        <precision>-1</precision>
+        <origin>Extract OrderDate</origin>
+        <comments>nama_hari</comments>
+        <conversion_Mask/>
         <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol/>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -888,39 +862,16 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
       <value-meta>
-        <type>BigNumber</type>
+        <type>Integer</type>
         <storagetype>normal</storagetype>
-        <name>unit_price_discount</name>
-        <length>19</length>
-        <precision>4</precision>
-        <origin>Extract Fact Source</origin>
-        <comments>unit_price_discount</comments>
-        <conversion_Mask>######0.0###################;-######0.0###################</conversion_Mask>
+        <name>is_akhir_pekan</name>
+        <length>9</length>
+        <precision>0</precision>
+        <origin>Extract OrderDate</origin>
+        <comments>is_akhir_pekan</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
         <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol/>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Asia/Jakarta</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>BigNumber</type>
-        <storagetype>normal</storagetype>
-        <name>line_total</name>
-        <length>38</length>
-        <precision>6</precision>
-        <origin>Extract Fact Source</origin>
-        <comments>line_total</comments>
-        <conversion_Mask>######0.0###################;-######0.0###################</conversion_Mask>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol/>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -943,14 +894,14 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>48</xloc>
-      <yloc>64</yloc>
+      <xloc>80</xloc>
+      <yloc>96</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Load fact_online_sales</name>
-    <type>TableOutput</type>
+    <name>Insert / update</name>
+    <type>InsertUpdate</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -960,122 +911,71 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
       <schema_name/>
     </partitioning>
     <connection>conn_adventureworks_dw</connection>
-    <schema>adventureworks_dw</schema>
-    <table>fact_online_sales</table>
-    <commit>1000</commit>
-    <truncate>Y</truncate>
-    <ignore_errors>N</ignore_errors>
-    <use_batch>Y</use_batch>
-    <specify_fields>Y</specify_fields>
-    <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field/>
-    <partitioning_daily>N</partitioning_daily>
-    <partitioning_monthly>Y</partitioning_monthly>
-    <tablename_in_field>N</tablename_in_field>
-    <tablename_field/>
-    <tablename_in_table>Y</tablename_in_table>
-    <return_keys>N</return_keys>
-    <return_field/>
-    <fields>
-      <field>
-        <column_name>sales_detail_key</column_name>
-        <stream_name>sales_detail_key</stream_name>
-      </field>
-      <field>
-        <column_name>sales_order_id</column_name>
-        <stream_name>sales_order_id</stream_name>
-      </field>
-      <field>
-        <column_name>tanggal_key</column_name>
-        <stream_name>tanggal_key</stream_name>
-      </field>
-      <field>
-        <column_name>order_qty</column_name>
-        <stream_name>order_qty</stream_name>
-      </field>
-      <field>
-        <column_name>unit_price</column_name>
-        <stream_name>unit_price</stream_name>
-      </field>
-      <field>
-        <column_name>unit_price_discount</column_name>
-        <stream_name>unit_price_discount</stream_name>
-      </field>
-      <field>
-        <column_name>line_total</column_name>
-        <stream_name>line_total</stream_name>
-      </field>
-      <field>
-        <column_name>product_key</column_name>
-        <stream_name>product_key</stream_name>
-      </field>
-      <field>
-        <column_name>customer_key</column_name>
-        <stream_name>customer_key</stream_name>
-      </field>
-      <field>
-        <column_name>territory_key</column_name>
-        <stream_name>territory_key</stream_name>
-      </field>
-      <field>
-        <column_name>promotion_key</column_name>
-        <stream_name>promotion_key</stream_name>
-      </field>
-      <field>
-        <column_name>currency_key</column_name>
-        <stream_name>currency_key</stream_name>
-      </field>
-      <field>
-        <column_name>ship_method_key</column_name>
-        <stream_name>ship_method_key</stream_name>
-      </field>
-    </fields>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>264</xloc>
-      <yloc>256</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Lookup Currency</name>
-    <type>DBLookup</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <connection>conn_adventureworks_dw</connection>
-    <cache>N</cache>
-    <cache_load_all>N</cache_load_all>
-    <cache_size>0</cache_size>
+    <commit>100</commit>
+    <update_bypassed>Y</update_bypassed>
     <lookup>
       <schema>adventureworks_dw</schema>
-      <table>dim_currency</table>
-      <orderby/>
-      <fail_on_multiple>N</fail_on_multiple>
-      <eat_row_on_failure>N</eat_row_on_failure>
+      <table>dim_date</table>
       <key>
-        <name>currency_rate_id</name>
-        <field>currency_rate_id</field>
+        <name>tanggal_key</name>
+        <field>tanggal_key</field>
         <condition>=</condition>
         <name2/>
       </key>
       <value>
-        <name>currency_key</name>
-        <rename>currency_key</rename>
-        <default/>
-        <type>Integer</type>
+        <name>tanggal</name>
+        <rename>tanggal</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>tahun</name>
+        <rename>tahun</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>semester</name>
+        <rename>semester</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>kuartal</name>
+        <rename>kuartal</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>bulan</name>
+        <rename>bulan</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>nama_bulan</name>
+        <rename>nama_bulan</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>minggu_dalam_tahun</name>
+        <rename>minggu_dalam_tahun</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>tanggal_dalam_bulan</name>
+        <rename>tanggal_dalam_bulan</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>hari_dalam_minggu</name>
+        <rename>hari_dalam_minggu</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>nama_hari</name>
+        <rename>nama_hari</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>is_akhir_pekan</name>
+        <rename>is_akhir_pekan</rename>
+        <update>Y</update>
       </value>
     </lookup>
     <attributes/>
@@ -1087,248 +987,8 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>48</xloc>
-      <yloc>160</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Lookup Customer</name>
-    <type>DBLookup</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <connection>conn_adventureworks_dw</connection>
-    <cache>N</cache>
-    <cache_load_all>N</cache_load_all>
-    <cache_size>0</cache_size>
-    <lookup>
-      <schema>adventureworks_dw</schema>
-      <table>dim_customer</table>
-      <orderby/>
-      <fail_on_multiple>N</fail_on_multiple>
-      <eat_row_on_failure>N</eat_row_on_failure>
-      <key>
-        <name>customer_id</name>
-        <field>customer_id</field>
-        <condition>=</condition>
-        <name2/>
-      </key>
-      <value>
-        <name>customer_key</name>
-        <rename>customer_key</rename>
-        <default/>
-        <type>Integer</type>
-      </value>
-    </lookup>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>352</xloc>
-      <yloc>64</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Lookup Product</name>
-    <type>DBLookup</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <connection>conn_adventureworks_dw</connection>
-    <cache>N</cache>
-    <cache_load_all>N</cache_load_all>
-    <cache_size>0</cache_size>
-    <lookup>
-      <schema>adventureworks_dw</schema>
-      <table>dim_product</table>
-      <orderby/>
-      <fail_on_multiple>N</fail_on_multiple>
-      <eat_row_on_failure>N</eat_row_on_failure>
-      <key>
-        <name>product_id</name>
-        <field>product_id</field>
-        <condition>=</condition>
-        <name2/>
-      </key>
-      <value>
-        <name>product_key</name>
-        <rename>product_key</rename>
-        <default/>
-        <type>Integer</type>
-      </value>
-    </lookup>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>192</xloc>
-      <yloc>64</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Lookup Promotion</name>
-    <type>DBLookup</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <connection>conn_adventureworks_dw</connection>
-    <cache>N</cache>
-    <cache_load_all>N</cache_load_all>
-    <cache_size>0</cache_size>
-    <lookup>
-      <schema>adventureworks_dw</schema>
-      <table>dim_promotion</table>
-      <orderby/>
-      <fail_on_multiple>N</fail_on_multiple>
-      <eat_row_on_failure>N</eat_row_on_failure>
-      <key>
-        <name>special_offer_id</name>
-        <field>special_offer_id</field>
-        <condition>=</condition>
-        <name2/>
-      </key>
-      <value>
-        <name>promotion_key</name>
-        <rename>promotion_key</rename>
-        <default/>
-        <type>Integer</type>
-      </value>
-    </lookup>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>192</xloc>
-      <yloc>160</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Lookup Ship Method</name>
-    <type>DBLookup</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <connection>conn_adventureworks_dw</connection>
-    <cache>N</cache>
-    <cache_load_all>N</cache_load_all>
-    <cache_size>0</cache_size>
-    <lookup>
-      <schema>adventureworks_dw</schema>
-      <table>dim_ship_method</table>
-      <orderby/>
-      <fail_on_multiple>N</fail_on_multiple>
-      <eat_row_on_failure>N</eat_row_on_failure>
-      <key>
-        <name>ship_method_id</name>
-        <field>ship_method_id</field>
-        <condition>=</condition>
-        <name2/>
-      </key>
-      <value>
-        <name>ship_method_key</name>
-        <rename>ship_method_key</rename>
-        <default/>
-        <type>Integer</type>
-      </value>
-    </lookup>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>48</xloc>
-      <yloc>256</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Lookup Territory</name>
-    <type>DBLookup</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <connection>conn_adventureworks_dw</connection>
-    <cache>N</cache>
-    <cache_load_all>N</cache_load_all>
-    <cache_size>0</cache_size>
-    <lookup>
-      <schema>adventureworks_dw</schema>
-      <table>dim_territory</table>
-      <orderby/>
-      <fail_on_multiple>N</fail_on_multiple>
-      <eat_row_on_failure>N</eat_row_on_failure>
-      <key>
-        <name>territory_id</name>
-        <field>territory_id</field>
-        <condition>=</condition>
-        <name2/>
-      </key>
-      <value>
-        <name>territory_key</name>
-        <rename>territory_key</rename>
-        <default/>
-        <type>Integer</type>
-      </value>
-    </lookup>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>352</xloc>
-      <yloc>160</yloc>
+      <xloc>224</xloc>
+      <yloc>96</yloc>
       <draw>Y</draw>
     </GUI>
   </step>

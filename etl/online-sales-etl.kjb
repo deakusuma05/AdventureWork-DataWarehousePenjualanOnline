@@ -11,6 +11,69 @@
   <modified_date>2026/11/02 22:58:21.113</modified_date>
   <parameters>
     </parameters>
+  <connection>
+    <name>conn_adventureworks_dw</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>adventureworks_dw</database>
+    <port>3306</port>
+    <username>root</username>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute>
+        <code>EXTRA_OPTION_MYSQL.defaultFetchSize</code>
+        <attribute>500</attribute>
+      </attribute>
+      <attribute>
+        <code>EXTRA_OPTION_MYSQL.useCursorFetch</code>
+        <attribute>true</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_UPPERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>IS_CLUSTERED</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>PORT_NUMBER</code>
+        <attribute>3306</attribute>
+      </attribute>
+      <attribute>
+        <code>PRESERVE_RESERVED_WORD_CASE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>QUOTE_ALL_FIELDS</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>STREAM_RESULTS</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_BOOLEAN_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_TIMESTAMP_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>USE_POOLING</code>
+        <attribute>N</attribute>
+      </attribute>
+    </attributes>
+  </connection>
   <slaveservers>
     </slaveservers>
   <job-log-table>
@@ -327,7 +390,7 @@
       <attributes/>
       <specification_method>filename</specification_method>
       <trans_object_id/>
-      <filename>D:/SEMESTER 7/DWO/FINAL PROJECT/adventureworks-online-sales-dw/etl/01-dim-date.ktr</filename>
+      <filename>${Internal.Job.Filename.Directory}/01-dim-date.ktr</filename>
       <transname/>
       <arg_from_previous>N</arg_from_previous>
       <params_from_previous>N</params_from_previous>
@@ -355,7 +418,7 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>128</xloc>
+      <xloc>368</xloc>
       <yloc>64</yloc>
       <attributes_kjc/>
     </entry>
@@ -366,7 +429,7 @@
       <attributes/>
       <specification_method>filename</specification_method>
       <trans_object_id/>
-      <filename>D:/SEMESTER 7/DWO/FINAL PROJECT/adventureworks-online-sales-dw/etl/02-dim-product.ktr</filename>
+      <filename>${Internal.Job.Filename.Directory}/02-dim-product.ktr</filename>
       <transname/>
       <arg_from_previous>N</arg_from_previous>
       <params_from_previous>N</params_from_previous>
@@ -394,7 +457,7 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>304</xloc>
+      <xloc>528</xloc>
       <yloc>64</yloc>
       <attributes_kjc/>
     </entry>
@@ -405,7 +468,7 @@
       <attributes/>
       <specification_method>filename</specification_method>
       <trans_object_id/>
-      <filename>D:/SEMESTER 7/DWO/FINAL PROJECT/adventureworks-online-sales-dw/etl/03-dim-customer.ktr</filename>
+      <filename>${Internal.Job.Filename.Directory}/03-dim-customer.ktr</filename>
       <transname/>
       <arg_from_previous>N</arg_from_previous>
       <params_from_previous>N</params_from_previous>
@@ -433,7 +496,7 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>496</xloc>
+      <xloc>672</xloc>
       <yloc>64</yloc>
       <attributes_kjc/>
     </entry>
@@ -444,7 +507,7 @@
       <attributes/>
       <specification_method>filename</specification_method>
       <trans_object_id/>
-      <filename>D:/SEMESTER 7/DWO/FINAL PROJECT/adventureworks-online-sales-dw/etl/04-dim-territory.ktr</filename>
+      <filename>${Internal.Job.Filename.Directory}/04-dim-territory.ktr</filename>
       <transname/>
       <arg_from_previous>N</arg_from_previous>
       <params_from_previous>N</params_from_previous>
@@ -472,7 +535,7 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>656</xloc>
+      <xloc>800</xloc>
       <yloc>64</yloc>
       <attributes_kjc/>
     </entry>
@@ -483,7 +546,7 @@
       <attributes/>
       <specification_method>filename</specification_method>
       <trans_object_id/>
-      <filename>D:/SEMESTER 7/DWO/FINAL PROJECT/adventureworks-online-sales-dw/etl/05-dim-promotion.ktr</filename>
+      <filename>${Internal.Job.Filename.Directory}/05-dim-promotion.ktr</filename>
       <transname/>
       <arg_from_previous>N</arg_from_previous>
       <params_from_previous>N</params_from_previous>
@@ -511,7 +574,7 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>656</xloc>
+      <xloc>800</xloc>
       <yloc>160</yloc>
       <attributes_kjc/>
     </entry>
@@ -522,7 +585,7 @@
       <attributes/>
       <specification_method>filename</specification_method>
       <trans_object_id/>
-      <filename>D:/SEMESTER 7/DWO/FINAL PROJECT/adventureworks-online-sales-dw/etl/06-dim-currency.ktr</filename>
+      <filename>${Internal.Job.Filename.Directory}/06-dim-currency.ktr</filename>
       <transname/>
       <arg_from_previous>N</arg_from_previous>
       <params_from_previous>N</params_from_previous>
@@ -550,7 +613,7 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>496</xloc>
+      <xloc>672</xloc>
       <yloc>160</yloc>
       <attributes_kjc/>
     </entry>
@@ -561,7 +624,7 @@
       <attributes/>
       <specification_method>filename</specification_method>
       <trans_object_id/>
-      <filename>D:/SEMESTER 7/DWO/FINAL PROJECT/adventureworks-online-sales-dw/etl/07-dim-ship-method.ktr</filename>
+      <filename>${Internal.Job.Filename.Directory}/07-dim-ship-method.ktr</filename>
       <transname/>
       <arg_from_previous>N</arg_from_previous>
       <params_from_previous>N</params_from_previous>
@@ -589,7 +652,7 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>320</xloc>
+      <xloc>528</xloc>
       <yloc>160</yloc>
       <attributes_kjc/>
     </entry>
@@ -600,7 +663,7 @@
       <attributes/>
       <specification_method>filename</specification_method>
       <trans_object_id/>
-      <filename>D:/SEMESTER 7/DWO/FINAL PROJECT/adventureworks-online-sales-dw/etl/08-fact-online-sales.ktr</filename>
+      <filename>${Internal.Job.Filename.Directory}/08-fact-online-sales.ktr</filename>
       <transname/>
       <arg_from_previous>N</arg_from_previous>
       <params_from_previous>N</params_from_previous>
@@ -628,21 +691,98 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>144</xloc>
+      <xloc>224</xloc>
       <yloc>160</yloc>
+      <attributes_kjc/>
+    </entry>
+    <entry>
+      <name>SQL Kosongkan Sebelum Load</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>-- 1. Kosongkan fakta dulu, lalu dimensi non-default
+DELETE FROM fact_online_sales;
+DELETE FROM dim_ship_method WHERE ship_method_key &lt;&gt; -1;
+DELETE FROM dim_currency WHERE currency_key &lt;&gt; -1;
+DELETE FROM dim_promotion WHERE promotion_key &lt;&gt; -1;
+DELETE FROM dim_territory WHERE territory_key &lt;&gt; -1;
+DELETE FROM dim_customer WHERE customer_key &lt;&gt; -1;
+DELETE FROM dim_product WHERE product_key &lt;&gt; -1;
+
+-- 2. Pastikan baris -1 (Unknown Member) selalu tersedia di seluruh dimensi
+INSERT IGNORE INTO dim_date (tanggal_key, tanggal, tahun, semester, kuartal, bulan, nama_bulan, minggu_dalam_tahun, tanggal_dalam_bulan, hari_dalam_minggu, nama_hari, is_akhir_pekan) 
+VALUES (-1, '1900-01-01', 1900, 1, 1, 1, 'Unknown', 1, 1, 1, 'Unknown', 0);
+
+INSERT IGNORE INTO dim_product (product_key, product_id, product_name, product_number, subcategory_name, category_name, standard_cost, berlaku_mulai, berlaku_sampai) 
+VALUES (-1, -1, 'Unknown Product', 'UNKNOWN', 'Unknown Subcategory', 'Unknown Category', 0.0000, '1900-01-01', '9999-12-31');
+
+INSERT IGNORE INTO dim_customer (customer_key, customer_id, account_number, customer_type, customer_name, territory_id) 
+VALUES (-1, -1, 'UNKNOWN', 'Unknown', 'Unknown Customer', -1);
+
+INSERT IGNORE INTO dim_territory (territory_key, territory_id, territory_name, country_code, territory_group) 
+VALUES (-1, -1, 'Unknown Territory', 'UNK', 'Unknown Group');
+
+INSERT IGNORE INTO dim_promotion (promotion_key, special_offer_id, description, discount_pct, type, category) 
+VALUES (-1, -1, 'Unknown Promotion', 0.0000, 'Unknown', 'Unknown');
+
+INSERT IGNORE INTO dim_currency (currency_key, currency_rate_id, from_currency_code, to_currency_code, average_rate, end_of_day_rate) 
+VALUES (-1, -1, 'USD', 'USD', 1.0000, 1.0000);
+
+INSERT IGNORE INTO dim_ship_method (ship_method_key, ship_method_id, ship_method_name, ship_base, ship_rate) 
+VALUES (-1, -1, 'Unknown Ship Method', 0.0000, 0.0000);</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>conn_adventureworks_dw</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>224</xloc>
+      <yloc>64</yloc>
+      <attributes_kjc/>
+    </entry>
+    <entry>
+      <name>t01_ekstrak</name>
+      <description/>
+      <type>TRANS</type>
+      <attributes/>
+      <specification_method>filename</specification_method>
+      <trans_object_id/>
+      <filename>${Internal.Job.Filename.Directory}/t01_ekstrak.ktr</filename>
+      <transname/>
+      <arg_from_previous>N</arg_from_previous>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <cluster>N</cluster>
+      <slave_server_name/>
+      <set_append_logfile>N</set_append_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <follow_abort_remote>N</follow_abort_remote>
+      <create_parent_folder>N</create_parent_folder>
+      <logging_remote_work>N</logging_remote_work>
+      <run_configuration>Pentaho local</run_configuration>
+      <suppress_result_data>N</suppress_result_data>
+      <parameters>
+        <pass_all_parameters>Y</pass_all_parameters>
+      </parameters>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>96</xloc>
+      <yloc>64</yloc>
       <attributes_kjc/>
     </entry>
   </entries>
   <hops>
-    <hop>
-      <from>Start</from>
-      <to>01-dim-date</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>Y</evaluation>
-      <unconditional>Y</unconditional>
-    </hop>
     <hop>
       <from>01-dim-date</from>
       <to>02-dim-product</to>
@@ -709,6 +849,33 @@
     <hop>
       <from>08-fact-online-sales</from>
       <to>Success</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Start</from>
+      <to>t01_ekstrak</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>t01_ekstrak</from>
+      <to>SQL Kosongkan Sebelum Load</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>SQL Kosongkan Sebelum Load</from>
+      <to>01-dim-date</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>

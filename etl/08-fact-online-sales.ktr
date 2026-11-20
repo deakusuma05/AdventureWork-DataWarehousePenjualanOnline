@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
     <name>08-fact-online-sales</name>
@@ -614,6 +614,7 @@
     sod.SalesOrderDetailID AS sales_detail_key,
     soh.SalesOrderID AS sales_order_id,
     CAST(DATE_FORMAT(soh.OrderDate, '%Y%m%d') AS UNSIGNED) AS tanggal_key,
+    CAST(soh.OrderDate AS DATE) AS order_date,
     sod.ProductID AS product_id,
     soh.CustomerID AS customer_id,
     soh.TerritoryID AS territory_id,
@@ -653,7 +654,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <sort_descending>N</sort_descending>
         <output_padding>N</output_padding>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
+        <date_format_locale>en_GB</date_format_locale>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
@@ -676,7 +677,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <sort_descending>N</sort_descending>
         <output_padding>N</output_padding>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
+        <date_format_locale>en_GB</date_format_locale>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
@@ -699,7 +700,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <sort_descending>N</sort_descending>
         <output_padding>N</output_padding>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
+        <date_format_locale>en_GB</date_format_locale>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
@@ -722,7 +723,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <sort_descending>N</sort_descending>
         <output_padding>N</output_padding>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
+        <date_format_locale>en_GB</date_format_locale>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
@@ -745,7 +746,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <sort_descending>N</sort_descending>
         <output_padding>N</output_padding>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
+        <date_format_locale>en_GB</date_format_locale>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
@@ -768,7 +769,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <sort_descending>N</sort_descending>
         <output_padding>N</output_padding>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
+        <date_format_locale>en_GB</date_format_locale>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
@@ -791,7 +792,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <sort_descending>N</sort_descending>
         <output_padding>N</output_padding>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
+        <date_format_locale>en_GB</date_format_locale>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
@@ -814,7 +815,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <sort_descending>N</sort_descending>
         <output_padding>N</output_padding>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
+        <date_format_locale>en_GB</date_format_locale>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
@@ -837,7 +838,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <sort_descending>N</sort_descending>
         <output_padding>N</output_padding>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
+        <date_format_locale>en_GB</date_format_locale>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
@@ -860,7 +861,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <sort_descending>N</sort_descending>
         <output_padding>N</output_padding>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
+        <date_format_locale>en_GB</date_format_locale>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
@@ -883,7 +884,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <sort_descending>N</sort_descending>
         <output_padding>N</output_padding>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
+        <date_format_locale>en_GB</date_format_locale>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
@@ -906,7 +907,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <sort_descending>N</sort_descending>
         <output_padding>N</output_padding>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
+        <date_format_locale>en_GB</date_format_locale>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
@@ -929,7 +930,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <sort_descending>N</sort_descending>
         <output_padding>N</output_padding>
         <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
+        <date_format_locale>en_GB</date_format_locale>
         <date_format_timezone>Asia/Jakarta</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
@@ -1074,7 +1075,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
       <value>
         <name>currency_key</name>
         <rename>currency_key</rename>
-        <default/>
+        <default>-1</default>
         <type>Integer</type>
       </value>
     </lookup>
@@ -1122,7 +1123,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
       <value>
         <name>customer_key</name>
         <rename>customer_key</rename>
-        <default/>
+        <default>-1</default>
         <type>Integer</type>
       </value>
     </lookup>
@@ -1152,7 +1153,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
       <schema_name/>
     </partitioning>
     <connection>conn_adventureworks_dw</connection>
-    <cache>N</cache>
+    <cache>Y</cache>
     <cache_load_all>N</cache_load_all>
     <cache_size>0</cache_size>
     <lookup>
@@ -1167,10 +1168,22 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
         <condition>=</condition>
         <name2/>
       </key>
+      <key>
+        <name>order_date</name>
+        <field>berlaku_mulai</field>
+        <condition>&lt;=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>order_date</name>
+        <field>berlaku_sampai</field>
+        <condition>&gt;=</condition>
+        <name2/>
+      </key>
       <value>
         <name>product_key</name>
         <rename>product_key</rename>
-        <default/>
+        <default>-1</default>
         <type>Integer</type>
       </value>
     </lookup>
@@ -1218,7 +1231,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
       <value>
         <name>promotion_key</name>
         <rename>promotion_key</rename>
-        <default/>
+        <default>-1</default>
         <type>Integer</type>
       </value>
     </lookup>
@@ -1266,7 +1279,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
       <value>
         <name>ship_method_key</name>
         <rename>ship_method_key</rename>
-        <default/>
+        <default>-1</default>
         <type>Integer</type>
       </value>
     </lookup>
@@ -1314,7 +1327,7 @@ WHERE soh.OnlineOrderFlag = 1;</sql>
       <value>
         <name>territory_key</name>
         <rename>territory_key</rename>
-        <default/>
+        <default>-1</default>
         <type>Integer</type>
       </value>
     </lookup>
