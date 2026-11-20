@@ -13,7 +13,25 @@
 
 ---
 
-## 1. Tim dan Pembagian Peran
+## 1. Matriks Pemenuhan 9 Kriteria Checklist Pekan 13
+
+Berikut rekapitulasi formal pemenuhan seluruh kriteria penilaian yang ditetapkan oleh dosen pembimbing:
+
+| No. | Kriteria Penugasan Dosen | Status Pemenuhan | Berkas Bukti & Implementasi |
+|:---:|---|:---:|---|
+| **1** | `etl/t01_ekstrak.ktr` berjalan, jumlah baris sumber dan staging sama (Header 27.659, Detail 60.398). | **100% Selesai** | [`etl/t01_ekstrak.ktr`](../etl/t01_ekstrak.ktr)<br>Bukti: [`bukti/etl/01-eksekusi-t01-ekstrak.png`](../bukti/etl/01-eksekusi-t01-ekstrak.png) |
+| **2** | Satu transformasi per dimensi (`01-dim-date.ktr` s.d. `07-dim-ship-method.ktr`), aturan NULL sesuai mapping. | **100% Selesai** | Berkas [`etl/01-dim-date.ktr`](../etl/01-dim-date.ktr) s.d. [`07-dim-ship-method.ktr`](../etl/07-dim-ship-method.ktr) |
+| **3** | Minimal satu dimensi SCD tipe 2: `dim_product` dari riwayat biaya, membuktikan produk berversi (misal ID 707 memiliki 3 versi). | **100% Selesai** | [`etl/02-dim-product.ktr`](../etl/02-dim-product.ktr)<br>Bukti: [`bukti/etl/02-scd2-dim-product.png`](../bukti/etl/02-scd2-dim-product.png) |
+| **4** | Transformasi fakta `etl/08-fact-online-sales.ktr`: Lookup ke seluruh dimensi dengan default `-1` dan lookup produk mencocokkan rentang tanggal transaksi. | **100% Selesai** | [`etl/08-fact-online-sales.ktr`](../etl/08-fact-online-sales.ktr) (60.398 baris termuat) |
+| **5** | Master Job berjalan lewat Kitchen dari terminal. | **100% Selesai** | Bukti: [`bukti/etl/05-eksekusi-kitchen-terminal.png`](../bukti/etl/05-eksekusi-kitchen-terminal.png) |
+| **6** | Job dijalankan 2x berturut-turut, tidak ada data ganda (menggunakan langkah SQL pengosongan sebelum load). | **100% Selesai** | [`etl/job_utama.kjb`](../etl/job_utama.kjb)<br>Bukti: [`bukti/etl/03-job-utama-sukses.png`](../bukti/etl/03-job-utama-sukses.png) |
+| **7** | Hasil rekonsiliasi tersimpan, selisih dijelaskan jika ada. | **100% Selesai** | [`sql/pengujian/pengujian-rekonsiliasi.sql`](../sql/pengujian/pengujian-rekonsiliasi.sql)<br>Bukti: [`bukti/etl/04-rekonsiliasi-staging-fakta.png`](../bukti/etl/04-rekonsiliasi-staging-fakta.png) |
+| **8** | Semua berkas `.ktr` dan `.kjb` tersimpan di folder `etl/`. | **100% Selesai** | Terverifikasi di folder [`etl/`](../etl/) |
+| **9** | Laporan `laporan/pekan-13.md` siap. | **100% Selesai** | Dokumen [`laporan/pekan-13.md`](pekan-13.md) |
+
+---
+
+## 2. Tim dan Pembagian Peran
 
 | No. | Nama | NPM | Peran Utama | Fokus Kontribusi Pekan 12–13 |
 |---:|---|---|---|---|
@@ -25,7 +43,7 @@
 
 ---
 
-## 2. Ringkasan Eksekutif Pekan 13
+## 3. Ringkasan Eksekutif Pekan 13
 
 Pada siklus pengembangan Pekan 12 menuju **Steering Review Pekan 13**, Tim Kelompok 2 berfokus penuh pada implementasi teknis pipeline **Extract, Transform, and Load (ETL)** menggunakan **Pentaho Data Integration (PDI / Kettle v9.4)**. Pipeline ini dirancang untuk memindahkan data transaksional dari database OLTP `adventureworks` menuju basis data analitik `adventureworks_dw`.
 
@@ -43,7 +61,7 @@ Seluruh **9 Kriteria Checklist Penugasan Dosen** telah diselesaikan secara tunta
 
 ---
 
-## 3. Arsitektur Lapisan Staging & Transformasi Ekstraksi (`t01_ekstrak.ktr`)
+## 4. Arsitektur Lapisan Staging & Transformasi Ekstraksi (`t01_ekstrak.ktr`)
 
 Sesuai metodologi arsitektur Data Warehouse Ralph Kimball, lapisan pementasan data (*staging layer*) difungsikan sebagai area isolasi agar proses transformasi data tidak membebani transaksi operasional pada database sumber OLTP.
 
@@ -65,11 +83,11 @@ Sesuai metodologi arsitektur Data Warehouse Ralph Kimball, lapisan pementasan da
 Seluruh alur ekstraksi berjalan serempak dan berstatus **100% Berhasil (Hijau)**.
 
 ![Eksekusi t01_ekstrak Sukses](../bukti/etl/01-eksekusi-t01-ekstrak.png)
-*Gambar 3.1: Kanvas eksekusi `t01_ekstrak.ktr` di Pentaho Spoon, mencatat pemuatan penuh 60.398 baris detail pesanan.*
+*Gambar 4.1: Kanvas eksekusi `t01_ekstrak.ktr` di Pentaho Spoon, mencatat pemuatan penuh 60.398 baris detail pesanan.*
 
 ---
 
-## 4. Implementasi 7 Transformasi Dimensi & Aturan NULL
+## 5. Implementasi 7 Transformasi Dimensi & Aturan NULL
 
 Setiap dimensi dibangun dalam satu berkas `.ktr` tersendiri pada folder [`etl/`](../etl/) untuk menjamin kemudahan pemeliharaan (*maintainability*):
 
@@ -85,7 +103,7 @@ Setiap dimensi dibangun dalam satu berkas `.ktr` tersendiri pada folder [`etl/`]
 
 ---
 
-## 5. Implementasi SCD Tipe 2 pada Dimensi Produk (`02-dim-product.ktr`)
+## 6. Implementasi SCD Tipe 2 pada Dimensi Produk (`02-dim-product.ktr`)
 
 Salah satu kriteria utama penugasan Pekan 12–13 adalah pembuktian **Slowly Changing Dimension (SCD) Tipe 2** minimal pada satu tabel dimensi. Tim Kelompok 2 mengimplementasikannya pada dimensi produk (`dim_product`) dengan memanfaatkan riwayat perubahan biaya standar produk dari tabel `production_productcosthistory`.
 
@@ -129,11 +147,11 @@ Hasil eksekusi membuktikan bahwa **Product ID 707 (Sport-100 Helmet, Red)** memi
 | **707** | Sport-100 Helmet, Red | $13.0863 | 2013-05-30 | 9999-12-31 | **Versi Aktif Saat Ini** |
 
 ![Bukti SCD Tipe 2 dim_product](../bukti/etl/02-scd2-dim-product.png)
-*Gambar 5.1: Hasil preview step `Extract Products` membuktikan 177 baris riwayat produk berversi dengan rentang tanggal masa berlaku yang presisi.*
+*Gambar 6.1: Hasil preview step `Extract Products` membuktikan 177 baris riwayat produk berversi dengan rentang tanggal masa berlaku yang presisi.*
 
 ---
 
-## 6. Transformasi Fakta Penjualan Online (`08-fact-online-sales.ktr`)
+## 7. Desain & Implementasi Transformasi Fakta (`08-fact-online-sales.ktr`)
 
 Transformasi fakta [`etl/08-fact-online-sales.ktr`](../etl/08-fact-online-sales.ktr) bertugas menggabungkan data transaksi detail penjualan dengan kunci pengganti (*surrogate keys*) dari seluruh tabel dimensi.
 
@@ -150,9 +168,9 @@ Transformasi fakta [`etl/08-fact-online-sales.ktr`](../etl/08-fact-online-sales.
 
 ---
 
-## 7. Orkestrasi Master Job, Idempotensi, dan Eksekusi Kitchen CLI
+## 8. Orkestrasi Master Job, Idempotensi, dan Eksekusi Kitchen CLI
 
-### 7.1. Desain Master Job (`job_utama.kjb` / `online-sales-etl.kjb`)
+### 8.1. Desain Master Job (`job_utama.kjb` / `online-sales-etl.kjb`)
 Untuk mengintegrasikan seluruh transformasi menjadi satu kesatuan alur kerja yang dapat dieksekusi sekali klik, tim menyusun berkas Job Pentaho:
 
 ```
@@ -179,7 +197,7 @@ Untuk mengintegrasikan seluruh transformasi menjadi satu kesatuan alur kerja yan
 
 Seluruh ketergantungan berkas di dalam Job telah menggunakan variabel path dinamis `${Internal.Job.Filename.Directory}/<file>.ktr`, sehingga job bersifat portabel dan dapat dijalankan di komputer manapun tanpa ketergantungan lokasi drive harddisk.
 
-### 7.2. Mekanisme Idempotensi (Uji Eksekusi 2x Berturut-turut)
+### 8.2. Mekanisme Idempotensi (Uji Eksekusi 2x Berturut-turut)
 Agar job dapat dijalankan berkali-kali tanpa menghasilkan duplikasi data (*idempotent*), disisipkan langkah SQL cerdas sebelum pemuatan dimensi:
 ```sql
 -- 1. Kosongkan fakta dulu, lalu dimensi non-default
@@ -199,11 +217,11 @@ VALUES (-1, '1900-01-01', 1900, 1, 1, 1, 'Unknown', 1, 1, 1, 'Unknown', 0);
 **Hasil Uji Idempotensi:** Job dijalankan dua kali berturut-turut di Spoon. Pada eksekusi kedua, jumlah baris tabel fakta tetap persis **60.398 baris** (tidak menjadi 120.796 baris), membuktikan sistem lolos uji Checklist #6 dosen.
 
 ![Master Job Sukses di Spoon](../bukti/etl/03-job-utama-sukses.png)
-*Gambar 7.1: Seluruh tahapan Master Job `job_utama.kjb` selesai dieksekusi dengan status hijau sempurna.*
+*Gambar 8.1: Seluruh tahapan Master Job `job_utama.kjb` selesai dieksekusi dengan status hijau sempurna.*
 
 ---
 
-### 7.3. Eksekusi Melalui Kitchen CLI dari Terminal
+### 8.3. Eksekusi Melalui Kitchen CLI dari Terminal
 Sesuai Checklist #5 dosen, pipeline ETL harus mampu dieksekusi secara otomatis dari command prompt/terminal tanpa membuka antarmuka grafis (GUI) Spoon. Tim menjalankan utilitas **Kitchen CLI** melalui Windows PowerShell:
 
 ```powershell
@@ -218,15 +236,15 @@ Kitchen - Finished!
 ```
 
 ![Eksekusi Kitchen Terminal Sukses](../bukti/etl/05-eksekusi-kitchen-terminal.png)
-*Gambar 7.2: Bukti eksekusi otomatis job ETL melalui terminal Windows PowerShell menggunakan utilitas Kitchen CLI.*
+*Gambar 8.2: Bukti eksekusi otomatis job ETL melalui terminal Windows PowerShell menggunakan utilitas Kitchen CLI.*
 
 ---
 
-## 8. Hasil Pengujian Rekonsiliasi Data & Kualitas Data
+## 9. Hasil Pengujian Rekonsiliasi Data & Kualitas Data
 
 Untuk membuktikan integritas matematis data antara sistem sumber dan Data Warehouse, tim merancang skrip pengujian komprehensif pada [`sql/pengujian/pengujian-rekonsiliasi.sql`](../sql/pengujian/pengujian-rekonsiliasi.sql).
 
-### 8.1. Hasil Kueri Rekonsiliasi Baris & Finansial:
+### 9.1. Hasil Kueri Rekonsiliasi Baris & Finansial:
 ```sql
 -- Uji 1: Rekonsiliasi Kelengkapan Baris
 SELECT 
@@ -261,11 +279,11 @@ FROM
 | **Tingkat Duplikasi Data (Duplicate PK)** | 0 baris | 0 baris | **0 baris** | **LULUS (Idempotent)** |
 
 ![Bukti Rekonsiliasi Staging vs Fakta](../bukti/etl/04-rekonsiliasi-staging-fakta.png)
-*Gambar 8.1: Hasil eksekusi kueri rekonsiliasi membuktikan keselarasan total baris (60.398) dan nilai finansial tanpa selisih.*
+*Gambar 9.1: Hasil eksekusi kueri rekonsiliasi membuktikan keselarasan total baris (60.398) dan nilai finansial tanpa selisih.*
 
 ---
 
-### 8.2. Audit Alokasi Anggota Pengganti / Missing Keys (`-1`):
+### 9.2. Audit Alokasi Anggota Pengganti / Missing Keys (`-1`):
 ```sql
 SELECT 
     SUM(CASE WHEN currency_key = -1 THEN 1 ELSE 0 END) AS domestik_tanpa_valas_currency,
@@ -277,25 +295,7 @@ FROM fact_online_sales;
 * **Justifikasi Bisnis:** Seluruh pesanan ini adalah transaksi domestik pelanggan Amerika Serikat yang menggunakan mata uang dasar USD, sehingga di sistem operasional nilai `CurrencyRateID` bernilai `NULL`. Pengalokasian ke `currency_key = -1` merupakan praktik terbaik (*best practice*) Kimball untuk mencegah kegagalan relasi foreign key tanpa kehilangan data transaksi.
 
 ![Audit Unknown Member minus 1](../bukti/etl/06-audit-unknown-member.png)
-*Gambar 8.2: Hasil audit menunjukkan penanganan anomali data berjalan sempurna melalui alokasi anggota `-1`.*
-
----
-
-## 9. Matriks Pemenuhan 9 Kriteria Checklist Pekan 13
-
-Berikut rekapitulasi formal pemenuhan seluruh kriteria penilaian yang ditetapkan oleh dosen pembimbing:
-
-| No. | Kriteria Penugasan Dosen | Status Pemenuhan | Berkas Bukti & Implementasi |
-|:---:|---|:---:|---|
-| **1** | `etl/t01_ekstrak.ktr` berjalan, jumlah baris sumber dan staging sama (Header 27.659, Detail 60.398). | **100% Selesai** | [`etl/t01_ekstrak.ktr`](../etl/t01_ekstrak.ktr)<br>Bukti: [`bukti/etl/01-eksekusi-t01-ekstrak.png`](../bukti/etl/01-eksekusi-t01-ekstrak.png) |
-| **2** | Satu transformasi per dimensi (`01-dim-date.ktr` s.d. `07-dim-ship-method.ktr`), aturan NULL sesuai mapping. | **100% Selesai** | Berkas [`etl/01-dim-date.ktr`](../etl/01-dim-date.ktr) s.d. [`07-dim-ship-method.ktr`](../etl/07-dim-ship-method.ktr) |
-| **3** | Minimal satu dimensi SCD tipe 2: `dim_product` dari riwayat biaya, membuktikan produk berversi (misal ID 707 memiliki 3 versi). | **100% Selesai** | [`etl/02-dim-product.ktr`](../etl/02-dim-product.ktr)<br>Bukti: [`bukti/etl/02-scd2-dim-product.png`](../bukti/etl/02-scd2-dim-product.png) |
-| **4** | Transformasi fakta `etl/08-fact-online-sales.ktr`: Lookup ke seluruh dimensi dengan default `-1` dan lookup produk mencocokkan rentang tanggal transaksi. | **100% Selesai** | [`etl/08-fact-online-sales.ktr`](../etl/08-fact-online-sales.ktr) (60.398 baris termuat) |
-| **5** | Master Job berjalan lewat Kitchen dari terminal. | **100% Selesai** | Bukti: [`bukti/etl/05-eksekusi-kitchen-terminal.png`](../bukti/etl/05-eksekusi-kitchen-terminal.png) |
-| **6** | Job dijalankan 2x berturut-turut, tidak ada data ganda (menggunakan langkah SQL pengosongan sebelum load). | **100% Selesai** | [`etl/job_utama.kjb`](../etl/job_utama.kjb)<br>Bukti: [`bukti/etl/03-job-utama-sukses.png`](../bukti/etl/03-job-utama-sukses.png) |
-| **7** | Hasil rekonsiliasi tersimpan, selisih dijelaskan jika ada. | **100% Selesai** | [`sql/pengujian/pengujian-rekonsiliasi.sql`](../sql/pengujian/pengujian-rekonsiliasi.sql)<br>Bukti: [`bukti/etl/04-rekonsiliasi-staging-fakta.png`](../bukti/etl/04-rekonsiliasi-staging-fakta.png) |
-| **8** | Semua berkas `.ktr` dan `.kjb` tersimpan di folder `etl/`. | **100% Selesai** | Terverifikasi di folder [`etl/`](../etl/) |
-| **9** | Laporan `laporan/pekan-13.md` siap. | **100% Selesai** | Dokumen [`laporan/pekan-13.md`](pekan-13.md) |
+*Gambar 9.2: Hasil audit menunjukkan penanganan anomali data berjalan sempurna melalui alokasi anggota `-1`.*
 
 ---
 
